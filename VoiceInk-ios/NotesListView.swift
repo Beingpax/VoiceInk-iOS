@@ -13,15 +13,11 @@ struct NotesListView: View {
     private let service = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
 
-    enum Filter: String, CaseIterable { case all = "All", shared = "Shared", starred = "Starred" }
+    enum Filter: String, CaseIterable { case all = "All" }
 
     var filteredNotes: [Note] {
         let base = notes.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || $0.transcript.localizedCaseInsensitiveContains(searchText) }
-        switch selectedFilter {
-        case .all: return base
-        case .shared: return base.filter { $0.isShared }
-        case .starred: return base.filter { $0.isStarred }
-        }
+        return base
     }
 
     init() {}

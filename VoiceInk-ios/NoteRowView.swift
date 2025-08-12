@@ -43,9 +43,5 @@ struct NoteRowView: View {
     }
 }
 
-#Preview {
-    let sample = Note(title: "Meeting notes", transcript: "Discussed quarterly roadmap and action items.", durationSeconds: 74)
-    return List { NoteRowView(note: sample, onToggleStar: {}, onToggleShare: {}) }
-}
 
 

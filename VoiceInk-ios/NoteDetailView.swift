@@ -26,9 +26,4 @@ struct NoteDetailView: View {
     }
 }
 
-#Preview {
-    let n = Note(title: "Sample", transcript: "This is a sample transcript.", durationSeconds: 42, isPostProcessed: true, postProcessorProvider: "Groq", postProcessorModel: "llama-3.1-8b-instant")
-    return NavigationStack { NoteDetailView(note: n) }
-}
-
 
