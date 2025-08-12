@@ -49,12 +49,10 @@ final class AppSettings: ObservableObject {
             self.selectedProvider = .groq
         }
         self.preferredModel = UserDefaults.standard.string(forKey: "preferredModel") ?? Provider.groq.availableModels.first ?? "whisper-large-v3"
-        if let raw = UserDefaults.standard.string(forKey: "llmProvider"), let p = Provider(rawValue: raw) {
-            self.llmProvider = p
-        } else {
-            self.llmProvider = .groq
-        }
-        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? self.llmProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
+        let storedLLMProviderRaw = UserDefaults.standard.string(forKey: "llmProvider")
+        let resolvedLLMProvider = Provider(rawValue: storedLLMProviderRaw ?? "") ?? .groq
+        self.llmProvider = resolvedLLMProvider
+        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
         self.llmModel = initialLLMModel
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
         self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""

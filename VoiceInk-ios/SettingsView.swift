@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var tempKey: String = ""
     @State private var isVerifying: Bool = false
     @State private var verifyResult: Bool? = nil
+    @State private var editingKey: Bool = true
 
     private let service = GroqTranscriptionService()
 
@@ -20,24 +21,40 @@ struct SettingsView: View {
             }
 
             Section(header: Text("API Key")) {
-                SecureField("\(settings.selectedProvider.rawValue) API Key", text: $tempKey)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                HStack {
-                    Button(action: saveKey) {
-                        Label("Save", systemImage: "checkmark.circle.fill")
-                    }
-                    .disabled(tempKey.isEmpty)
-                    Spacer()
-                    if isVerifying {
-                        ProgressView().progressViewStyle(.circular)
-                    } else {
-                        Button(action: verifyKey) {
-                            Label("Verify", systemImage: "checkmark.seal")
+                if editingKey {
+                    SecureField("\(settings.selectedProvider.rawValue) API Key", text: $tempKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    HStack {
+                        Button(action: saveKey) {
+                            Label("Save", systemImage: "checkmark.circle.fill")
                         }
-                        .disabled(currentAPIKey().isEmpty)
+                        .disabled(tempKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        Spacer()
+                        if isVerifying {
+                            ProgressView().progressViewStyle(.circular)
+                        } else {
+                            Button(action: verifyKey) {
+                                Label("Verify", systemImage: "checkmark.seal")
+                            }
+                            .disabled(tempKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && currentAPIKey().isEmpty)
+                        }
+                    }
+                } else {
+                    HStack {
+                        Label("Key verified", systemImage: "checkmark.seal.fill").foregroundStyle(.green)
+                        Spacer()
+                        Button("Change") {
+                            editingKey = true
+                            verifyResult = nil
+                            tempKey = currentAPIKey()
+                        }
+                    }
+                    if let existing = obfuscatedKey() {
+                        Text(existing).font(.caption).foregroundStyle(.secondary)
                     }
                 }
+
                 if let verifyResult {
                     Label(verifyResult ? "Key verified" : "Verification failed", systemImage: verifyResult ? "checkmark.seal.fill" : "xmark.seal")
                         .foregroundStyle(verifyResult ? .green : .red)
@@ -64,9 +81,16 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .onAppear { tempKey = currentAPIKey() }
+        .onAppear {
+            tempKey = currentAPIKey()
+            editingKey = currentAPIKey().isEmpty ? true : (verifyResult != true)
+        }
         .onChange(of: settings.selectedProvider) { _, _ in
             tempKey = currentAPIKey()
+            verifyResult = nil
+            editingKey = currentAPIKey().isEmpty
+        }
+        .onChange(of: tempKey) { _, _ in
             verifyResult = nil
         }
     }
@@ -82,9 +106,16 @@ struct SettingsView: View {
     private func verifyKey() {
         Task {
             isVerifying = true
-            let ok = await service.verifyAPIKey(apiBaseURL: settings.selectedProvider.baseURL, currentAPIKey())
+            let entered = tempKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            let keyToVerify = entered.isEmpty ? currentAPIKey() : entered
+            let ok = await service.verifyAPIKey(apiBaseURL: settings.selectedProvider.baseURL, keyToVerify)
             verifyResult = ok
             isVerifying = false
+            if ok {
+                // Auto-save verified key and switch to non-editing state
+                if !entered.isEmpty { settings.setAPIKey(entered, for: settings.selectedProvider) }
+                editingKey = false
+            }
         }
     }
 }
