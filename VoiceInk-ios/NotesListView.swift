@@ -9,6 +9,7 @@ struct NotesListView: View {
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
     @State private var selectedFilter: Filter = .all
+    @State private var showingRecordSheet: Bool = false
     private let service = GroqTranscriptionService()
 
     enum Filter: String, CaseIterable { case all = "All", shared = "Shared", starred = "Starred" }
@@ -26,91 +27,46 @@ struct NotesListView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Mimic search bar and filter chips
-                HStack {
-                    HStack { Image(systemName: "magnifyingglass"); TextField("Search", text: $searchText) }
-                        .padding(10)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gearshape")
-                            .padding(8)
+            content
+                .navigationTitle("Voice Notes")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink(destination: SettingsView()) { Image(systemName: "gearshape") }
                     }
-                }.padding([.horizontal, .top])
-
-                HStack(spacing: 8) {
-                    ForEach(Filter.allCases, id: \.self) { f in
-                        Button(action: { selectedFilter = f }) {
-                            Text(f.rawValue)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(selectedFilter == f ? Color.accentColor.opacity(0.2) : Color(.secondarySystemBackground))
-                                .clipShape(Capsule())
-                        }
-                    }
-                }.padding(.horizontal)
-
-                List {
-                    ForEach(filteredNotes) { note in
-                        NavigationLink(value: note.id) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(note.title).font(.headline)
-                                Text(note.transcript.isEmpty ? "No audible content detected." : note.transcript)
-                                    .lineLimit(2)
-                                    .foregroundStyle(.secondary)
-                                HStack(spacing: 16) {
-                                    Label(note.createdAt.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
-                                        .labelStyle(.titleAndIcon)
-                                        .font(.caption)
-                                    if note.durationSeconds > 0 {
-                                        Label(timeString(note.durationSeconds), systemImage: "play.circle")
-                                            .font(.caption)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .onDelete(perform: deleteItems)
+                    ToolbarItem(placement: .bottomBar) { recordButton }
                 }
-
-                // Bottom record bar
-                recordBar
-            }
-            .navigationTitle("Voicenotes")
-            .navigationBarTitleDisplayMode(.large)
+                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
+                .sheet(isPresented: $showingRecordSheet) {
+                    RecordSheetView(recorder: recorder, onStopAndTranscribe: stopAndTranscribe)
+                }
         }
     }
 
-    private var recordBar: some View {
-        VStack {
-            if recorder.isRecording {
-                Button(action: stopAndTranscribe) {
-                    HStack { Image(systemName: "stop.fill"); Text("Stop • \(timeString(recorder.currentDuration))") }
+    private var content: some View {
+        VStack(spacing: 8) {
+            filterControl
+            List {
+                ForEach(filteredNotes) { note in
+                    NoteRowView(note: note, onToggleStar: { toggleStar(note) }, onToggleShare: { toggleShare(note) })
                 }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.red)
-                .foregroundStyle(.white)
-                .clipShape(Capsule())
-                .padding()
-            } else {
-                Button(action: startRecording) {
-                    HStack { Image(systemName: "record.circle"); Text(isTranscribing ? "Transcribing..." : "Record") }
-                }
-                .disabled(isTranscribing)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color(.label))
-                .foregroundStyle(Color(.systemBackground))
-                .clipShape(Capsule())
-                .padding()
+                .onDelete(perform: deleteItems)
             }
+            .listStyle(.insetGrouped)
         }
     }
 
-    private func startRecording() {
-        do { try recorder.startRecording() } catch { print("Record error: \(error)") }
+    private var filterControl: some View {
+        Picker("Filter", selection: $selectedFilter) {
+            ForEach(Filter.allCases, id: \.self) { f in Text(f.rawValue).tag(f) }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+    }
+
+    private var recordButton: some View {
+        Button(action: { showingRecordSheet = true }) {
+            Label("Record", systemImage: "record.circle")
+        }.disabled(isTranscribing)
     }
 
     private func stopAndTranscribe() {
@@ -139,6 +95,14 @@ struct NotesListView: View {
         withAnimation {
             for index in offsets { modelContext.delete(filteredNotes[index]) }
         }
+    }
+
+    private func toggleStar(_ note: Note) {
+        note.isStarred.toggle()
+    }
+
+    private func toggleShare(_ note: Note) {
+        note.isShared.toggle()
     }
 
     private func timeString(_ seconds: Double) -> String {
