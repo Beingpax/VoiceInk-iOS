@@ -18,7 +18,7 @@ final class Note {
     var durationSeconds: Double
     var isStarred: Bool
     var isShared: Bool
-    var isPostProcessed: Bool
+    var isPostProcessed: Bool?
     var postProcessorProvider: String?
     var postProcessorModel: String?
 
@@ -31,7 +31,7 @@ final class Note {
         durationSeconds: Double = 0,
         isStarred: Bool = false,
         isShared: Bool = false,
-        isPostProcessed: Bool = false,
+        isPostProcessed: Bool? = nil,
         postProcessorProvider: String? = nil,
         postProcessorModel: String? = nil
     ) {
