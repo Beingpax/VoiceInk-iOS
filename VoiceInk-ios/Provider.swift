@@ -28,6 +28,22 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
             ]
         }
     }
+
+    // Suggested LLM models for post-processing (chat/completions)
+    var availableLLMModels: [String] {
+        switch self {
+        case .groq:
+            return [
+                "llama-3.1-8b-instant",
+                "llama-3.1-70b-versatile"
+            ]
+        case .openai:
+            return [
+                "gpt-4o-mini",
+                "gpt-3.5-turbo"
+            ]
+        }
+    }
 }
 
 

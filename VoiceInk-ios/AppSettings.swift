@@ -17,6 +17,22 @@ final class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(preferredModel, forKey: "preferredModel") }
     }
 
+    // Post-processing LLM provider and model
+    @Published var llmProvider: Provider {
+        didSet {
+            UserDefaults.standard.set(llmProvider.rawValue, forKey: "llmProvider")
+            ensureLLMModelIsValid()
+        }
+    }
+
+    @Published var llmModel: String {
+        didSet { UserDefaults.standard.set(llmModel, forKey: "llmModel") }
+    }
+
+    @Published var postProcessPrompt: String {
+        didSet { UserDefaults.standard.set(postProcessPrompt, forKey: "postProcessPrompt") }
+    }
+
     // Separate API keys per provider
     @Published var groqAPIKey: String {
         didSet { UserDefaults.standard.set(groqAPIKey, forKey: "groqAPIKey") }
@@ -33,9 +49,17 @@ final class AppSettings: ObservableObject {
             self.selectedProvider = .groq
         }
         self.preferredModel = UserDefaults.standard.string(forKey: "preferredModel") ?? Provider.groq.availableModels.first ?? "whisper-large-v3"
+        if let raw = UserDefaults.standard.string(forKey: "llmProvider"), let p = Provider(rawValue: raw) {
+            self.llmProvider = p
+        } else {
+            self.llmProvider = .groq
+        }
+        self.llmModel = UserDefaults.standard.string(forKey: "llmModel") ?? self.llmProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
+        self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
         self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""
         self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
         ensurePreferredModelIsValid()
+        ensureLLMModelIsValid()
     }
 
     func apiKey(for provider: Provider) -> String {
@@ -49,6 +73,12 @@ final class AppSettings: ObservableObject {
     private func ensurePreferredModelIsValid() {
         if !selectedProvider.availableModels.contains(preferredModel) {
             preferredModel = selectedProvider.availableModels.first ?? preferredModel
+        }
+    }
+
+    private func ensureLLMModelIsValid() {
+        if !llmProvider.availableLLMModels.contains(llmModel) {
+            llmModel = llmProvider.availableLLMModels.first ?? llmModel
         }
     }
 }

@@ -11,6 +11,7 @@ struct NotesListView: View {
     @State private var selectedFilter: Filter = .all
     @State private var showingRecordSheet: Bool = false
     private let service = GroqTranscriptionService()
+    private let postProcessor = LLMPostProcessor()
 
     enum Filter: String, CaseIterable { case all = "All", shared = "Shared", starred = "Starred" }
 
@@ -97,7 +98,22 @@ struct NotesListView: View {
             guard !apiKey.isEmpty else { return }
             do {
                 let text = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
-                let note = Note(title: "New note", transcript: text, audioFilePath: fileURL.path, durationSeconds: recorder.currentDuration)
+                var finalText = text
+                // Optional post-processing
+                let ppPrompt = AppSettings.shared.postProcessPrompt
+                if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    let llmProvider = AppSettings.shared.llmProvider
+                    let llmKey = AppSettings.shared.apiKey(for: llmProvider)
+                    let llmModel = AppSettings.shared.llmModel
+                    if !llmKey.isEmpty {
+                        do {
+                            finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: text)
+                        } catch {
+                            // Fall back silently to raw text
+                        }
+                    }
+                }
+                let note = Note(title: "New note", transcript: finalText, audioFilePath: fileURL.path, durationSeconds: recorder.currentDuration)
                 modelContext.insert(note)
             } catch {
                 let note = Note(title: "New note", transcript: "Transcription failed: \(error.localizedDescription)")

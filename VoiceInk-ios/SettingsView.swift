@@ -51,6 +51,17 @@ struct SettingsView: View {
                     }
                 }
             }
+
+            Section(header: Text("Post-processing"), footer: Text("Optionally improve your transcript automatically using the selected LLM and prompt.")) {
+                Picker("LLM Provider", selection: $settings.llmProvider) {
+                    ForEach(Provider.allCases) { p in Text(p.rawValue).tag(p) }
+                }
+                Picker("LLM Model", selection: $settings.llmModel) {
+                    ForEach(settings.llmProvider.availableLLMModels, id: \.self) { m in Text(m).tag(m) }
+                }
+                TextField("Custom prompt (optional)", text: $settings.postProcessPrompt, axis: .vertical)
+                    .lineLimit(3, reservesSpace: true)
+            }
         }
         .navigationTitle("Settings")
         .onAppear { tempKey = currentAPIKey() }
