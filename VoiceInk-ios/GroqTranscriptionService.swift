@@ -17,7 +17,7 @@ struct GroqTranscriptionService: TranscriptionService {
     // OpenAI-compatible APIs. Caller supplies baseURL and model.
 
     func transcribeAudioFile(apiBaseURL: URL, apiKey: String, model: String, fileURL: URL, language: String? = nil) async throws -> String {
-        var components = URLComponents(url: apiBaseURL.appendingPathComponent("/v1/audio/transcriptions"), resolvingAgainstBaseURL: false)!
+        let components = URLComponents(url: apiBaseURL.appendingPathComponent("/v1/audio/transcriptions"), resolvingAgainstBaseURL: false)!
         guard let url = components.url else { throw URLError(.badURL) }
 
         var request = URLRequest(url: url)
