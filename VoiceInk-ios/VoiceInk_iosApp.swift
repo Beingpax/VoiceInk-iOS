@@ -1,6 +1,6 @@
 //
-//  VoiceInkApp.swift
-//  VoiceInk
+//  VoiceInk_iosApp.swift
+//  VoiceInk-ios
 //
 //  Created by Prakash Joshi on 12/08/2025.
 //
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct VoiceInkApp: App {
+struct VoiceInk_iosApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,

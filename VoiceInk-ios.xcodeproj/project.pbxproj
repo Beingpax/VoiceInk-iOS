@@ -7,62 +7,75 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		E168DEE22E4B429E00F133D2 /* PBXContainerItemProxy */ = {
+		E168DF192E4B464C00F133D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E168DECA2E4B429D00F133D2 /* Project object */;
+			containerPortal = E168DEFF2E4B464B00F133D2 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E168DED12E4B429D00F133D2;
-			remoteInfo = VoiceInk;
+			remoteGlobalIDString = E168DF062E4B464B00F133D2;
+			remoteInfo = "VoiceInk-ios";
 		};
-		E168DEEC2E4B429E00F133D2 /* PBXContainerItemProxy */ = {
+		E168DF232E4B464C00F133D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E168DECA2E4B429D00F133D2 /* Project object */;
+			containerPortal = E168DEFF2E4B464B00F133D2 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E168DED12E4B429D00F133D2;
-			remoteInfo = VoiceInk;
+			remoteGlobalIDString = E168DF062E4B464B00F133D2;
+			remoteInfo = "VoiceInk-ios";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E168DED22E4B429D00F133D2 /* VoiceInk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceInk.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E168DEE12E4B429E00F133D2 /* VoiceInkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VoiceInkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E168DEEB2E4B429E00F133D2 /* VoiceInkUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VoiceInkUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoiceInk-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E168DF182E4B464C00F133D2 /* VoiceInk-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceInk-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E168DF222E4B464C00F133D2 /* VoiceInk-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceInk-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E168DF2A2E4B464C00F133D2 /* Exceptions for "VoiceInk-ios" folder in "VoiceInk-ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E168DF062E4B464B00F133D2 /* VoiceInk-ios */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E168DED42E4B429D00F133D2 /* VoiceInk */ = {
+		E168DF092E4B464B00F133D2 /* VoiceInk-ios */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VoiceInk;
+			exceptions = (
+				E168DF2A2E4B464C00F133D2 /* Exceptions for "VoiceInk-ios" folder in "VoiceInk-ios" target */,
+			);
+			path = "VoiceInk-ios";
 			sourceTree = "<group>";
 		};
-		E168DEE42E4B429E00F133D2 /* VoiceInkTests */ = {
+		E168DF1B2E4B464C00F133D2 /* VoiceInk-iosTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VoiceInkTests;
+			path = "VoiceInk-iosTests";
 			sourceTree = "<group>";
 		};
-		E168DEEE2E4B429E00F133D2 /* VoiceInkUITests */ = {
+		E168DF252E4B464C00F133D2 /* VoiceInk-iosUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VoiceInkUITests;
+			path = "VoiceInk-iosUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E168DECF2E4B429D00F133D2 /* Frameworks */ = {
+		E168DF042E4B464B00F133D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEDE2E4B429E00F133D2 /* Frameworks */ = {
+		E168DF152E4B464C00F133D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEE82E4B429E00F133D2 /* Frameworks */ = {
+		E168DF1F2E4B464C00F133D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -72,22 +85,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E168DEC92E4B429D00F133D2 = {
+		E168DEFE2E4B464B00F133D2 = {
 			isa = PBXGroup;
 			children = (
-				E168DED42E4B429D00F133D2 /* VoiceInk */,
-				E168DEE42E4B429E00F133D2 /* VoiceInkTests */,
-				E168DEEE2E4B429E00F133D2 /* VoiceInkUITests */,
-				E168DED32E4B429D00F133D2 /* Products */,
+				E168DF092E4B464B00F133D2 /* VoiceInk-ios */,
+				E168DF1B2E4B464C00F133D2 /* VoiceInk-iosTests */,
+				E168DF252E4B464C00F133D2 /* VoiceInk-iosUITests */,
+				E168DF082E4B464B00F133D2 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E168DED32E4B429D00F133D2 /* Products */ = {
+		E168DF082E4B464B00F133D2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E168DED22E4B429D00F133D2 /* VoiceInk.app */,
-				E168DEE12E4B429E00F133D2 /* VoiceInkTests.xctest */,
-				E168DEEB2E4B429E00F133D2 /* VoiceInkUITests.xctest */,
+				E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */,
+				E168DF182E4B464C00F133D2 /* VoiceInk-iosTests.xctest */,
+				E168DF222E4B464C00F133D2 /* VoiceInk-iosUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,134 +108,134 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E168DED12E4B429D00F133D2 /* VoiceInk */ = {
+		E168DF062E4B464B00F133D2 /* VoiceInk-ios */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E168DEF52E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk" */;
+			buildConfigurationList = E168DF2B2E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-ios" */;
 			buildPhases = (
-				E168DECE2E4B429D00F133D2 /* Sources */,
-				E168DECF2E4B429D00F133D2 /* Frameworks */,
-				E168DED02E4B429D00F133D2 /* Resources */,
+				E168DF032E4B464B00F133D2 /* Sources */,
+				E168DF042E4B464B00F133D2 /* Frameworks */,
+				E168DF052E4B464B00F133D2 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E168DED42E4B429D00F133D2 /* VoiceInk */,
+				E168DF092E4B464B00F133D2 /* VoiceInk-ios */,
 			);
-			name = VoiceInk;
+			name = "VoiceInk-ios";
 			packageProductDependencies = (
 			);
-			productName = VoiceInk;
-			productReference = E168DED22E4B429D00F133D2 /* VoiceInk.app */;
+			productName = "VoiceInk-ios";
+			productReference = E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E168DEE02E4B429E00F133D2 /* VoiceInkTests */ = {
+		E168DF172E4B464C00F133D2 /* VoiceInk-iosTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E168DEF82E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInkTests" */;
+			buildConfigurationList = E168DF302E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-iosTests" */;
 			buildPhases = (
-				E168DEDD2E4B429E00F133D2 /* Sources */,
-				E168DEDE2E4B429E00F133D2 /* Frameworks */,
-				E168DEDF2E4B429E00F133D2 /* Resources */,
+				E168DF142E4B464C00F133D2 /* Sources */,
+				E168DF152E4B464C00F133D2 /* Frameworks */,
+				E168DF162E4B464C00F133D2 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E168DEE32E4B429E00F133D2 /* PBXTargetDependency */,
+				E168DF1A2E4B464C00F133D2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E168DEE42E4B429E00F133D2 /* VoiceInkTests */,
+				E168DF1B2E4B464C00F133D2 /* VoiceInk-iosTests */,
 			);
-			name = VoiceInkTests;
+			name = "VoiceInk-iosTests";
 			packageProductDependencies = (
 			);
-			productName = VoiceInkTests;
-			productReference = E168DEE12E4B429E00F133D2 /* VoiceInkTests.xctest */;
+			productName = "VoiceInk-iosTests";
+			productReference = E168DF182E4B464C00F133D2 /* VoiceInk-iosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E168DEEA2E4B429E00F133D2 /* VoiceInkUITests */ = {
+		E168DF212E4B464C00F133D2 /* VoiceInk-iosUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E168DEFB2E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInkUITests" */;
+			buildConfigurationList = E168DF332E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-iosUITests" */;
 			buildPhases = (
-				E168DEE72E4B429E00F133D2 /* Sources */,
-				E168DEE82E4B429E00F133D2 /* Frameworks */,
-				E168DEE92E4B429E00F133D2 /* Resources */,
+				E168DF1E2E4B464C00F133D2 /* Sources */,
+				E168DF1F2E4B464C00F133D2 /* Frameworks */,
+				E168DF202E4B464C00F133D2 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E168DEED2E4B429E00F133D2 /* PBXTargetDependency */,
+				E168DF242E4B464C00F133D2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E168DEEE2E4B429E00F133D2 /* VoiceInkUITests */,
+				E168DF252E4B464C00F133D2 /* VoiceInk-iosUITests */,
 			);
-			name = VoiceInkUITests;
+			name = "VoiceInk-iosUITests";
 			packageProductDependencies = (
 			);
-			productName = VoiceInkUITests;
-			productReference = E168DEEB2E4B429E00F133D2 /* VoiceInkUITests.xctest */;
+			productName = "VoiceInk-iosUITests";
+			productReference = E168DF222E4B464C00F133D2 /* VoiceInk-iosUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E168DECA2E4B429D00F133D2 /* Project object */ = {
+		E168DEFF2E4B464B00F133D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					E168DED12E4B429D00F133D2 = {
+					E168DF062E4B464B00F133D2 = {
 						CreatedOnToolsVersion = 26.0;
 					};
-					E168DEE02E4B429E00F133D2 = {
+					E168DF172E4B464C00F133D2 = {
 						CreatedOnToolsVersion = 26.0;
-						TestTargetID = E168DED12E4B429D00F133D2;
+						TestTargetID = E168DF062E4B464B00F133D2;
 					};
-					E168DEEA2E4B429E00F133D2 = {
+					E168DF212E4B464C00F133D2 = {
 						CreatedOnToolsVersion = 26.0;
-						TestTargetID = E168DED12E4B429D00F133D2;
+						TestTargetID = E168DF062E4B464B00F133D2;
 					};
 				};
 			};
-			buildConfigurationList = E168DECD2E4B429D00F133D2 /* Build configuration list for PBXProject "VoiceInk" */;
+			buildConfigurationList = E168DF022E4B464B00F133D2 /* Build configuration list for PBXProject "VoiceInk-ios" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = E168DEC92E4B429D00F133D2;
+			mainGroup = E168DEFE2E4B464B00F133D2;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = E168DED32E4B429D00F133D2 /* Products */;
+			productRefGroup = E168DF082E4B464B00F133D2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E168DED12E4B429D00F133D2 /* VoiceInk */,
-				E168DEE02E4B429E00F133D2 /* VoiceInkTests */,
-				E168DEEA2E4B429E00F133D2 /* VoiceInkUITests */,
+				E168DF062E4B464B00F133D2 /* VoiceInk-ios */,
+				E168DF172E4B464C00F133D2 /* VoiceInk-iosTests */,
+				E168DF212E4B464C00F133D2 /* VoiceInk-iosUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E168DED02E4B429D00F133D2 /* Resources */ = {
+		E168DF052E4B464B00F133D2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEDF2E4B429E00F133D2 /* Resources */ = {
+		E168DF162E4B464C00F133D2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEE92E4B429E00F133D2 /* Resources */ = {
+		E168DF202E4B464C00F133D2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -232,21 +245,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E168DECE2E4B429D00F133D2 /* Sources */ = {
+		E168DF032E4B464B00F133D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEDD2E4B429E00F133D2 /* Sources */ = {
+		E168DF142E4B464C00F133D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E168DEE72E4B429E00F133D2 /* Sources */ = {
+		E168DF1E2E4B464C00F133D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -256,20 +269,86 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E168DEE32E4B429E00F133D2 /* PBXTargetDependency */ = {
+		E168DF1A2E4B464C00F133D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E168DED12E4B429D00F133D2 /* VoiceInk */;
-			targetProxy = E168DEE22E4B429E00F133D2 /* PBXContainerItemProxy */;
+			target = E168DF062E4B464B00F133D2 /* VoiceInk-ios */;
+			targetProxy = E168DF192E4B464C00F133D2 /* PBXContainerItemProxy */;
 		};
-		E168DEED2E4B429E00F133D2 /* PBXTargetDependency */ = {
+		E168DF242E4B464C00F133D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E168DED12E4B429D00F133D2 /* VoiceInk */;
-			targetProxy = E168DEEC2E4B429E00F133D2 /* PBXContainerItemProxy */;
+			target = E168DF062E4B464B00F133D2 /* VoiceInk-ios */;
+			targetProxy = E168DF232E4B464C00F133D2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E168DEF32E4B429E00F133D2 /* Debug */ = {
+		E168DF2C2E4B464C00F133D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "VoiceInk-ios/VoiceInk_ios.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V6J6A3VWY2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "VoiceInk-ios/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E168DF2D2E4B464C00F133D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "VoiceInk-ios/VoiceInk_ios.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V6J6A3VWY2;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "VoiceInk-ios/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E168DF2E2E4B464C00F133D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -322,18 +401,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		E168DEF42E4B429E00F133D2 /* Release */ = {
+		E168DF2F2E4B464C00F133D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -380,78 +459,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		E168DEF62E4B429E00F133D2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = V6J6A3VWY2;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInk;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		E168DEF72E4B429E00F133D2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = V6J6A3VWY2;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInk;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		E168DEF92E4B429E00F133D2 /* Debug */ = {
+		E168DF312E4B464C00F133D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -459,19 +477,20 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V6J6A3VWY2;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInkTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-iosTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInk.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceInk";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInk-ios.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceInk-ios";
 			};
 			name = Debug;
 		};
-		E168DEFA2E4B429E00F133D2 /* Release */ = {
+		E168DF322E4B464C00F133D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -479,19 +498,20 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V6J6A3VWY2;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInkTests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-iosTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInk.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceInk";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInk-ios.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VoiceInk-ios";
 			};
 			name = Release;
 		};
-		E168DEFC2E4B429E00F133D2 /* Debug */ = {
+		E168DF342E4B464C00F133D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -499,17 +519,18 @@
 				DEVELOPMENT_TEAM = V6J6A3VWY2;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInkUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-iosUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = VoiceInk;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "VoiceInk-ios";
 			};
 			name = Debug;
 		};
-		E168DEFD2E4B429E00F133D2 /* Release */ = {
+		E168DF352E4B464C00F133D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -517,56 +538,57 @@
 				DEVELOPMENT_TEAM = V6J6A3VWY2;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prakashjoshipax.VoiceInk.VoiceInkUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-iosUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = VoiceInk;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "VoiceInk-ios";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E168DECD2E4B429D00F133D2 /* Build configuration list for PBXProject "VoiceInk" */ = {
+		E168DF022E4B464B00F133D2 /* Build configuration list for PBXProject "VoiceInk-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E168DEF32E4B429E00F133D2 /* Debug */,
-				E168DEF42E4B429E00F133D2 /* Release */,
+				E168DF2E2E4B464C00F133D2 /* Debug */,
+				E168DF2F2E4B464C00F133D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E168DEF52E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk" */ = {
+		E168DF2B2E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E168DEF62E4B429E00F133D2 /* Debug */,
-				E168DEF72E4B429E00F133D2 /* Release */,
+				E168DF2C2E4B464C00F133D2 /* Debug */,
+				E168DF2D2E4B464C00F133D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E168DEF82E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInkTests" */ = {
+		E168DF302E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-iosTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E168DEF92E4B429E00F133D2 /* Debug */,
-				E168DEFA2E4B429E00F133D2 /* Release */,
+				E168DF312E4B464C00F133D2 /* Debug */,
+				E168DF322E4B464C00F133D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E168DEFB2E4B429E00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInkUITests" */ = {
+		E168DF332E4B464C00F133D2 /* Build configuration list for PBXNativeTarget "VoiceInk-iosUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E168DEFC2E4B429E00F133D2 /* Debug */,
-				E168DEFD2E4B429E00F133D2 /* Release */,
+				E168DF342E4B464C00F133D2 /* Debug */,
+				E168DF352E4B464C00F133D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E168DECA2E4B429D00F133D2 /* Project object */;
+	rootObject = E168DEFF2E4B464B00F133D2 /* Project object */;
 }

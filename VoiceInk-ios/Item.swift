@@ -1,6 +1,6 @@
 //
 //  Item.swift
-//  VoiceInk
+//  VoiceInk-ios
 //
 //  Created by Prakash Joshi on 12/08/2025.
 //
