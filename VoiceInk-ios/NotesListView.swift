@@ -48,7 +48,9 @@ struct NotesListView: View {
             filterControl
             List {
                 ForEach(filteredNotes) { note in
-                    NoteRowView(note: note, onToggleStar: { toggleStar(note) }, onToggleShare: { toggleShare(note) })
+                    NavigationLink(destination: NoteDetailView(note: note)) {
+                        NoteRowView(note: note, onToggleStar: { toggleStar(note) }, onToggleShare: { toggleShare(note) })
+                    }
                 }
                 .onDelete(perform: deleteItems)
             }
@@ -113,7 +115,23 @@ struct NotesListView: View {
                         }
                     }
                 }
-                let note = Note(title: "New note", transcript: finalText, audioFilePath: fileURL.path, durationSeconds: recorder.currentDuration)
+                var isPP = false
+                var ppProvider: String? = nil
+                var ppModel: String? = nil
+                if finalText != text {
+                    isPP = true
+                    ppProvider = AppSettings.shared.llmProvider.rawValue
+                    ppModel = AppSettings.shared.llmModel
+                }
+                let note = Note(
+                    title: "New note",
+                    transcript: finalText,
+                    audioFilePath: fileURL.path,
+                    durationSeconds: recorder.currentDuration,
+                    isPostProcessed: isPP,
+                    postProcessorProvider: ppProvider,
+                    postProcessorModel: ppModel
+                )
                 modelContext.insert(note)
             } catch {
                 let note = Note(title: "New note", transcript: "Transcription failed: \(error.localizedDescription)")

@@ -18,6 +18,9 @@ final class Note {
     var durationSeconds: Double
     var isStarred: Bool
     var isShared: Bool
+    var isPostProcessed: Bool
+    var postProcessorProvider: String?
+    var postProcessorModel: String?
 
     init(
         id: UUID = UUID(),
@@ -27,7 +30,10 @@ final class Note {
         audioFilePath: String? = nil,
         durationSeconds: Double = 0,
         isStarred: Bool = false,
-        isShared: Bool = false
+        isShared: Bool = false,
+        isPostProcessed: Bool = false,
+        postProcessorProvider: String? = nil,
+        postProcessorModel: String? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -37,6 +43,9 @@ final class Note {
         self.durationSeconds = durationSeconds
         self.isStarred = isStarred
         self.isShared = isShared
+        self.isPostProcessed = isPostProcessed
+        self.postProcessorProvider = postProcessorProvider
+        self.postProcessorModel = postProcessorModel
     }
 }
 
