@@ -2,8 +2,9 @@ import SwiftUI
 
 struct NoteRowView: View {
     let note: Note
-    let onToggleStar: () -> Void
-    let onToggleShare: () -> Void
+    // Callbacks removed since star/share are gone
+    let onToggleStar: () -> Void = {}
+    let onToggleShare: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -12,14 +13,9 @@ struct NoteRowView: View {
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(note.title.isEmpty ? "New note" : note.title)
-                        .font(.headline)
-                        .lineLimit(1)
-                    Spacer()
-                    if note.isStarred { Image(systemName: "star.fill").foregroundStyle(.yellow) }
-                    if note.isShared { Image(systemName: "person.2.fill").foregroundStyle(.secondary) }
-                }
+                Text(note.title.isEmpty ? "New note" : note.title)
+                    .font(.headline)
+                    .lineLimit(1)
                 Text(note.transcript.isEmpty ? "No audible content detected." : note.transcript)
                     .lineLimit(2)
                     .foregroundStyle(.secondary)
@@ -36,16 +32,7 @@ struct NoteRowView: View {
                 }
             }
         }
-        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            Button(action: onToggleStar) {
-                Label(note.isStarred ? "Unstar" : "Star", systemImage: note.isStarred ? "star.slash" : "star")
-            }.tint(.yellow)
-        }
-        .swipeActions(edge: .leading) {
-            Button(action: onToggleShare) {
-                Label(note.isShared ? "Unshare" : "Share", systemImage: note.isShared ? "person.fill.xmark" : "square.and.arrow.up")
-            }.tint(.blue)
-        }
+        // Swipe actions removed with star/share
     }
 
     private func timeString(_ seconds: Double) -> String {

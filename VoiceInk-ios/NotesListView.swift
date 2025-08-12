@@ -49,7 +49,7 @@ struct NotesListView: View {
             List {
                 ForEach(filteredNotes) { note in
                     NavigationLink(destination: NoteDetailView(note: note)) {
-                        NoteRowView(note: note, onToggleStar: { toggleStar(note) }, onToggleShare: { toggleShare(note) })
+                        NoteRowView(note: note)
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -115,22 +115,11 @@ struct NotesListView: View {
                         }
                     }
                 }
-                var isPP = false
-                var ppProvider: String? = nil
-                var ppModel: String? = nil
-                if finalText != text {
-                    isPP = true
-                    ppProvider = AppSettings.shared.llmProvider.rawValue
-                    ppModel = AppSettings.shared.llmModel
-                }
                 let note = Note(
                     title: "New note",
                     transcript: finalText,
                     audioFilePath: fileURL.path,
-                    durationSeconds: recorder.currentDuration,
-                    isPostProcessed: isPP,
-                    postProcessorProvider: ppProvider,
-                    postProcessorModel: ppModel
+                    durationSeconds: recorder.currentDuration
                 )
                 modelContext.insert(note)
             } catch {
@@ -147,13 +136,7 @@ struct NotesListView: View {
         }
     }
 
-    private func toggleStar(_ note: Note) {
-        note.isStarred.toggle()
-    }
-
-    private func toggleShare(_ note: Note) {
-        note.isShared.toggle()
-    }
+    // Star/share removed
 
     private func timeString(_ seconds: Double) -> String {
         let s = Int(seconds)

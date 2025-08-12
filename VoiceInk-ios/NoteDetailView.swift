@@ -7,21 +7,13 @@ struct NoteDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Text(note.title.isEmpty ? "New note" : note.title)
-                        .font(.title2.weight(.semibold))
-                    Spacer()
-                    if note.isStarred { Image(systemName: "star.fill").foregroundStyle(.yellow) }
-                }
+                Text(note.title.isEmpty ? "New note" : note.title)
+                    .font(.title2.weight(.semibold))
                 Text(note.createdAt.formatted(date: .abbreviated, time: .shortened))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                if note.isPostProcessed {
-                    Label("Post-processed by \(note.postProcessorProvider ?? "LLM") • \(note.postProcessorModel ?? "")", systemImage: "wand.and.stars")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+                // Post-processing badge removed for leaner UI
 
                 Text(note.transcript.isEmpty ? "No content" : note.transcript)
                     .font(.body)

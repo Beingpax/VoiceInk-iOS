@@ -16,11 +16,7 @@ final class Note {
     var transcript: String
     var audioFilePath: String?
     var durationSeconds: Double
-    var isStarred: Bool
-    var isShared: Bool
-    var isPostProcessed: Bool?
-    var postProcessorProvider: String?
-    var postProcessorModel: String?
+    // Removed starred/shared/post-process flags for a leaner model
 
     init(
         id: UUID = UUID(),
@@ -28,12 +24,7 @@ final class Note {
         title: String = "New note",
         transcript: String = "",
         audioFilePath: String? = nil,
-        durationSeconds: Double = 0,
-        isStarred: Bool = false,
-        isShared: Bool = false,
-        isPostProcessed: Bool? = nil,
-        postProcessorProvider: String? = nil,
-        postProcessorModel: String? = nil
+        durationSeconds: Double = 0
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -41,11 +32,6 @@ final class Note {
         self.transcript = transcript
         self.audioFilePath = audioFilePath
         self.durationSeconds = durationSeconds
-        self.isStarred = isStarred
-        self.isShared = isShared
-        self.isPostProcessed = isPostProcessed
-        self.postProcessorProvider = postProcessorProvider
-        self.postProcessorModel = postProcessorModel
     }
 }
 
