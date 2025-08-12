@@ -3,7 +3,7 @@ import SwiftData
 
 struct NotesListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \[SortDescriptor(\.createdAt, order: .reverse)\]) private var notes: [Note]
+    @Query(sort: [SortDescriptor(\Note.createdAt, order: .reverse)]) private var notes: [Note]
 
     @StateObject private var recorder = AudioRecorder()
     @State private var isTranscribing: Bool = false
@@ -21,6 +21,8 @@ struct NotesListView: View {
         case .starred: return base.filter { $0.isStarred }
         }
     }
+
+    init() {}
 
     var body: some View {
         NavigationStack {
@@ -58,7 +60,7 @@ struct NotesListView: View {
                                     .lineLimit(2)
                                     .foregroundStyle(.secondary)
                                 HStack(spacing: 16) {
-                                    Label(note.createdAt, systemImage: "calendar")
+                                    Label(note.createdAt.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
                                         .labelStyle(.titleAndIcon)
                                         .font(.caption)
                                     if note.durationSeconds > 0 {
