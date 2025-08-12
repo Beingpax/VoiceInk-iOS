@@ -28,17 +28,17 @@ struct NotesListView: View {
     var body: some View {
         NavigationStack {
             content
-                .navigationTitle("Voice Notes")
+                .navigationTitle("VoiceInk")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         NavigationLink(destination: SettingsView()) { Image(systemName: "gearshape") }
                     }
-                    ToolbarItem(placement: .bottomBar) { recordButton }
                 }
                 .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
                 .sheet(isPresented: $showingRecordSheet) {
                     RecordSheetView(recorder: recorder, onStopAndTranscribe: stopAndTranscribe)
                 }
+                .safeAreaInset(edge: .bottom) { recordBar }
         }
     }
 
@@ -63,10 +63,26 @@ struct NotesListView: View {
         .padding(.horizontal)
     }
 
-    private var recordButton: some View {
-        Button(action: { showingRecordSheet = true }) {
-            Label("Record", systemImage: "record.circle")
-        }.disabled(isTranscribing)
+    private var recordBar: some View {
+        HStack {
+            Button(action: { showingRecordSheet = true }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "record.circle.fill")
+                    Text("Record")
+                        .font(.headline)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity)
+                .background(Color(UIColor.label))
+                .foregroundStyle(Color(UIColor.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .disabled(isTranscribing)
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
     }
 
     private func stopAndTranscribe() {

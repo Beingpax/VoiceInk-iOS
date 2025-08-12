@@ -8,7 +8,6 @@ struct NoteRowView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "waveform")
-                .foregroundStyle(.accent)
                 .imageScale(.large)
                 .frame(width: 28)
 

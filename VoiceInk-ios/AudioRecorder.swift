@@ -12,6 +12,7 @@ final class AudioRecorder: NSObject, ObservableObject {
     @Published var isRecording: Bool = false
     @Published var currentRecordingURL: URL?
     @Published var currentDuration: TimeInterval = 0
+    @Published var levelsHistory: [CGFloat] = [] // normalized 0...1
 
     private var audioRecorder: AVAudioRecorder?
     private var meterTimer: Timer?
@@ -39,10 +40,17 @@ final class AudioRecorder: NSObject, ObservableObject {
         isRecording = true
         currentDuration = 0
 
-        meterTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+        meterTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self else { return }
             self.audioRecorder?.updateMeters()
-            self.currentDuration += 0.25
+            self.currentDuration += 0.1
+
+            if let power = self.audioRecorder?.averagePower(forChannel: 0) {
+                // Convert dB (-160..0) to 0..1
+                let normalized = max(0, min(1, (power + 60) / 60))
+                self.levelsHistory.append(CGFloat(normalized))
+                if self.levelsHistory.count > 40 { self.levelsHistory.removeFirst(self.levelsHistory.count - 40) }
+            }
         }
     }
 
@@ -52,6 +60,7 @@ final class AudioRecorder: NSObject, ObservableObject {
         meterTimer?.invalidate()
         meterTimer = nil
         isRecording = false
+        levelsHistory.removeAll()
     }
 
     func discard() {
