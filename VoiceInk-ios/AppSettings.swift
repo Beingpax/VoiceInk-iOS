@@ -54,7 +54,8 @@ final class AppSettings: ObservableObject {
         } else {
             self.llmProvider = .groq
         }
-        self.llmModel = UserDefaults.standard.string(forKey: "llmModel") ?? self.llmProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
+        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? self.llmProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
+        self.llmModel = initialLLMModel
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
         self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""
         self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
