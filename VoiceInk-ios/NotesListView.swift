@@ -8,16 +8,12 @@ struct NotesListView: View {
     @StateObject private var recorder = AudioRecorder()
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
-    @State private var selectedFilter: Filter = .all
     @State private var showingRecordSheet: Bool = false
     private let service = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
 
-    enum Filter: String, CaseIterable { case all = "All" }
-
     var filteredNotes: [Note] {
-        let base = notes.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || $0.transcript.localizedCaseInsensitiveContains(searchText) }
-        return base
+        notes.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || $0.transcript.localizedCaseInsensitiveContains(searchText) }
     }
 
     init() {}
@@ -40,8 +36,7 @@ struct NotesListView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 8) {
-            filterControl
+        VStack(spacing: 0) {
             List {
                 ForEach(filteredNotes) { note in
                     NavigationLink(destination: NoteDetailView(note: note)) {
@@ -52,14 +47,6 @@ struct NotesListView: View {
             }
             .listStyle(.insetGrouped)
         }
-    }
-
-    private var filterControl: some View {
-        Picker("Filter", selection: $selectedFilter) {
-            ForEach(Filter.allCases, id: \.self) { f in Text(f.rawValue).tag(f) }
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
     }
 
     private var recordBar: some View {
