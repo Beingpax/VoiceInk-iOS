@@ -9,17 +9,14 @@ struct GroqTranscriptionResponse: Decodable {
 }
 
 protocol TranscriptionService {
-    func transcribeAudioFile(apiKey: String, fileURL: URL, language: String?) async throws -> String
-    func verifyAPIKey(_ apiKey: String) async -> Bool
+    func transcribeAudioFile(apiBaseURL: URL, apiKey: String, model: String, fileURL: URL, language: String?) async throws -> String
+    func verifyAPIKey(apiBaseURL: URL, _ apiKey: String) async -> Bool
 }
 
 struct GroqTranscriptionService: TranscriptionService {
-    // Groq provides OpenAI-compatible APIs. We'll use the transcriptions endpoint.
-    // Model: whisper-large-v3 or tiny depending on availability; we default to whisper-large-v3.
-    let apiBaseURL: URL = URL(string: "https://api.groq.com/openai")!
-    let model: String = "whisper-large-v3"
+    // OpenAI-compatible APIs. Caller supplies baseURL and model.
 
-    func transcribeAudioFile(apiKey: String, fileURL: URL, language: String? = nil) async throws -> String {
+    func transcribeAudioFile(apiBaseURL: URL, apiKey: String, model: String, fileURL: URL, language: String? = nil) async throws -> String {
         var components = URLComponents(url: apiBaseURL.appendingPathComponent("/v1/audio/transcriptions"), resolvingAgainstBaseURL: false)!
         guard let url = components.url else { throw URLError(.badURL) }
 
@@ -74,7 +71,7 @@ struct GroqTranscriptionService: TranscriptionService {
         return ""
     }
 
-    func verifyAPIKey(_ apiKey: String) async -> Bool {
+    func verifyAPIKey(apiBaseURL: URL, _ apiKey: String) async -> Bool {
         // Hit a lightweight endpoint (models listing) to verify
         var request = URLRequest(url: apiBaseURL.appendingPathComponent("/v1/models"))
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")

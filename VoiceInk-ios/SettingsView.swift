@@ -10,8 +10,17 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("OpenAI-compatible API"), footer: Text("Currently uses Groq's OpenAI-compatible endpoints. Your key is stored securely in UserDefaults on-device.")) {
-                SecureField("API Key", text: $tempKey)
+            Section(header: Text("Provider")) {
+                Picker("Provider", selection: $settings.selectedProvider) {
+                    ForEach(Provider.allCases) { provider in
+                        Text(provider.rawValue).tag(provider)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Section(header: Text("API Key")) {
+                SecureField("\(settings.selectedProvider.rawValue) API Key", text: $tempKey)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                 HStack {
@@ -26,7 +35,7 @@ struct SettingsView: View {
                         Button(action: verifyKey) {
                             Label("Verify", systemImage: "checkmark.seal")
                         }
-                        .disabled(settings.openAICompatibleAPIKey.isEmpty)
+                        .disabled(currentAPIKey().isEmpty)
                     }
                 }
                 if let verifyResult {
@@ -36,21 +45,33 @@ struct SettingsView: View {
             }
 
             Section(header: Text("Model")) {
-                TextField("Preferred model", text: $settings.preferredModel)
+                Picker("Model", selection: $settings.preferredModel) {
+                    ForEach(settings.selectedProvider.availableModels, id: \.self) { m in
+                        Text(m).tag(m)
+                    }
+                }
             }
         }
         .navigationTitle("Settings")
-        .onAppear { tempKey = settings.openAICompatibleAPIKey }
+        .onAppear { tempKey = currentAPIKey() }
+        .onChange(of: settings.selectedProvider) { _, _ in
+            tempKey = currentAPIKey()
+            verifyResult = nil
+        }
+    }
+
+    private func currentAPIKey() -> String {
+        settings.apiKey(for: settings.selectedProvider)
     }
 
     private func saveKey() {
-        settings.openAICompatibleAPIKey = tempKey
+        settings.setAPIKey(tempKey, for: settings.selectedProvider)
     }
 
     private func verifyKey() {
         Task {
             isVerifying = true
-            let ok = await service.verifyAPIKey(settings.openAICompatibleAPIKey)
+            let ok = await service.verifyAPIKey(apiBaseURL: settings.selectedProvider.baseURL, currentAPIKey())
             verifyResult = ok
             isVerifying = false
         }

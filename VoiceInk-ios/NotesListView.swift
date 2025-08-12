@@ -119,10 +119,12 @@ struct NotesListView: View {
         isTranscribing = true
         Task {
             defer { isTranscribing = false }
-            let apiKey = AppSettings.shared.openAICompatibleAPIKey
+            let provider = AppSettings.shared.selectedProvider
+            let apiKey = AppSettings.shared.apiKey(for: provider)
+            let model = AppSettings.shared.preferredModel
             guard !apiKey.isEmpty else { return }
             do {
-                let text = try await service.transcribeAudioFile(apiKey: apiKey, fileURL: fileURL, language: nil)
+                let text = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
                 let note = Note(title: "New note", transcript: text, audioFilePath: fileURL.path, durationSeconds: recorder.currentDuration)
                 modelContext.insert(note)
             } catch {
