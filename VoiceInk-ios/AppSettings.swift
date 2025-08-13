@@ -5,7 +5,27 @@ import Combine
 final class AppSettings: ObservableObject {
     static let shared = AppSettings()
 
-    // Provider selection and model
+    // Modes system
+    @Published var modes: [Mode] {
+        didSet { saveModes() }
+    }
+    
+    @Published var selectedModeId: UUID? {
+        didSet { 
+            if let id = selectedModeId {
+                UserDefaults.standard.set(id.uuidString, forKey: "selectedModeId")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "selectedModeId")
+            }
+        }
+    }
+    
+    var selectedMode: Mode? {
+        guard let selectedModeId = selectedModeId else { return nil }
+        return modes.first { $0.id == selectedModeId }
+    }
+
+    // Legacy properties for backward compatibility (deprecated)
     @Published var selectedProvider: Provider {
         didSet {
             UserDefaults.standard.set(selectedProvider.rawValue, forKey: "selectedProvider")
@@ -17,7 +37,6 @@ final class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(preferredModel, forKey: "preferredModel") }
     }
 
-    // Post-processing LLM provider and model
     @Published var llmProvider: Provider {
         didSet {
             UserDefaults.standard.set(llmProvider.rawValue, forKey: "llmProvider")
@@ -41,8 +60,29 @@ final class AppSettings: ObservableObject {
     @Published var openAIAPIKey: String {
         didSet { UserDefaults.standard.set(openAIAPIKey, forKey: "openAIAPIKey") }
     }
+    
+    // Track verification status per provider
+    @Published var groqKeyVerified: Bool {
+        didSet { UserDefaults.standard.set(groqKeyVerified, forKey: "groqKeyVerified") }
+    }
+    
+    @Published var openAIKeyVerified: Bool {
+        didSet { UserDefaults.standard.set(openAIKeyVerified, forKey: "openAIKeyVerified") }
+    }
 
     private init() {
+        // Load modes
+        self.modes = Self.loadModes()
+        
+        // Load selected mode
+        if let selectedModeIdString = UserDefaults.standard.string(forKey: "selectedModeId"),
+           let selectedModeId = UUID(uuidString: selectedModeIdString) {
+            self.selectedModeId = selectedModeId
+        } else {
+            self.selectedModeId = nil
+        }
+        
+        // Legacy settings for backward compatibility
         if let raw = UserDefaults.standard.string(forKey: "selectedProvider"), let p = Provider(rawValue: raw) {
             self.selectedProvider = p
         } else {
@@ -57,6 +97,8 @@ final class AppSettings: ObservableObject {
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
         self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""
         self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
+        self.groqKeyVerified = UserDefaults.standard.bool(forKey: "groqKeyVerified")
+        self.openAIKeyVerified = UserDefaults.standard.bool(forKey: "openAIKeyVerified")
         ensurePreferredModelIsValid()
         ensureLLMModelIsValid()
     }
@@ -66,7 +108,30 @@ final class AppSettings: ObservableObject {
     }
 
     func setAPIKey(_ key: String, for provider: Provider) {
-        switch provider { case .groq: groqAPIKey = key; case .openai: openAIAPIKey = key }
+        switch provider { 
+        case .groq: 
+            groqAPIKey = key
+            // Reset verification status when key changes
+            if groqAPIKey != key { groqKeyVerified = false }
+        case .openai: 
+            openAIAPIKey = key
+            // Reset verification status when key changes
+            if openAIAPIKey != key { openAIKeyVerified = false }
+        }
+    }
+    
+    func isKeyVerified(for provider: Provider) -> Bool {
+        switch provider {
+        case .groq: return groqKeyVerified && !groqAPIKey.isEmpty
+        case .openai: return openAIKeyVerified && !openAIAPIKey.isEmpty
+        }
+    }
+    
+    func setKeyVerified(_ verified: Bool, for provider: Provider) {
+        switch provider {
+        case .groq: groqKeyVerified = verified
+        case .openai: openAIKeyVerified = verified
+        }
     }
 
     private func ensurePreferredModelIsValid() {
@@ -78,6 +143,79 @@ final class AppSettings: ObservableObject {
     private func ensureLLMModelIsValid() {
         if !llmProvider.availableLLMModels.contains(llmModel) {
             llmModel = llmProvider.availableLLMModels.first ?? llmModel
+        }
+    }
+    
+    // MARK: - Modes Management
+    
+    private func saveModes() {
+        if let data = try? JSONEncoder().encode(modes) {
+            UserDefaults.standard.set(data, forKey: "modes")
+        }
+    }
+    
+    private static func loadModes() -> [Mode] {
+        guard let data = UserDefaults.standard.data(forKey: "modes"),
+              let modes = try? JSONDecoder().decode([Mode].self, from: data) else {
+            return []
+        }
+        return modes
+    }
+    
+    // MARK: - Mode-based Settings
+    
+    /// Get the effective transcription provider (from selected mode, first mode, or fallback to legacy)
+    var effectiveTranscriptionProvider: Provider {
+        if let selectedMode = selectedMode {
+            return selectedMode.transcriptionProvider
+        } else if let firstMode = modes.first {
+            return firstMode.transcriptionProvider
+        } else {
+            return selectedProvider
+        }
+    }
+    
+    /// Get the effective transcription model (from selected mode, first mode, or fallback to legacy)
+    var effectiveTranscriptionModel: String {
+        if let selectedMode = selectedMode {
+            return selectedMode.transcriptionModel
+        } else if let firstMode = modes.first {
+            return firstMode.transcriptionModel
+        } else {
+            return preferredModel
+        }
+    }
+    
+    /// Get the effective post-processing provider (from selected mode, first mode, or fallback to legacy)
+    var effectivePostProcessingProvider: Provider {
+        if let selectedMode = selectedMode {
+            return selectedMode.postProcessingProvider
+        } else if let firstMode = modes.first {
+            return firstMode.postProcessingProvider
+        } else {
+            return llmProvider
+        }
+    }
+    
+    /// Get the effective post-processing model (from selected mode, first mode, or fallback to legacy)
+    var effectivePostProcessingModel: String {
+        if let selectedMode = selectedMode {
+            return selectedMode.postProcessingModel
+        } else if let firstMode = modes.first {
+            return firstMode.postProcessingModel
+        } else {
+            return llmModel
+        }
+    }
+    
+    /// Get the effective custom prompt (from selected mode, first mode, or fallback to legacy)
+    var effectiveCustomPrompt: String {
+        if let selectedMode = selectedMode {
+            return selectedMode.customPrompt
+        } else if let firstMode = modes.first {
+            return firstMode.customPrompt
+        } else {
+            return postProcessPrompt
         }
     }
 }

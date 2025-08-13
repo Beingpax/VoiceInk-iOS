@@ -12,6 +12,13 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case .openai: return URL(string: "https://api.openai.com")!
         }
     }
+    
+    var consoleURL: URL {
+        switch self {
+        case .groq: return URL(string: "https://console.groq.com/keys")!
+        case .openai: return URL(string: "https://platform.openai.com/api-keys")!
+        }
+    }
 
     var availableModels: [String] {
         switch self {

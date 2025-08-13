@@ -9,6 +9,7 @@ struct NotesListView: View {
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
     @State private var showingRecordSheet: Bool = false
+    @State private var recordSheetView: RecordSheetView?
     private let service = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
 
@@ -29,7 +30,10 @@ struct NotesListView: View {
                 }
                 .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
                 .sheet(isPresented: $showingRecordSheet) {
-                    RecordSheetView(recorder: recorder, onStopAndTranscribe: stopAndTranscribe)
+                    RecordSheetView(recorder: recorder, onStopAndTranscribe: { completion in
+                        stopAndTranscribe(completion: completion)
+                    })
+                    .id(showingRecordSheet) // Reset state when sheet reopens
                 }
                 .safeAreaInset(edge: .bottom) { recordBar }
         }
@@ -71,33 +75,45 @@ struct NotesListView: View {
         .padding(.bottom)
     }
 
-    private func stopAndTranscribe() {
+    private func stopAndTranscribe(completion: @escaping (Result<String, Error>) -> Void) {
         recorder.stopRecording()
         guard let fileURL = recorder.currentRecordingURL else { return }
         isTranscribing = true
         Task {
             defer { isTranscribing = false }
-            let provider = AppSettings.shared.selectedProvider
-            let apiKey = AppSettings.shared.apiKey(for: provider)
-            let model = AppSettings.shared.preferredModel
+            let settings = AppSettings.shared
+            
+            // Use effective settings from selected mode or fallback to legacy settings
+            let provider = settings.effectiveTranscriptionProvider
+            let apiKey = settings.apiKey(for: provider)
+            let model = settings.effectiveTranscriptionModel
             guard !apiKey.isEmpty else { return }
+            
             do {
-                let text = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
-                var finalText = text
-                // Optional post-processing
-                let ppPrompt = AppSettings.shared.postProcessPrompt
+                let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
+                // Clean up transcription: trim whitespace and normalize line breaks
+                let cleanedText = rawText
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: "\n\n+", with: "\n\n", options: .regularExpression) // Remove excessive line breaks
+                    .replacingOccurrences(of: "[ \t]+", with: " ", options: .regularExpression) // Normalize multiple spaces/tabs to single space
+                
+                var finalText = cleanedText
+                
+                // Optional post-processing using effective settings
+                let ppPrompt = settings.effectiveCustomPrompt
                 if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    let llmProvider = AppSettings.shared.llmProvider
-                    let llmKey = AppSettings.shared.apiKey(for: llmProvider)
-                    let llmModel = AppSettings.shared.llmModel
+                    let llmProvider = settings.effectivePostProcessingProvider
+                    let llmKey = settings.apiKey(for: llmProvider)
+                    let llmModel = settings.effectivePostProcessingModel
                     if !llmKey.isEmpty {
                         do {
-                            finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: text)
+                            finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
                         } catch {
                             // Fall back silently to raw text
                         }
                     }
                 }
+                
                 let note = Note(
                     title: "New note",
                     transcript: finalText,
@@ -105,11 +121,23 @@ struct NotesListView: View {
                     durationSeconds: recorder.currentDuration
                 )
                 modelContext.insert(note)
+                
+                // Don't discard the audio file - keep it for playback
+                recorder.stopRecording()
+                recorder.currentRecordingURL = nil
+                recorder.currentDuration = 0
+                
+                // Return success with transcript
+                completion(.success(finalText))
             } catch {
                 let note = Note(title: "New note", transcript: "Transcription failed: \(error.localizedDescription)")
                 modelContext.insert(note)
+                // Only discard on error
+                recorder.discard()
+                
+                // Return error
+                completion(.failure(error))
             }
-            recorder.discard()
         }
     }
 

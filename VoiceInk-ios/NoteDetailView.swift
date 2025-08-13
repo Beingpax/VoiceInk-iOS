@@ -13,7 +13,12 @@ struct NoteDetailView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                // Post-processing badge removed for leaner UI
+                // Audio player (only show if audio file exists)
+                if let audioPath = note.audioFilePath,
+                   !audioPath.isEmpty,
+                   FileManager.default.fileExists(atPath: audioPath) {
+                    AudioPlayerView(audioFilePath: audioPath, duration: note.durationSeconds)
+                }
 
                 Text(note.transcript.isEmpty ? "No content" : note.transcript)
                     .font(.body)
