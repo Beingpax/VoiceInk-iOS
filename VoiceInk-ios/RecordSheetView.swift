@@ -7,9 +7,6 @@ struct RecordSheetView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Capsule().fill(Color.secondary.opacity(0.3)).frame(width: 40, height: 5).padding(.top, 8)
-            Spacer(minLength: 4)
-
             // Status row with dot and rectangular stop
             HStack(alignment: .center) {
                 Circle()
@@ -44,9 +41,10 @@ struct RecordSheetView: View {
             Spacer(minLength: 8)
         }
         .padding()
+        .background(Color(.systemBackground))
         .interactiveDismissDisabled(recorder.isRecording)
         .presentationDetents([.fraction(0.45), .medium])
-        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(.systemBackground))
         .onAppear {
             animate = true
             if !recorder.isRecording { try? recorder.startRecording() }
