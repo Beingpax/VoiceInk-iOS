@@ -8,15 +8,26 @@ struct NoteRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "waveform")
+            // Status icon based on transcription status
+            Image(systemName: statusIcon)
                 .imageScale(.large)
                 .frame(width: 28)
+                .foregroundStyle(statusColor)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(note.title.isEmpty ? "New note" : note.title)
-                    .font(.headline)
-                    .lineLimit(1)
-                Text(note.transcript.isEmpty ? "No audible content detected." : note.transcript)
+                HStack {
+                    Text(note.title.isEmpty ? "New note" : note.title)
+                        .font(.headline)
+                        .lineLimit(1)
+                    
+                    if note.transcriptionStatus == .failed {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+                
+                Text(transcriptText)
                     .lineLimit(2)
                     .foregroundStyle(.secondary)
 
@@ -32,7 +43,39 @@ struct NoteRowView: View {
                 }
             }
         }
-        // Swipe actions removed with star/share
+    }
+    
+    private var statusIcon: String {
+        switch note.transcriptionStatus {
+        case .pending:
+            return "clock"
+        case .completed:
+            return "waveform"
+        case .failed:
+            return "exclamationmark.triangle"
+        }
+    }
+    
+    private var statusColor: Color {
+        switch note.transcriptionStatus {
+        case .pending:
+            return .orange
+        case .completed:
+            return .blue
+        case .failed:
+            return .red
+        }
+    }
+    
+    private var transcriptText: String {
+        switch note.transcriptionStatus {
+        case .pending:
+            return "Transcription pending..."
+        case .failed:
+            return "Transcription failed - tap to retry"
+        case .completed:
+            return note.transcript.isEmpty ? "No audible content detected." : note.transcript
+        }
     }
 
     private func timeString(_ seconds: Double) -> String {

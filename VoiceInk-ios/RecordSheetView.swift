@@ -191,34 +191,44 @@ struct RecordSheetView: View {
     }
     
     private func errorView(message: String) -> some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Spacer()
             
             VStack(spacing: 16) {
-                Image(systemName: "exclamationmark.triangle")
+                Image(systemName: "wifi.exclamationmark")
                     .font(.system(size: 48))
                     .foregroundStyle(.orange)
                 
-                Text("Transcription Failed")
-                    .font(.headline)
+                Text("Network Error")
+                    .font(.title2.weight(.semibold))
                 
-                Text(message)
+                Text("Recording saved! You can retry transcription later from your notes.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
             }
             
-            Button("Try Again") {
-                recordingState = .recording
-                animate = true
-                try? recorder.startRecording()
+            VStack(spacing: 12) {
+                Button("Done") {
+                    dismiss()
+                }
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                
+                Button("Try Again") {
+                    recordingState = .recording
+                    animate = true
+                    try? recorder.startRecording()
+                }
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.blue)
             }
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(Color.blue)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 20)
             
             Spacer()
         }

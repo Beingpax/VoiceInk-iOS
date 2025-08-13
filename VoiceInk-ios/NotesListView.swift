@@ -79,15 +79,40 @@ struct NotesListView: View {
         recorder.stopRecording()
         guard let fileURL = recorder.currentRecordingURL else { return }
         isTranscribing = true
+        
+        // ALWAYS preserve the audio file first, regardless of what happens next
+        let audioFilePath = fileURL.path
+        let recordingDuration = recorder.currentDuration
+        
         Task {
-            defer { isTranscribing = false }
+            defer { 
+                isTranscribing = false
+                // Clean up recorder state but keep the audio file
+                recorder.currentRecordingURL = nil
+                recorder.currentDuration = 0
+            }
+            
             let settings = AppSettings.shared
             
             // Use effective settings from selected mode or fallback to legacy settings
             let provider = settings.effectiveTranscriptionProvider
             let apiKey = settings.apiKey(for: provider)
             let model = settings.effectiveTranscriptionModel
-            guard !apiKey.isEmpty else { return }
+            
+            // If no API key, save audio with pending status
+            guard !apiKey.isEmpty else {
+                let note = Note(
+                    title: "New note",
+                    transcript: "",
+                    audioFilePath: audioFilePath,
+                    durationSeconds: recordingDuration,
+                    transcriptionStatus: .pending,
+                    transcriptionError: "No API key configured"
+                )
+                modelContext.insert(note)
+                completion(.failure(NSError(domain: "VoiceInk", code: 1, userInfo: [NSLocalizedDescriptionKey: "No API key configured"])))
+                return
+            }
             
             do {
                 let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
@@ -117,23 +142,25 @@ struct NotesListView: View {
                 let note = Note(
                     title: "New note",
                     transcript: finalText,
-                    audioFilePath: fileURL.path,
-                    durationSeconds: recorder.currentDuration
+                    audioFilePath: audioFilePath,
+                    durationSeconds: recordingDuration,
+                    transcriptionStatus: .completed
                 )
                 modelContext.insert(note)
-                
-                // Don't discard the audio file - keep it for playback
-                recorder.stopRecording()
-                recorder.currentRecordingURL = nil
-                recorder.currentDuration = 0
                 
                 // Return success with transcript
                 completion(.success(finalText))
             } catch {
-                let note = Note(title: "New note", transcript: "Transcription failed: \(error.localizedDescription)")
+                // Save the recording even if transcription failed
+                let note = Note(
+                    title: "New note",
+                    transcript: "",
+                    audioFilePath: audioFilePath,
+                    durationSeconds: recordingDuration,
+                    transcriptionStatus: .failed,
+                    transcriptionError: error.localizedDescription
+                )
                 modelContext.insert(note)
-                // Only discard on error
-                recorder.discard()
                 
                 // Return error
                 completion(.failure(error))
