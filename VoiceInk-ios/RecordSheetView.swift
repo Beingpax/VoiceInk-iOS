@@ -40,67 +40,101 @@ struct RecordSheetView: View {
     }
 
     private var recordingView: some View {
-        VStack(spacing: 16) {
-            // Mode selection (only show if modes exist)
-            if !settings.modes.isEmpty {
-                ModeSelectionView()
-                    .padding(.horizontal)
-            }
-            
-            // Status row with dot and rectangular stop
+        VStack(spacing: 20) {
+            // Status row with dot and stop button
             HStack(alignment: .center) {
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: 8, height: 8)
-                    .scaleEffect(animate ? 1.2 : 1.0)
-                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animate)
-                Text("Recording")
-                    .font(.headline)
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 10, height: 10)
+                        .scaleEffect(animate ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: animate)
+                    Text("Recording")
+                        .font(.headline)
+                }
+                
                 Spacer()
+                
                 Button(action: {
                     recordingState = .processing
                     onStopAndTranscribe { result in
                         setTranscriptionResult(result)
                     }
                 }) {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 8) {
                         Image(systemName: "stop.fill")
+                            .font(.system(size: 14, weight: .medium))
                         Text("Stop")
+                            .font(.subheadline.weight(.medium))
                     }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 20)
                     .background(Color.red)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 }
                 .buttonStyle(.plain)
             }
 
+            // Timer
             Text(timeString(recorder.currentDuration))
-                .font(.system(.title2, design: .rounded))
+                .font(.system(.largeTitle, design: .rounded).weight(.medium))
                 .monospacedDigit()
 
+            // Audio visualizer
             AudioVisualizerView(levels: recorder.levelsHistory)
-                .padding(.top, 4)
+                .frame(height: 60)
 
-            Spacer(minLength: 8)
+            // Mode selection (positioned below visualizer)
+            if !settings.modes.isEmpty {
+                VStack(spacing: 8) {
+                    if settings.modes.count > 1 {
+                        Picker("Mode", selection: $settings.selectedModeId) {
+                            ForEach(settings.modes) { mode in
+                                Text(mode.name).tag(mode.id as UUID?)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .onAppear {
+                            // Auto-select first mode if none is selected
+                            if settings.selectedModeId == nil {
+                                settings.selectedModeId = settings.modes.first?.id
+                            }
+                        }
+                    } else if let singleMode = settings.modes.first {
+                        Text(singleMode.name)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .onAppear {
+                                settings.selectedModeId = singleMode.id
+                            }
+                    }
+                }
+                .padding(.horizontal, 8)
+            }
+
+            Spacer(minLength: 16)
         }
     }
     
     private var processingView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Spacer()
             
-            VStack(spacing: 16) {
+            VStack(spacing: 20) {
                 ProgressView()
-                    .scaleEffect(1.2)
+                    .scaleEffect(1.5)
+                    .tint(.blue)
                 
-                Text("Processing...")
-                    .font(.headline)
-                
-                Text("Transcribing your recording")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                VStack(spacing: 8) {
+                    Text("Processing...")
+                        .font(.title2.weight(.semibold))
+                    
+                    Text("Transcribing your recording")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
             }
             
             Spacer()
@@ -108,38 +142,51 @@ struct RecordSheetView: View {
     }
     
     private func completedView(transcript: String) -> some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
+            // Header
             HStack {
                 Text("Transcript")
-                    .font(.headline)
+                    .font(.title2.weight(.semibold))
                 Spacer()
-                Button("Copy") {
-                    UIPasteboard.general.string = transcript
-                    dismiss()
-                }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.blue)
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
             
+            // Transcript content
             ScrollView {
                 Text(transcript)
                     .font(.body)
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(16)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .padding(.horizontal, 20)
             }
             
-            Button("Done") {
-                dismiss()
+            // Bottom actions
+            VStack(spacing: 12) {
+                Button("Copy Transcript") {
+                    UIPasteboard.general.string = transcript
+                    dismiss()
+                }
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                
+                Button("Done") {
+                    dismiss()
+                }
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
             }
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(Color.blue)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 8)
         }
     }
     
