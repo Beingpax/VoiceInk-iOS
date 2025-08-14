@@ -1,6 +1,15 @@
 import SwiftUI
 import SwiftData
 
+struct StaticButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .opacity(1.0) // Always full opacity
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
 struct NotesListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Note.createdAt, order: .reverse)]) private var notes: [Note]
@@ -60,8 +69,8 @@ struct NotesListView: View {
         HStack {
             Button(action: { showingRecordSheet = true }) {
                 HStack(spacing: 8) {
-                    Image(systemName: "record.circle.fill")
-                    Text("Record")
+                    Image(systemName: isTranscribing ? "waveform" : "record.circle.fill")
+                    Text(isTranscribing ? "Processing..." : "Record")
                         .font(.headline)
                 }
                 .padding(.vertical, 12)
@@ -71,7 +80,7 @@ struct NotesListView: View {
                 .foregroundStyle(Color(UIColor.systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(StaticButtonStyle())
             .disabled(isTranscribing)
         }
         .padding(.horizontal)
