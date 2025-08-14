@@ -9,10 +9,12 @@ enum RecordingState {
 
 struct RecordSheetView: View {
     @ObservedObject var recorder: AudioRecorder
-    let onStopAndTranscribe: (@escaping (Result<String, Error>) -> Void) -> Void
+    let onStopAndTranscribe: (@escaping (Result<String, Error>, Note?) -> Void) -> Void
+    let onDismiss: (() -> Void)? // Callback for dismissal
     @State private var animate = false
     @StateObject private var settings = AppSettings.shared
     @State private var recordingState: RecordingState = .recording
+    @State private var createdNote: Note? // Track the note created from this recording
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -57,7 +59,8 @@ struct RecordSheetView: View {
                 
                 Button(action: {
                     recordingState = .processing
-                    onStopAndTranscribe { result in
+                    onStopAndTranscribe { result, note in
+                        createdNote = note
                         setTranscriptionResult(result)
                     }
                 }) {
@@ -169,7 +172,7 @@ struct RecordSheetView: View {
             VStack(spacing: 12) {
                 Button("Copy Transcript") {
                     UIPasteboard.general.string = transcript
-                    dismiss()
+                    onDismiss?() ?? dismiss()
                 }
                 .font(.headline)
                 .foregroundStyle(.white)
@@ -179,7 +182,7 @@ struct RecordSheetView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 
                 Button("Done") {
-                    dismiss()
+                    onDismiss?() ?? dismiss()
                 }
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.secondary)
@@ -211,7 +214,7 @@ struct RecordSheetView: View {
             
             VStack(spacing: 12) {
                 Button("Done") {
-                    dismiss()
+                    onDismiss?() ?? dismiss()
                 }
                 .font(.headline)
                 .foregroundStyle(.white)
@@ -221,9 +224,29 @@ struct RecordSheetView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 
                 Button("Try Again") {
-                    recordingState = .recording
-                    animate = true
-                    try? recorder.startRecording()
+                    if let note = createdNote {
+                        // Retry transcription of the created note
+                        recordingState = .processing
+                        Task {
+                            do {
+                                let transcript = try await TranscriptionRetryService.shared.retranscribe(note: note)
+                                await MainActor.run {
+                                    setTranscriptionResult(.success(transcript))
+                                }
+                            } catch {
+                                await MainActor.run {
+                                    note.transcriptionStatus = .failed
+                                    note.transcriptionError = error.localizedDescription
+                                    setTranscriptionResult(.failure(error))
+                                }
+                            }
+                        }
+                    } else {
+                        // Start new recording (fallback)
+                        recordingState = .recording
+                        animate = true
+                        try? recorder.startRecording()
+                    }
                 }
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.blue)

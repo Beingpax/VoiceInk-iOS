@@ -7,8 +7,6 @@ struct NoteDetailView: View {
     
     @State private var isRetranscribing = false
     @StateObject private var settings = AppSettings.shared
-    private let service = GroqTranscriptionService()
-    private let postProcessor = LLMPostProcessor()
 
     var body: some View {
         ScrollView {
@@ -119,57 +117,15 @@ struct NoteDetailView: View {
     }
     
     private func retranscribe() {
-        guard let audioPath = note.audioFilePath,
-              FileManager.default.fileExists(atPath: audioPath) else { return }
-        
         isRetranscribing = true
         
         Task {
             defer { isRetranscribing = false }
             
-            let settings = AppSettings.shared
-            let provider = settings.effectiveTranscriptionProvider
-            let apiKey = settings.apiKey(for: provider)
-            let model = settings.effectiveTranscriptionModel
-            
-            guard !apiKey.isEmpty else { return }
-            
             do {
-                let fileURL = URL(fileURLWithPath: audioPath)
-                let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
-                
-                // Clean up transcription
-                let cleanedText = rawText
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .replacingOccurrences(of: "\n\n+", with: "\n\n", options: .regularExpression)
-                    .replacingOccurrences(of: "[ \t]+", with: " ", options: .regularExpression)
-                
-                var finalText = cleanedText
-                
-                // Optional post-processing
-                let ppPrompt = settings.effectiveCustomPrompt
-                if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    let llmProvider = settings.effectivePostProcessingProvider
-                    let llmKey = settings.apiKey(for: llmProvider)
-                    let llmModel = settings.effectivePostProcessingModel
-                    if !llmKey.isEmpty {
-                        do {
-                            finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
-                        } catch {
-                            // Fall back to cleaned text
-                        }
-                    }
-                }
-                
-                // Update note with successful transcription
-                note.transcript = finalText
-                note.transcriptionStatus = .completed
-                note.transcriptionError = nil
-                
+                _ = try await TranscriptionRetryService.shared.retranscribe(note: note)
             } catch {
-                // Update with new error
-                note.transcriptionStatus = .failed
-                note.transcriptionError = error.localizedDescription
+                // Error handling is already done in the service
             }
         }
     }

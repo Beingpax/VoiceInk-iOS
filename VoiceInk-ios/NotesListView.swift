@@ -9,7 +9,7 @@ struct NotesListView: View {
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
     @State private var showingRecordSheet: Bool = false
-    @State private var recordSheetView: RecordSheetView?
+    @State private var currentRecordingNote: Note?
     private let service = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
 
@@ -31,9 +31,12 @@ struct NotesListView: View {
                 .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
                 .sheet(isPresented: $showingRecordSheet) {
                     RecordSheetView(recorder: recorder, onStopAndTranscribe: { completion in
-                        stopAndTranscribe(completion: completion)
+                        stopAndTranscribe { result, note in
+                            completion(result, note)
+                        }
+                    }, onDismiss: {
+                        showingRecordSheet = false
                     })
-                    .id(showingRecordSheet) // Reset state when sheet reopens
                 }
                 .safeAreaInset(edge: .bottom) { recordBar }
         }
@@ -75,7 +78,7 @@ struct NotesListView: View {
         .padding(.bottom)
     }
 
-    private func stopAndTranscribe(completion: @escaping (Result<String, Error>) -> Void) {
+    private func stopAndTranscribe(completion: @escaping (Result<String, Error>, Note?) -> Void) {
         recorder.stopRecording()
         guard let fileURL = recorder.currentRecordingURL else { return }
         isTranscribing = true
@@ -83,6 +86,11 @@ struct NotesListView: View {
         // ALWAYS preserve the audio file first, regardless of what happens next
         let audioFilePath = fileURL.path
         let recordingDuration = recorder.currentDuration
+        
+        transcribeAudio(audioFilePath: audioFilePath, recordingDuration: recordingDuration, completion: completion)
+    }
+    
+    private func transcribeAudio(audioFilePath: String, recordingDuration: Double, completion: @escaping (Result<String, Error>, Note?) -> Void) {
         
         Task {
             defer { 
@@ -110,11 +118,12 @@ struct NotesListView: View {
                     transcriptionError: "No API key configured"
                 )
                 modelContext.insert(note)
-                completion(.failure(NSError(domain: "VoiceInk", code: 1, userInfo: [NSLocalizedDescriptionKey: "No API key configured"])))
+                completion(.failure(NSError(domain: "VoiceInk", code: 1, userInfo: [NSLocalizedDescriptionKey: "No API key configured"])), note)
                 return
             }
             
             do {
+                let fileURL = URL(fileURLWithPath: audioFilePath)
                 let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
                 // Clean up transcription: trim whitespace and normalize line breaks
                 let cleanedText = rawText
@@ -149,7 +158,7 @@ struct NotesListView: View {
                 modelContext.insert(note)
                 
                 // Return success with transcript
-                completion(.success(finalText))
+                completion(.success(finalText), note)
             } catch {
                 // Save the recording even if transcription failed
                 let note = Note(
@@ -163,7 +172,7 @@ struct NotesListView: View {
                 modelContext.insert(note)
                 
                 // Return error
-                completion(.failure(error))
+                completion(.failure(error), note)
             }
         }
     }
