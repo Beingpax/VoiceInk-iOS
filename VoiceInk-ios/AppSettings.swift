@@ -68,6 +68,10 @@ final class AppSettings: ObservableObject {
     @Published var cerebrasAPIKey: String {
         didSet { UserDefaults.standard.set(cerebrasAPIKey, forKey: "cerebrasAPIKey") }
     }
+
+    @Published var geminiAPIKey: String {
+        didSet { UserDefaults.standard.set(geminiAPIKey, forKey: "geminiAPIKey") }
+    }
     
     // Track verification status per provider
     @Published var groqKeyVerified: Bool {
@@ -84,6 +88,10 @@ final class AppSettings: ObservableObject {
 
     @Published var cerebrasKeyVerified: Bool {
         didSet { UserDefaults.standard.set(cerebrasKeyVerified, forKey: "cerebrasKeyVerified") }
+    }
+
+    @Published var geminiKeyVerified: Bool {
+        didSet { UserDefaults.standard.set(geminiKeyVerified, forKey: "geminiKeyVerified") }
     }
 
     private init() {
@@ -115,10 +123,12 @@ final class AppSettings: ObservableObject {
         self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
         self.deepgramAPIKey = UserDefaults.standard.string(forKey: "deepgramAPIKey") ?? ""
         self.cerebrasAPIKey = UserDefaults.standard.string(forKey: "cerebrasAPIKey") ?? ""
+        self.geminiAPIKey = UserDefaults.standard.string(forKey: "geminiAPIKey") ?? ""
         self.groqKeyVerified = UserDefaults.standard.bool(forKey: "groqKeyVerified")
         self.openAIKeyVerified = UserDefaults.standard.bool(forKey: "openAIKeyVerified")
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
         self.cerebrasKeyVerified = UserDefaults.standard.bool(forKey: "cerebrasKeyVerified")
+        self.geminiKeyVerified = UserDefaults.standard.bool(forKey: "geminiKeyVerified")
         ensurePreferredModelIsValid()
         ensureLLMModelIsValid()
     }
@@ -129,6 +139,7 @@ final class AppSettings: ObservableObject {
         case .openai: return openAIAPIKey
         case .deepgram: return deepgramAPIKey
         case .cerebras: return cerebrasAPIKey
+        case .gemini: return geminiAPIKey
         }
     }
 
@@ -150,6 +161,10 @@ final class AppSettings: ObservableObject {
             cerebrasAPIKey = key
             // Reset verification status when key changes
             if cerebrasAPIKey != key { cerebrasKeyVerified = false }
+        case .gemini:
+            geminiAPIKey = key
+            // Reset verification status when key changes
+            if geminiAPIKey != key { geminiKeyVerified = false }
         }
     }
     
@@ -159,6 +174,7 @@ final class AppSettings: ObservableObject {
         case .openai: return openAIKeyVerified && !openAIAPIKey.isEmpty
         case .deepgram: return deepgramKeyVerified && !deepgramAPIKey.isEmpty
         case .cerebras: return cerebrasKeyVerified && !cerebrasAPIKey.isEmpty
+        case .gemini: return geminiKeyVerified && !geminiAPIKey.isEmpty
         }
     }
     
@@ -168,6 +184,7 @@ final class AppSettings: ObservableObject {
         case .openai: openAIKeyVerified = verified
         case .deepgram: deepgramKeyVerified = verified
         case .cerebras: cerebrasKeyVerified = verified
+        case .gemini: geminiKeyVerified = verified
         }
     }
 

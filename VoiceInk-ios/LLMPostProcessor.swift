@@ -11,6 +11,7 @@ struct LLMPostProcessor {
             OAChatMessage(role: "system", content: systemPrompt),
             OAChatMessage(role: "user", content: contentPrompt)
         ]
+        
         let result = try await client.chatCompletion(baseURL: provider.baseURL, apiKey: apiKey, model: model, messages: messages, temperature: 0.2)
         return result.isEmpty ? transcript : result
     }

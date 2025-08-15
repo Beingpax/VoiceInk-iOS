@@ -10,6 +10,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
     case openai = "OpenAI"
     case deepgram = "Deepgram"
     case cerebras = "Cerebras"
+    case gemini = "Gemini"
 
     var id: String { rawValue }
 
@@ -19,6 +20,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case .openai: return URL(string: "https://api.openai.com")!
         case .deepgram: return URL(string: "https://api.deepgram.com")!
         case .cerebras: return URL(string: "https://api.cerebras.ai")!
+        case .gemini: return URL(string: "https://generativelanguage.googleapis.com/v1beta/openai")!
         }
     }
     
@@ -28,6 +30,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case .openai: return URL(string: "https://platform.openai.com/api-keys")!
         case .deepgram: return URL(string: "https://console.deepgram.com/project/keys")!
         case .cerebras: return URL(string: "https://cloud.cerebras.ai/platform")!
+        case .gemini: return URL(string: "https://aistudio.google.com/app/apikey")!
         }
     }
 
@@ -67,6 +70,15 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
             return [
                 "llama3.1-8b",
                 "llama3.1-70b"
+            ]
+        case (.gemini, .transcription):
+            return []
+        case (.gemini, .postProcessing):
+            return [
+                "gemini-2.0-flash",
+                "gemini-2.5-flash",
+                "gemini-1.5-flash",
+                "gemini-1.5-pro"
             ]
         }
     }

@@ -10,6 +10,7 @@ struct ProviderAPIKeyView: View {
 
     private let groqService = GroqTranscriptionService()
     private let deepgramService = DeepgramTranscriptionService()
+    private let openAIClient = OpenAICompatibleClient()
     
     private var isKeyVerified: Bool {
         settings.isKeyVerified(for: provider)
@@ -102,6 +103,8 @@ struct ProviderAPIKeyView: View {
             switch provider {
             case .deepgram:
                 ok = await deepgramService.verifyAPIKey(apiBaseURL: provider.baseURL, keyToVerify)
+            case .gemini, .openai, .cerebras:
+                ok = await openAIClient.verifyAPIKey(baseURL: provider.baseURL, apiKey: keyToVerify)
             default:
                 ok = await groqService.verifyAPIKey(apiBaseURL: provider.baseURL, keyToVerify)
             }
