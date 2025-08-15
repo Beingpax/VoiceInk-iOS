@@ -9,7 +9,7 @@ struct TranscriptionServiceFactory {
         switch provider {
         case .deepgram:
             return DeepgramTranscriptionService()
-        case .groq, .openai, .cerebras:
+        case .groq, .openai, .cerebras, .gemini:
             return GroqTranscriptionService()
         }
     }
