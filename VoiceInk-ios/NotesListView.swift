@@ -19,7 +19,6 @@ struct NotesListView: View {
     @State private var searchText: String = ""
     @State private var showingRecordSheet: Bool = false
     @State private var currentRecordingNote: Note?
-    private let service = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
 
     var filteredNotes: [Note] {
@@ -133,6 +132,7 @@ struct NotesListView: View {
             
             do {
                 let fileURL = URL(fileURLWithPath: audioFilePath)
+                let service = TranscriptionServiceFactory.service(for: provider)
                 let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
                 // Clean up transcription: trim whitespace and normalize line breaks
                 let cleanedText = rawText

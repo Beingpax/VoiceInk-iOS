@@ -15,16 +15,16 @@ struct Mode: Identifiable, Codable {
     
     init(name: String, 
          transcriptionProvider: Provider = .groq,
-         transcriptionModel: String = "whisper-large-v3",
+         transcriptionModel: String? = nil,
          postProcessingProvider: Provider = .groq,
-         postProcessingModel: String = "llama-3.1-8b-instant",
+         postProcessingModel: String? = nil,
          customPrompt: String = "") {
         self.id = UUID()
         self.name = name
         self.transcriptionProvider = transcriptionProvider
-        self.transcriptionModel = transcriptionModel
+        self.transcriptionModel = transcriptionModel ?? transcriptionProvider.models(for: .transcription).first ?? "whisper-large-v3"
         self.postProcessingProvider = postProcessingProvider
-        self.postProcessingModel = postProcessingModel
+        self.postProcessingModel = postProcessingModel ?? postProcessingProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
         self.customPrompt = customPrompt
     }
 }

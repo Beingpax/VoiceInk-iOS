@@ -8,7 +8,6 @@
 import Foundation
 
 class TranscriptionRetryService {
-    private let transcriptionService = GroqTranscriptionService()
     private let postProcessor = LLMPostProcessor()
     
     static let shared = TranscriptionRetryService()
@@ -32,6 +31,7 @@ class TranscriptionRetryService {
         }
         
         let fileURL = URL(fileURLWithPath: audioPath)
+        let transcriptionService = TranscriptionServiceFactory.service(for: provider)
         let rawText = try await transcriptionService.transcribeAudioFile(
             apiBaseURL: provider.baseURL,
             apiKey: apiKey,

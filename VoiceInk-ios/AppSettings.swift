@@ -60,6 +60,14 @@ final class AppSettings: ObservableObject {
     @Published var openAIAPIKey: String {
         didSet { UserDefaults.standard.set(openAIAPIKey, forKey: "openAIAPIKey") }
     }
+
+    @Published var deepgramAPIKey: String {
+        didSet { UserDefaults.standard.set(deepgramAPIKey, forKey: "deepgramAPIKey") }
+    }
+
+    @Published var cerebrasAPIKey: String {
+        didSet { UserDefaults.standard.set(cerebrasAPIKey, forKey: "cerebrasAPIKey") }
+    }
     
     // Track verification status per provider
     @Published var groqKeyVerified: Bool {
@@ -68,6 +76,14 @@ final class AppSettings: ObservableObject {
     
     @Published var openAIKeyVerified: Bool {
         didSet { UserDefaults.standard.set(openAIKeyVerified, forKey: "openAIKeyVerified") }
+    }
+
+    @Published var deepgramKeyVerified: Bool {
+        didSet { UserDefaults.standard.set(deepgramKeyVerified, forKey: "deepgramKeyVerified") }
+    }
+
+    @Published var cerebrasKeyVerified: Bool {
+        didSet { UserDefaults.standard.set(cerebrasKeyVerified, forKey: "cerebrasKeyVerified") }
     }
 
     private init() {
@@ -88,23 +104,32 @@ final class AppSettings: ObservableObject {
         } else {
             self.selectedProvider = .groq
         }
-        self.preferredModel = UserDefaults.standard.string(forKey: "preferredModel") ?? Provider.groq.availableModels.first ?? "whisper-large-v3"
+        self.preferredModel = UserDefaults.standard.string(forKey: "preferredModel") ?? Provider.groq.models(for: .transcription).first ?? "whisper-large-v3"
         let storedLLMProviderRaw = UserDefaults.standard.string(forKey: "llmProvider")
         let resolvedLLMProvider = Provider(rawValue: storedLLMProviderRaw ?? "") ?? .groq
         self.llmProvider = resolvedLLMProvider
-        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.availableLLMModels.first ?? "llama-3.1-8b-instant"
+        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
         self.llmModel = initialLLMModel
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
         self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""
         self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
+        self.deepgramAPIKey = UserDefaults.standard.string(forKey: "deepgramAPIKey") ?? ""
+        self.cerebrasAPIKey = UserDefaults.standard.string(forKey: "cerebrasAPIKey") ?? ""
         self.groqKeyVerified = UserDefaults.standard.bool(forKey: "groqKeyVerified")
         self.openAIKeyVerified = UserDefaults.standard.bool(forKey: "openAIKeyVerified")
+        self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
+        self.cerebrasKeyVerified = UserDefaults.standard.bool(forKey: "cerebrasKeyVerified")
         ensurePreferredModelIsValid()
         ensureLLMModelIsValid()
     }
 
     func apiKey(for provider: Provider) -> String {
-        switch provider { case .groq: return groqAPIKey; case .openai: return openAIAPIKey }
+        switch provider { 
+        case .groq: return groqAPIKey
+        case .openai: return openAIAPIKey
+        case .deepgram: return deepgramAPIKey
+        case .cerebras: return cerebrasAPIKey
+        }
     }
 
     func setAPIKey(_ key: String, for provider: Provider) {
@@ -117,6 +142,14 @@ final class AppSettings: ObservableObject {
             openAIAPIKey = key
             // Reset verification status when key changes
             if openAIAPIKey != key { openAIKeyVerified = false }
+        case .deepgram:
+            deepgramAPIKey = key
+            // Reset verification status when key changes
+            if deepgramAPIKey != key { deepgramKeyVerified = false }
+        case .cerebras:
+            cerebrasAPIKey = key
+            // Reset verification status when key changes
+            if cerebrasAPIKey != key { cerebrasKeyVerified = false }
         }
     }
     
@@ -124,6 +157,8 @@ final class AppSettings: ObservableObject {
         switch provider {
         case .groq: return groqKeyVerified && !groqAPIKey.isEmpty
         case .openai: return openAIKeyVerified && !openAIAPIKey.isEmpty
+        case .deepgram: return deepgramKeyVerified && !deepgramAPIKey.isEmpty
+        case .cerebras: return cerebrasKeyVerified && !cerebrasAPIKey.isEmpty
         }
     }
     
@@ -131,18 +166,22 @@ final class AppSettings: ObservableObject {
         switch provider {
         case .groq: groqKeyVerified = verified
         case .openai: openAIKeyVerified = verified
+        case .deepgram: deepgramKeyVerified = verified
+        case .cerebras: cerebrasKeyVerified = verified
         }
     }
 
     private func ensurePreferredModelIsValid() {
-        if !selectedProvider.availableModels.contains(preferredModel) {
-            preferredModel = selectedProvider.availableModels.first ?? preferredModel
+        let availableModels = selectedProvider.models(for: .transcription)
+        if !availableModels.contains(preferredModel) {
+            preferredModel = availableModels.first ?? preferredModel
         }
     }
 
     private func ensureLLMModelIsValid() {
-        if !llmProvider.availableLLMModels.contains(llmModel) {
-            llmModel = llmProvider.availableLLMModels.first ?? llmModel
+        let availableModels = llmProvider.models(for: .postProcessing)
+        if !availableModels.contains(llmModel) {
+            llmModel = availableModels.first ?? llmModel
         }
     }
     

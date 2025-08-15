@@ -25,13 +25,13 @@ struct ModeConfigurationView: View {
             
             Section(header: Text("Transcription")) {
                 Picker("Provider", selection: $mode.transcriptionProvider) {
-                    ForEach(Provider.allCases) { provider in
+                    ForEach(Provider.allCases.filter { !$0.models(for: .transcription).isEmpty }) { provider in
                         Text(provider.rawValue).tag(provider)
                     }
                 }
                 
                 Picker("Model", selection: $mode.transcriptionModel) {
-                    ForEach(mode.transcriptionProvider.availableModels, id: \.self) { model in
+                    ForEach(mode.transcriptionProvider.models(for: .transcription), id: \.self) { model in
                         Text(model).tag(model)
                     }
                 }
@@ -39,13 +39,13 @@ struct ModeConfigurationView: View {
             
             Section(header: Text("Post-processing")) {
                 Picker("Provider", selection: $mode.postProcessingProvider) {
-                    ForEach(Provider.allCases) { provider in
+                    ForEach(Provider.allCases.filter { !$0.models(for: .postProcessing).isEmpty }) { provider in
                         Text(provider.rawValue).tag(provider)
                     }
                 }
                 
                 Picker("Model", selection: $mode.postProcessingModel) {
-                    ForEach(mode.postProcessingProvider.availableLLMModels, id: \.self) { model in
+                    ForEach(mode.postProcessingProvider.models(for: .postProcessing), id: \.self) { model in
                         Text(model).tag(model)
                     }
                 }
@@ -70,14 +70,16 @@ struct ModeConfigurationView: View {
         }
         .onChange(of: mode.transcriptionProvider) { _, _ in
             // Reset model when provider changes
-            if !mode.transcriptionProvider.availableModels.contains(mode.transcriptionModel) {
-                mode.transcriptionModel = mode.transcriptionProvider.availableModels.first ?? ""
+            let availableModels = mode.transcriptionProvider.models(for: .transcription)
+            if !availableModels.contains(mode.transcriptionModel) {
+                mode.transcriptionModel = availableModels.first ?? ""
             }
         }
         .onChange(of: mode.postProcessingProvider) { _, _ in
             // Reset model when provider changes
-            if !mode.postProcessingProvider.availableLLMModels.contains(mode.postProcessingModel) {
-                mode.postProcessingModel = mode.postProcessingProvider.availableLLMModels.first ?? ""
+            let availableModels = mode.postProcessingProvider.models(for: .postProcessing)
+            if !availableModels.contains(mode.postProcessingModel) {
+                mode.postProcessingModel = availableModels.first ?? ""
             }
         }
     }

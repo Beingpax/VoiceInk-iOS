@@ -8,7 +8,8 @@ struct ProviderAPIKeyView: View {
     @State private var verifyResult: Bool? = nil
     @State private var editingKey: Bool = true
 
-    private let service = GroqTranscriptionService()
+    private let groqService = GroqTranscriptionService()
+    private let deepgramService = DeepgramTranscriptionService()
     
     private var isKeyVerified: Bool {
         settings.isKeyVerified(for: provider)
@@ -96,7 +97,15 @@ struct ProviderAPIKeyView: View {
             isVerifying = true
             let entered = tempKey.trimmingCharacters(in: .whitespacesAndNewlines)
             let keyToVerify = entered.isEmpty ? currentAPIKey() : entered
-            let ok = await service.verifyAPIKey(apiBaseURL: provider.baseURL, keyToVerify)
+            
+            let ok: Bool
+            switch provider {
+            case .deepgram:
+                ok = await deepgramService.verifyAPIKey(apiBaseURL: provider.baseURL, keyToVerify)
+            default:
+                ok = await groqService.verifyAPIKey(apiBaseURL: provider.baseURL, keyToVerify)
+            }
+            
             verifyResult = ok
             isVerifying = false
             if ok {

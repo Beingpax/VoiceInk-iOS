@@ -1,8 +1,15 @@
 import Foundation
 
+enum ModelType {
+    case transcription
+    case postProcessing
+}
+
 enum Provider: String, CaseIterable, Codable, Identifiable {
     case groq = "Groq"
     case openai = "OpenAI"
+    case deepgram = "Deepgram"
+    case cerebras = "Cerebras"
 
     var id: String { rawValue }
 
@@ -10,6 +17,8 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         switch self {
         case .groq: return URL(string: "https://api.groq.com/openai")!
         case .openai: return URL(string: "https://api.openai.com")!
+        case .deepgram: return URL(string: "https://api.deepgram.com")!
+        case .cerebras: return URL(string: "https://api.cerebras.ai")!
         }
     }
     
@@ -17,37 +26,47 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         switch self {
         case .groq: return URL(string: "https://console.groq.com/keys")!
         case .openai: return URL(string: "https://platform.openai.com/api-keys")!
+        case .deepgram: return URL(string: "https://console.deepgram.com/project/keys")!
+        case .cerebras: return URL(string: "https://cloud.cerebras.ai/platform")!
         }
     }
 
-    var availableModels: [String] {
-        switch self {
-        case .groq:
+    func models(for type: ModelType) -> [String] {
+        switch (self, type) {
+        case (.groq, .transcription):
             return [
                 "whisper-large-v3",
                 "whisper-large-v3-turbo",
                 "whisper-medium",
                 "whisper-small"
             ]
-        case .openai:
-            return [
-                "whisper-1"
-            ]
-        }
-    }
-
-    // Suggested LLM models for post-processing (chat/completions)
-    var availableLLMModels: [String] {
-        switch self {
-        case .groq:
+        case (.groq, .postProcessing):
             return [
                 "llama-3.1-8b-instant",
                 "llama-3.1-70b-versatile"
             ]
-        case .openai:
+        case (.openai, .transcription):
+            return [
+                "whisper-1"
+            ]
+        case (.openai, .postProcessing):
             return [
                 "gpt-4o-mini",
                 "gpt-3.5-turbo"
+            ]
+        case (.deepgram, .transcription):
+            return [
+                "nova-2",
+                "nova-3"
+            ]
+        case (.deepgram, .postProcessing):
+            return []
+        case (.cerebras, .transcription):
+            return []
+        case (.cerebras, .postProcessing):
+            return [
+                "llama3.1-8b",
+                "llama3.1-70b"
             ]
         }
     }
