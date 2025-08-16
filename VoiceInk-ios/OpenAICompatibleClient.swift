@@ -24,9 +24,13 @@ struct OpenAICompatibleClient {
         let body = OAChatRequest(model: model, messages: messages, temperature: temperature)
         request.httpBody = try JSONEncoder().encode(body)
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            throw NSError(domain: "OAChat", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        guard let http = response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            let errorText = String(data: data, encoding: .utf8) ?? ""
+            throw NSError(domain: "LLMPostProcessing", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorText])
         }
+        
         let decoded = try JSONDecoder().decode(OAChatResponse.self, from: data)
         return decoded.choices.first?.message.content ?? ""
     }

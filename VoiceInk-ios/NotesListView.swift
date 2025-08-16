@@ -144,6 +144,7 @@ struct NotesListView: View {
                 
                 // Optional post-processing using effective settings
                 let ppPrompt = settings.effectiveCustomPrompt
+                var postProcessingError: String? = nil
                 if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     let llmProvider = settings.effectivePostProcessingProvider
                     let llmKey = settings.apiKey(for: llmProvider)
@@ -152,7 +153,10 @@ struct NotesListView: View {
                         do {
                             finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
                         } catch {
-                            // Fall back silently to raw text
+                            // Post-processing failed, but transcription succeeded
+                            postProcessingError = "Post-processing failed: \(error.localizedDescription)"
+                            // Still use the cleaned transcription text
+                            finalText = cleanedText
                         }
                     }
                 }
@@ -162,7 +166,8 @@ struct NotesListView: View {
                     transcript: finalText,
                     audioFilePath: audioFilePath,
                     durationSeconds: recordingDuration,
-                    transcriptionStatus: .completed
+                    transcriptionStatus: .completed,
+                    transcriptionError: postProcessingError
                 )
                 modelContext.insert(note)
                 

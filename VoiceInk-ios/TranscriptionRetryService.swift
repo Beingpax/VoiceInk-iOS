@@ -49,6 +49,7 @@ class TranscriptionRetryService {
         var finalText = cleanedText
         
         // Optional post-processing
+        var postProcessingError: String? = nil
         let ppPrompt = settings.effectiveCustomPrompt
         if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let llmProvider = settings.effectivePostProcessingProvider
@@ -64,7 +65,10 @@ class TranscriptionRetryService {
                         transcript: cleanedText
                     )
                 } catch {
-                    // Fall back to cleaned text
+                    // Post-processing failed, but transcription succeeded
+                    postProcessingError = "Post-processing failed: \(error.localizedDescription)"
+                    // Still use the cleaned transcription text
+                    finalText = cleanedText
                 }
             }
         }
@@ -72,7 +76,7 @@ class TranscriptionRetryService {
         // Update note
         note.transcript = finalText
         note.transcriptionStatus = .completed
-        note.transcriptionError = nil
+        note.transcriptionError = postProcessingError
         
         return finalText
     }
