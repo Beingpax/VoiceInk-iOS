@@ -93,6 +93,8 @@ final class AppSettings: ObservableObject {
     @Published var geminiKeyVerified: Bool {
         didSet { UserDefaults.standard.set(geminiKeyVerified, forKey: "geminiKeyVerified") }
     }
+    
+
 
     private init() {
         // Load modes
@@ -140,6 +142,7 @@ final class AppSettings: ObservableObject {
         case .deepgram: return deepgramAPIKey
         case .cerebras: return cerebrasAPIKey
         case .gemini: return geminiAPIKey
+        case .local: return "local" // Local transcription doesn't need an API key
         }
     }
 
@@ -165,6 +168,8 @@ final class AppSettings: ObservableObject {
             geminiAPIKey = key
             // Reset verification status when key changes
             if geminiAPIKey != key { geminiKeyVerified = false }
+        case .local:
+            break // Local provider doesn't use API keys
         }
     }
     
@@ -175,6 +180,7 @@ final class AppSettings: ObservableObject {
         case .deepgram: return deepgramKeyVerified && !deepgramAPIKey.isEmpty
         case .cerebras: return cerebrasKeyVerified && !cerebrasAPIKey.isEmpty
         case .gemini: return geminiKeyVerified && !geminiAPIKey.isEmpty
+        case .local: return LocalModelManager.shared.hasAvailableModel
         }
     }
     
@@ -185,6 +191,7 @@ final class AppSettings: ObservableObject {
         case .deepgram: deepgramKeyVerified = verified
         case .cerebras: cerebrasKeyVerified = verified
         case .gemini: geminiKeyVerified = verified
+        case .local: break // Local model status is handled by LocalModelManager
         }
     }
 
@@ -201,6 +208,8 @@ final class AppSettings: ObservableObject {
             llmModel = availableModels.first ?? llmModel
         }
     }
+    
+
     
     // MARK: - Modes Management
     

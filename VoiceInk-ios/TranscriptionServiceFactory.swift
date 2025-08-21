@@ -11,6 +11,8 @@ struct TranscriptionServiceFactory {
             return DeepgramTranscriptionService()
         case .groq, .openai, .cerebras, .gemini:
             return GroqTranscriptionService()
+        case .local:
+            return WhisperTranscriptionService()
         }
     }
 }

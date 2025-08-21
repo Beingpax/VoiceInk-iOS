@@ -170,22 +170,28 @@ struct RecordSheetView: View {
             
             // Bottom actions
             VStack(spacing: 12) {
-                Button("Copy Transcript") {
+                Button(action: {
                     UIPasteboard.general.string = transcript
                     onDismiss?() ?? dismiss()
+                }) {
+                    Text("Copy Transcript")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.blue)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .buttonStyle(.plain)
                 
-                Button("Done") {
+                Button(action: {
                     onDismiss?() ?? dismiss()
+                }) {
+                    Text("Done")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
                 }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)

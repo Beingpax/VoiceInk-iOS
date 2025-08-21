@@ -21,12 +21,13 @@ final class AudioRecorder: NSObject, ObservableObject {
         try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker])
         try AVAudioSession.sharedInstance().setActive(true)
 
-        let filename = "recording_\(Int(Date().timeIntervalSince1970)).m4a"
+        let filename = "recording_\(Int(Date().timeIntervalSince1970)).wav"
         let url = Self.recordingsDirectory().appendingPathComponent(filename)
 
+        // Whisper-compatible format: 16kHz mono WAV
         let settings: [String: Any] = [
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 44100,
+            AVFormatIDKey: Int(kAudioFormatLinearPCM),
+            AVSampleRateKey: 16000.0,
             AVNumberOfChannelsKey: 1,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]

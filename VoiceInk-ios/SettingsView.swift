@@ -34,8 +34,14 @@ struct SettingsView: View {
                 }
             }
             
+            Section(header: Text("Local Models")) {
+                NavigationLink(destination: LocalModelManagementView()) {
+                    Text("Manage Local Models")
+                }
+            }
+            
             Section(header: Text("API Keys")) {
-                ForEach(Provider.allCases) { provider in
+                ForEach(Provider.allCases.filter { $0 != .local }) { provider in
                     NavigationLink(destination: ProviderAPIKeyView(provider: provider)) {
                         HStack {
                             Text(provider.rawValue)
