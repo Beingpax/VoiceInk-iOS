@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #ff9a8b 0%, #a8edea 50%, #d299c2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
         
@@ -26,276 +26,97 @@
         }
         
         header {
-            padding: 1rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            margin: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-left: 20px;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding-right: 20px;
-        }
-        
-        .header-nav {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-        
-        .header-nav a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .header-nav a:hover {
-            color: #8b5cf6;
-        }
-        
-        .star-button {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: none;
-            border: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .star-button:hover {
-            background: #f3f4f6;
-            border-color: #d1d5db;
-        }
-        
-        .download-button {
-            background: #1f2937;
+            padding: 2rem 0;
+            text-align: center;
             color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .download-button:hover {
-            background: #374151;
-            transform: translateY(-1px);
         }
         
         .hero {
-            padding: 6rem 0;
+            padding: 4rem 0;
             text-align: center;
-            color: #1f2937;
-            max-width: 900px;
-            margin: 0 auto;
+            color: white;
         }
         
-        .hero-title {
-            font-size: 4.5rem;
-            font-weight: 800;
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
-            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .hero-title .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.25rem;
-            margin-bottom: 3rem;
-            color: #4b5563;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .hero-features {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-        
-        .hero-feature {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #374151;
-            font-weight: 500;
-        }
-        
-        .hero-cta {
+        .hero p {
+            font-size: 1.3rem;
             margin-bottom: 2rem;
-        }
-        
-        .hero-cta .download-button {
-            font-size: 1.1rem;
-            padding: 16px 32px;
-            border-radius: 16px;
-        }
-        
-        .testimonials-preview {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 2rem;
-        }
-        
-        .user-avatars {
-            display: flex;
-            margin-right: 10px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid white;
-            margin-left: -8px;
-            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-        }
-        
-        .user-avatar:first-child {
-            margin-left: 0;
-        }
-        
-        .rating {
-            display: flex;
-            gap: 2px;
-            margin-right: 10px;
-        }
-        
-        .star {
-            color: #fbbf24;
-            font-size: 18px;
-        }
-        
-        .testimonial-text {
-            color: #6b7280;
-            font-weight: 500;
+            opacity: 0.9;
         }
         
         .app-icon {
-            width: 48px;
-            height: 48px;
+            width: 120px;
+            height: 120px;
             background: white;
-            border-radius: 12px;
+            border-radius: 25px;
+            margin: 0 auto 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden;
-        }
-        
-        .app-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .brand-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin: 0;
+            font-size: 4rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         .features {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 6rem 0;
-            margin: 4rem 20px;
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 4rem 0;
+            margin-top: 2rem;
         }
         
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
         }
         
         .feature-card {
-            padding: 2.5rem;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            text-align: left;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            background: #f8f9fa;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
         
         .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            transform: translateY(-5px);
         }
         
         .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            display: block;
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
         
         .feature-card h3 {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             margin-bottom: 1rem;
-            color: #1f2937;
-            font-weight: 600;
+            color: #2c3e50;
         }
         
         .feature-card p {
-            color: #6b7280;
-            line-height: 1.7;
-            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
         }
         
         .section-title {
             text-align: center;
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
-            color: #1f2937;
-            font-weight: 700;
+            color: #2c3e50;
         }
         
         .section-subtitle {
             text-align: center;
-            font-size: 1.3rem;
-            color: #6b7280;
+            font-size: 1.2rem;
+            color: #666;
             margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
         }
         
         .download-section {
@@ -345,128 +166,46 @@
         }
         
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
-                padding: 1.5rem 0;
-                margin: 10px;
+            .hero h1 {
+                font-size: 2.5rem;
             }
             
-            .header-left, .header-right {
-                padding: 0 20px;
-            }
-            
-            .header-nav {
-                gap: 20px;
-            }
-            
-            .hero-title {
-                font-size: 2.8rem;
-            }
-            
-            .hero-subtitle {
+            .hero p {
                 font-size: 1.1rem;
             }
             
-            .hero-features {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .features {
-                margin: 2rem 10px;
-                padding: 4rem 0;
+            .app-icon {
+                width: 100px;
+                height: 100px;
+                font-size: 3rem;
             }
             
             .features-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .feature-card {
-                padding: 2rem;
-            }
-            
-            .section-title {
-                font-size: 2.2rem;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="header-left">
-            <div class="app-icon">
-                <img src="VoiceInk-ios/Assets.xcassets/AppIcon.appiconset/1024.png" alt="VoiceInk App Icon">
-            </div>
-            <h1 class="brand-name">VoiceInk</h1>
-        </div>
-        <div class="header-nav">
-            <a href="#features">Features</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#pricing">Pricing</a>
-        </div>
-        <div class="header-right">
-            <a href="#" class="star-button">
-                ⭐ Star <span style="color: #fbbf24;">1515</span>
-            </a>
-            <a href="#" class="download-button">
-                🍎 Download
-            </a>
+        <div class="container">
+            <div class="app-icon">🎙️</div>
+            <h1>VoiceInk</h1>
+            <p>Transform Your Voice into Text</p>
         </div>
     </header>
 
     <section class="hero">
         <div class="container">
-            <h1 class="hero-title">WRITE AT THE <span class="gradient-text">SPEED OF THOUGHT</span></h1>
-            <p class="hero-subtitle">VoiceInk uses <strong>local AI models</strong> to instantly transcribe what you say with near-perfect accuracy and <strong>complete privacy</strong>.</p>
-            
-            <div class="hero-features">
-                <div class="hero-feature">
-                    <span style="color: #10b981;">✅</span>
-                    <span>100% Private</span>
-                </div>
-                <div class="hero-feature">
-                    <span style="color: #3b82f6;">📂</span>
-                    <span>Open Source</span>
-                </div>
-                <div class="hero-feature">
-                    <span style="color: #fbbf24;">⚡</span>
-                    <span>Lightning Fast</span>
-                </div>
-            </div>
-            
-            <div class="hero-cta">
-                <a href="#" class="download-button">
-                    🍎 Download Now
-                </a>
-            </div>
-            
-            <div class="testimonials-preview">
-                <div class="user-avatars">
-                    <div class="user-avatar"></div>
-                    <div class="user-avatar"></div>
-                    <div class="user-avatar"></div>
-                    <div class="user-avatar"></div>
-                </div>
-                <div class="rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                </div>
-                <div class="testimonial-text">
-                    <strong>Loved by 1637+</strong> Vibe coders
-                </div>
-            </div>
+            <h1>Capture Your Thoughts Instantly</h1>
+            <p>The most intuitive voice-to-text app for iOS. Record, transcribe, and organize your ideas with powerful AI.</p>
         </div>
     </section>
 
     <section class="features">
         <div class="container">
             <h2 class="section-title">Why Choose VoiceInk?</h2>
-            <p class="section-subtitle">Powerful features designed for capturing your instant ideas seamlessly</p>
+            <p class="section-subtitle">Powerful features designed for seamless voice-to-text conversion</p>
             
             <div class="features-grid">
                 <div class="feature-card">
@@ -511,25 +250,9 @@
     <section class="download-section">
         <div class="container">
             <h2>Get VoiceInk Today</h2>
-            <p>Start capturing your instant ideas on your iOS devices</p>
-            
-            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0;">
-                <div style="text-align: center;">
-                    <h3 style="color: white; margin-bottom: 1rem;">📱 iOS & iPadOS</h3>
-                    <a href="#" class="app-store-badge">Download on App Store</a>
-                    <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9em;">Coming soon to the App Store</p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.1); border-radius: 15px;">
-                <h3 style="color: white; margin-bottom: 1rem;">✨ Why VoiceInk?</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; color: white;">
-                    <div>• Instant idea capture</div>
-                    <div>• Multiple AI models</div>
-                    <div>• Complete privacy control</div>
-                    <div>• Works offline</div>
-                </div>
-            </div>
+            <p>Available on the App Store for iPhone and iPad</p>
+            <a href="#" class="app-store-badge">📱 Download on App Store</a>
+            <p style="margin-top: 2rem; opacity: 0.8;">Coming soon to the App Store</p>
         </div>
     </section>
 
