@@ -50,25 +50,27 @@ class TranscriptionRetryService {
         
         // Optional post-processing
         var postProcessingError: String? = nil
-        let ppPrompt = settings.effectiveCustomPrompt
-        if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let llmProvider = settings.effectivePostProcessingProvider
-            let llmKey = settings.apiKey(for: llmProvider)
-            let llmModel = settings.effectivePostProcessingModel
-            if !llmKey.isEmpty {
-                do {
-                    finalText = try await postProcessor.postProcessTranscript(
-                        provider: llmProvider,
-                        apiKey: llmKey,
-                        model: llmModel,
-                        prompt: ppPrompt,
-                        transcript: cleanedText
-                    )
-                } catch {
-                    // Post-processing failed, but transcription succeeded
-                    postProcessingError = "Post-processing failed: \(error.localizedDescription)"
-                    // Still use the cleaned transcription text
-                    finalText = cleanedText
+        if settings.effectiveIsPostProcessingEnabled {
+            let ppPrompt = settings.effectiveCustomPrompt
+            if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                let llmProvider = settings.effectivePostProcessingProvider
+                let llmKey = settings.apiKey(for: llmProvider)
+                let llmModel = settings.effectivePostProcessingModel
+                if !llmKey.isEmpty {
+                    do {
+                        finalText = try await postProcessor.postProcessTranscript(
+                            provider: llmProvider,
+                            apiKey: llmKey,
+                            model: llmModel,
+                            prompt: ppPrompt,
+                            transcript: cleanedText
+                        )
+                    } catch {
+                        // Post-processing failed, but transcription succeeded
+                        postProcessingError = "Post-processing failed: \(error.localizedDescription)"
+                        // Still use the cleaned transcription text
+                        finalText = cleanedText
+                    }
                 }
             }
         }

@@ -33,7 +33,7 @@ struct RecordSheetView: View {
         .padding()
         .background(Color(.systemBackground))
         .interactiveDismissDisabled(recorder.isRecording)
-        .presentationDetents([.fraction(0.45), .medium])
+        .presentationDetents([.large])
         .presentationBackground(Color(.systemBackground))
         .onAppear {
             animate = true
@@ -42,9 +42,9 @@ struct RecordSheetView: View {
     }
 
     private var recordingView: some View {
-        VStack(spacing: 20) {
-            // Status row with dot and stop button
-            HStack(alignment: .center) {
+        VStack(spacing: 0) {
+            // Top section with status indicator
+            VStack(spacing: 24) {
                 HStack(spacing: 8) {
                     Circle()
                         .fill(Color.red)
@@ -55,8 +55,50 @@ struct RecordSheetView: View {
                         .font(.headline)
                 }
                 
-                Spacer()
+                // Timer
+                Text(timeString(recorder.currentDuration))
+                    .font(.system(.largeTitle, design: .rounded).weight(.medium))
+                    .monospacedDigit()
                 
+                // Mode selection
+                if !settings.modes.isEmpty {
+                    VStack(spacing: 8) {
+                        if settings.modes.count > 1 {
+                            Picker("Mode", selection: $settings.selectedModeId) {
+                                ForEach(settings.modes) { mode in
+                                    Text(mode.name).tag(mode.id as UUID?)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .onAppear {
+                                // Auto-select first mode if none is selected
+                                if settings.selectedModeId == nil {
+                                    settings.selectedModeId = settings.modes.first?.id
+                                }
+                            }
+                        } else if let singleMode = settings.modes.first {
+                            Text(singleMode.name)
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.secondary)
+                                .onAppear {
+                                    settings.selectedModeId = singleMode.id
+                                }
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                }
+            }
+            .padding(.top, 20)
+            
+            Spacer()
+            
+            // Bottom section with visualizer and stop button
+            VStack(spacing: 24) {
+                // Audio visualizer
+                AudioVisualizerView(levels: recorder.levelsHistory)
+                    .frame(height: 80)
+                
+                // Stop button
                 Button(action: {
                     recordingState = .processing
                     onStopAndTranscribe { result, note in
@@ -64,59 +106,22 @@ struct RecordSheetView: View {
                         setTranscriptionResult(result)
                     }
                 }) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 12) {
                         Image(systemName: "stop.fill")
-                            .font(.system(size: 14, weight: .medium))
-                        Text("Stop")
-                            .font(.subheadline.weight(.medium))
+                            .font(.system(size: 16, weight: .medium))
+                        Text("Stop Recording")
+                            .font(.headline.weight(.medium))
                     }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 32)
+                    .frame(maxWidth: .infinity)
                     .background(Color.red)
                     .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 .buttonStyle(.plain)
             }
-
-            // Timer
-            Text(timeString(recorder.currentDuration))
-                .font(.system(.largeTitle, design: .rounded).weight(.medium))
-                .monospacedDigit()
-
-            // Audio visualizer
-            AudioVisualizerView(levels: recorder.levelsHistory)
-                .frame(height: 60)
-
-            // Mode selection (positioned below visualizer)
-            if !settings.modes.isEmpty {
-                VStack(spacing: 8) {
-                    if settings.modes.count > 1 {
-                        Picker("Mode", selection: $settings.selectedModeId) {
-                            ForEach(settings.modes) { mode in
-                                Text(mode.name).tag(mode.id as UUID?)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .onAppear {
-                            // Auto-select first mode if none is selected
-                            if settings.selectedModeId == nil {
-                                settings.selectedModeId = settings.modes.first?.id
-                            }
-                        }
-                    } else if let singleMode = settings.modes.first {
-                        Text(singleMode.name)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.secondary)
-                            .onAppear {
-                                settings.selectedModeId = singleMode.id
-                            }
-                    }
-                }
-                .padding(.horizontal, 8)
-            }
-
-            Spacer(minLength: 16)
+            .padding(.bottom, 40)
         }
     }
     
@@ -229,7 +234,7 @@ struct RecordSheetView: View {
                 .background(Color.blue)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 
-                Button("Try Again") {
+                Button(action: {
                     if let note = createdNote {
                         // Retry transcription of the created note
                         recordingState = .processing
@@ -253,9 +258,12 @@ struct RecordSheetView: View {
                         animate = true
                         try? recorder.startRecording()
                     }
+                }) {
+                    Text("Try Again")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
                 }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.blue)
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, 20)
             

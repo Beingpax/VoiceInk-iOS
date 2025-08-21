@@ -283,6 +283,18 @@ final class AppSettings: ObservableObject {
             return postProcessPrompt
         }
     }
+    
+    /// Get whether post-processing is enabled (from selected mode, first mode, or fallback to checking if prompt exists)
+    var effectiveIsPostProcessingEnabled: Bool {
+        if let selectedMode = selectedMode {
+            return selectedMode.isPostProcessingEnabled
+        } else if let firstMode = modes.first {
+            return firstMode.isPostProcessingEnabled
+        } else {
+            // For backward compatibility, enable post-processing if there's a prompt
+            return !postProcessPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+    }
 }
 
 

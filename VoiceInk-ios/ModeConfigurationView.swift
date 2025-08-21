@@ -37,24 +37,26 @@ struct ModeConfigurationView: View {
                 }
             }
             
-            Section(header: Text("Post-processing")) {
-                Picker("Provider", selection: $mode.postProcessingProvider) {
-                    ForEach(Provider.allCases.filter { !$0.models(for: .postProcessing).isEmpty }) { provider in
-                        Text(provider.rawValue).tag(provider)
-                    }
-                }
+            Section(header: Text("Post-processing"), 
+                   footer: mode.isPostProcessingEnabled ? Text("Configure how the raw transcription should be processed and refined.") : nil) {
+                Toggle("Enable Post-processing", isOn: $mode.isPostProcessingEnabled)
                 
-                Picker("Model", selection: $mode.postProcessingModel) {
-                    ForEach(mode.postProcessingProvider.models(for: .postProcessing), id: \.self) { model in
-                        Text(model).tag(model)
+                if mode.isPostProcessingEnabled {
+                    Picker("Provider", selection: $mode.postProcessingProvider) {
+                        ForEach(Provider.allCases.filter { !$0.models(for: .postProcessing).isEmpty }) { provider in
+                            Text(provider.rawValue).tag(provider)
+                        }
                     }
+                    
+                    Picker("Model", selection: $mode.postProcessingModel) {
+                        ForEach(mode.postProcessingProvider.models(for: .postProcessing), id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                    }
+                    
+                    TextField("Custom Prompt (Optional)", text: $mode.customPrompt, axis: .vertical)
+                        .lineLimit(4, reservesSpace: true)
                 }
-            }
-            
-            Section(header: Text("Custom Prompt"), 
-                   footer: Text("Optional prompt to customize post-processing behavior.")) {
-                TextField("Enter custom prompt...", text: $mode.customPrompt, axis: .vertical)
-                    .lineLimit(4, reservesSpace: true)
             }
         }
         .navigationTitle(isEditing ? "Edit Mode" : "New Mode")
