@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - VoiceInk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: #f8f9ff;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .last-updated {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <a href="index.html" class="back-link">← Back to VoiceInk</a>
+            
+            <h1>Privacy Policy for VoiceInk</h1>
+            <p class="last-updated"><em>Last updated: January 2025</em></p>
+
+            <h2>Overview</h2>
+            <p>VoiceInk is a voice-to-text transcription app that helps you capture your thoughts by converting speech to text. This privacy policy explains how we handle your data when you use our app.</p>
+
+            <h2>Data Collection and Usage</h2>
+
+            <h3>Audio Data</h3>
+            <ul>
+                <li><strong>What we collect:</strong> VoiceInk records audio when you press the record button</li>
+                <li><strong>How we use it:</strong> Audio is used solely for transcription purposes</li>
+                <li><strong>Storage:</strong> Audio files are stored locally on your device and may be sent to third-party cloud services based on your chosen settings</li>
+                <li><strong>Retention:</strong> You can delete individual recordings at any time by swiping in the notes list</li>
+            </ul>
+
+            <h3>API Keys</h3>
+            <ul>
+                <li><strong>What we collect:</strong> If you choose to use cloud services, you must provide your own API keys</li>
+                <li><strong>How we use it:</strong> API keys are used exclusively to authenticate with your chosen cloud services</li>
+                <li><strong>Storage:</strong> API keys are stored locally on your device</li>
+                <li><strong>Purpose:</strong> These keys enable the app to use third-party cloud services for transcription and text post-processing</li>
+            </ul>
+
+            <h2>Third-Party Services</h2>
+
+            <div class="highlight">
+                <p><strong>Important:</strong> VoiceInk integrates with several optional third-party cloud services. <strong>You choose which services to use by providing your own API keys.</strong></p>
+            </div>
+
+            <h3>Cloud Services</h3>
+            <ul>
+                <li><strong>Groq:</strong> Speech-to-text transcription</li>
+                <li><strong>OpenAI:</strong> Speech-to-text transcription and text post-processing</li>
+                <li><strong>Deepgram:</strong> Speech-to-text transcription</li>
+                <li><strong>Cerebras:</strong> Text post-processing</li>
+                <li><strong>Google Gemini:</strong> Text post-processing</li>
+            </ul>
+
+            <h3>Local Processing</h3>
+            <ul>
+                <li><strong>Whisper.cpp:</strong> Local on-device transcription (no data leaves your device)</li>
+            </ul>
+
+            <h3>Data Sharing</h3>
+            <p>When you use cloud services:</p>
+            <ul>
+                <li>Audio files are sent to your chosen transcription service</li>
+                <li>Text content may be sent to your chosen AI service for post-processing</li>
+                <li>Each service has its own privacy policy - please review them:
+                    <ul>
+                        <li><a href="https://groq.com/privacy-policy/" target="_blank">Groq Privacy Policy</a></li>
+                        <li><a href="https://openai.com/privacy/" target="_blank">OpenAI Privacy Policy</a></li>
+                        <li><a href="https://deepgram.com/privacy/" target="_blank">Deepgram Privacy Policy</a></li>
+                        <li><a href="https://cerebras.ai/privacy-policy/" target="_blank">Cerebras Privacy Policy</a></li>
+                        <li><a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Your Choices</h2>
+
+            <h3>Local vs Cloud Processing</h3>
+            <ul>
+                <li>You can choose to use local transcription (Whisper) which keeps all data on your device</li>
+                <li>Cloud services require your own API keys and are subject to third-party privacy policies</li>
+            </ul>
+
+            <h3>Data Control</h3>
+            <ul>
+                <li>Delete individual notes by swiping in the notes list</li>
+                <li>All data is stored locally on your device</li>
+                <li>Uninstalling the app removes all local data</li>
+            </ul>
+
+            <h2>Data Security</h2>
+            <ul>
+                <li>All data processing occurs either locally on your device or through your own API keys with third-party cloud services</li>
+                <li>We do not collect, store, or have access to your audio recordings or transcriptions</li>
+                <li>All sensitive data remains on your device</li>
+            </ul>
+
+            <h2>Children's Privacy</h2>
+            <p>VoiceInk is not intended for children under 13. We do not knowingly collect personal information from children under 13.</p>
+
+            <h2>Changes to This Policy</h2>
+            <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
+
+            <h2>Contact Us</h2>
+            <p>If you have questions about this privacy policy, please contact us at: <a href="mailto:prakashjoshipax@gmail.com">prakashjoshipax@gmail.com</a></p>
+
+            <h2>Your Rights</h2>
+            <p>You have the right to:</p>
+            <ul>
+                <li>Access your data (all stored locally on your device)</li>
+                <li>Delete your data (through the app interface or by uninstalling)</li>
+                <li>Choose which services to use</li>
+                <li>Use the app entirely offline with local models</li>
+            </ul>
+
+            <hr style="margin: 40px 0; border: none; height: 2px; background: #eee;">
+            
+            <p style="text-align: center; color: #666; font-size: 0.9em;">
+                <a href="index.html" class="back-link">← Back to VoiceInk</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
