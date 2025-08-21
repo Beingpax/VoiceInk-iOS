@@ -5,6 +5,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
+		<string>audio</string>
 	</array>
     <key>NSMicrophoneUsageDescription</key>
     <string>This app records audio to transcribe into notes.</string>

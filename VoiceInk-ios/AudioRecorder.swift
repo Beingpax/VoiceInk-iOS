@@ -18,8 +18,10 @@ final class AudioRecorder: NSObject, ObservableObject {
     private var meterTimer: Timer?
 
     func startRecording() throws {
-        try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker])
-        try AVAudioSession.sharedInstance().setActive(true)
+        // Configure audio session for background recording
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker, .allowBluetooth])
+        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
 
         let filename = "recording_\(Int(Date().timeIntervalSince1970)).wav"
         let url = Self.recordingsDirectory().appendingPathComponent(filename)
@@ -35,7 +37,9 @@ final class AudioRecorder: NSObject, ObservableObject {
         audioRecorder = try AVAudioRecorder(url: url, settings: settings)
         audioRecorder?.delegate = self
         audioRecorder?.isMeteringEnabled = true
-        guard audioRecorder?.record() == true else { throw NSError(domain: "Audio", code: -1) }
+        guard audioRecorder?.record() == true else { 
+            throw NSError(domain: "Audio", code: -1) 
+        }
 
         currentRecordingURL = url
         isRecording = true
@@ -64,6 +68,9 @@ final class AudioRecorder: NSObject, ObservableObject {
         meterTimer = nil
         isRecording = false
         levelsHistory.removeAll()
+        
+        // Deactivate audio session when done recording
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     func discard() {
