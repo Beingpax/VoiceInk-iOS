@@ -18,7 +18,6 @@ enum TranscriptionStatus: String, Codable, CaseIterable {
 final class Note {
     var id: UUID
     var createdAt: Date
-    var title: String
     var transcript: String
     var audioFilePath: String?
     var durationSeconds: Double
@@ -28,7 +27,6 @@ final class Note {
     init(
         id: UUID = UUID(),
         createdAt: Date = Date(),
-        title: String = "New note",
         transcript: String = "",
         audioFilePath: String? = nil,
         durationSeconds: Double = 0,
@@ -37,7 +35,6 @@ final class Note {
     ) {
         self.id = id
         self.createdAt = createdAt
-        self.title = title
         self.transcript = transcript
         self.audioFilePath = audioFilePath
         self.durationSeconds = durationSeconds
@@ -47,6 +44,21 @@ final class Note {
     
     var needsTranscription: Bool {
         return transcriptionStatus == .pending || transcriptionStatus == .failed
+    }
+    
+    /// Get the full path to the audio file
+    var fullAudioPath: String? {
+        guard let audioFilePath = audioFilePath, !audioFilePath.isEmpty else { return nil }
+        
+        // If already a full path, use it
+        if audioFilePath.hasPrefix("/") {
+            return audioFilePath
+        }
+        
+        // Otherwise, it's a filename - build the full path
+        let recordingsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Recordings")
+        return recordingsDir.appendingPathComponent(audioFilePath).path
     }
 }
 

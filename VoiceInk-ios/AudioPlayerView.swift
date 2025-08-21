@@ -6,19 +6,26 @@ struct AudioPlayerView: View {
     @StateObject private var player = AudioPlayer()
     
     var body: some View {
-        Group {
+        VStack(spacing: 0) {
             if player.isLoading {
-                HStack {
+                // Simple loading state
+                HStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(0.8)
+                        .tint(.blue)
+                    
                     Text("Loading...")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    
+                    Spacer()
                 }
-                .padding(.vertical, 8)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             } else {
-                HStack(spacing: 12) {
-                    // Play/pause button
+                // Clean player interface
+                HStack(spacing: 16) {
+                    // Play/Pause button
                     Button(action: {
                         if player.isPlaying {
                             player.pause()
@@ -26,39 +33,61 @@ struct AudioPlayerView: View {
                             player.play()
                         }
                     }) {
-                        Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(Circle().fill(.blue))
+                        Circle()
+                            .fill(.blue)
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .offset(x: player.isPlaying ? 0 : 1)
+                            )
                     }
                     .buttonStyle(.plain)
                     
-                    // Slider and time
-                    VStack(spacing: 4) {
-                        Slider(value: Binding(
-                            get: { player.currentTime },
-                            set: { player.seek(to: $0) }
-                        ), in: 0...max(1, player.duration))
-                        .tint(.blue)
+                    // Progress and time
+                    VStack(spacing: 8) {
+                        // Simple progress bar
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                // Background
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(Color(.quaternaryLabel))
+                                    .frame(height: 4)
+                                
+                                // Progress
+                                RoundedRectangle(cornerRadius: 2)
+                                    .fill(.blue)
+                                    .frame(width: geometry.size.width * CGFloat(player.currentTime / max(player.duration, 1)), height: 4)
+                            }
+                        }
+                        .frame(height: 4)
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    let progress = value.location.x / max(value.startLocation.x, 1)
+                                    let seekTime = progress * player.duration
+                                    player.seek(to: max(0, min(seekTime, player.duration)))
+                                }
+                        )
                         
+                        // Time display
                         HStack {
                             Text(timeString(player.currentTime))
                                 .font(.caption.monospacedDigit())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.primary)
+                            
                             Spacer()
+                            
                             Text(timeString(player.duration))
                                 .font(.caption.monospacedDigit())
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.secondarySystemGroupedBackground))
-                )
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
             }
         }
         .onAppear {
@@ -75,11 +104,13 @@ struct AudioPlayerView: View {
         let s = Int(seconds)
         let m = s / 60
         let r = s % 60
-        return String(format: "%02d:%02d", m, r)
+        return String(format: "%d:%02d", m, r)
     }
 }
 
 #Preview {
     AudioPlayerView(audioFilePath: "", duration: 120)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding()
 }

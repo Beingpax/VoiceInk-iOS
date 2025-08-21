@@ -7,65 +7,33 @@ struct NoteRowView: View {
     let onToggleShare: () -> Void = {}
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            // Status icon based on transcription status
-            Image(systemName: statusIcon)
-                .imageScale(.large)
-                .frame(width: 28)
-                .foregroundStyle(statusColor)
-
-            VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text(note.title.isEmpty ? "New note" : note.title)
-                        .font(.headline)
-                        .lineLimit(1)
-                    
-                    if note.transcriptionStatus == .failed {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.orange)
-                    }
-                }
-                
-                Text(transcriptText)
-                    .lineLimit(2)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(transcriptText)
+                .font(.body)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+            
+            HStack(spacing: 16) {
+                Label(note.createdAt.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-
-                HStack(spacing: 16) {
-                    Label(note.createdAt.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                if note.durationSeconds > 0 {
+                    Label(timeString(note.durationSeconds), systemImage: "play.circle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    if note.durationSeconds > 0 {
-                        Label(timeString(note.durationSeconds), systemImage: "play.circle")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                }
+                
+                if note.transcriptionStatus == .failed {
+                    Label("Failed", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var statusIcon: String {
-        switch note.transcriptionStatus {
-        case .pending:
-            return "clock"
-        case .completed:
-            return "waveform"
-        case .failed:
-            return "exclamationmark.triangle"
-        }
-    }
-    
-    private var statusColor: Color {
-        switch note.transcriptionStatus {
-        case .pending:
-            return .orange
-        case .completed:
-            return .blue
-        case .failed:
-            return .red
-        }
-    }
+
     
     private var transcriptText: String {
         switch note.transcriptionStatus {

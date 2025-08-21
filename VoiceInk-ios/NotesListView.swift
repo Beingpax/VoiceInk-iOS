@@ -22,7 +22,7 @@ struct NotesListView: View {
     private let postProcessor = LLMPostProcessor()
 
     var filteredNotes: [Note] {
-        notes.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || $0.transcript.localizedCaseInsensitiveContains(searchText) }
+        notes.filter { searchText.isEmpty || $0.transcript.localizedCaseInsensitiveContains(searchText) }
     }
 
     init() {}
@@ -92,10 +92,11 @@ struct NotesListView: View {
         isTranscribing = true
         
         // ALWAYS preserve the audio file first, regardless of what happens next
-        let audioFilePath = fileURL.path
+        // Store relative path instead of absolute path for persistence across app launches
+        let audioFileName = fileURL.lastPathComponent
         let recordingDuration = recorder.currentDuration
         
-        transcribeAudio(audioFilePath: audioFilePath, recordingDuration: recordingDuration, completion: completion)
+        transcribeAudio(audioFilePath: audioFileName, recordingDuration: recordingDuration, completion: completion)
     }
     
     private func transcribeAudio(audioFilePath: String, recordingDuration: Double, completion: @escaping (Result<String, Error>, Note?) -> Void) {
@@ -118,7 +119,6 @@ struct NotesListView: View {
             // If no API key, save audio with pending status
             guard !apiKey.isEmpty else {
                 let note = Note(
-                    title: "New note",
                     transcript: "",
                     audioFilePath: audioFilePath,
                     durationSeconds: recordingDuration,
@@ -126,12 +126,16 @@ struct NotesListView: View {
                     transcriptionError: "No API key configured"
                 )
                 modelContext.insert(note)
+                try? modelContext.save()
                 completion(.failure(NSError(domain: "VoiceInk", code: 1, userInfo: [NSLocalizedDescriptionKey: "No API key configured"])), note)
                 return
             }
             
             do {
-                let fileURL = URL(fileURLWithPath: audioFilePath)
+                // Resolve the relative path to absolute path for transcription
+                let recordingsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    .appendingPathComponent("Recordings")
+                let fileURL = recordingsDir.appendingPathComponent(audioFilePath)
                 let service = TranscriptionServiceFactory.service(for: provider)
                 let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
                 // Clean up transcription: trim whitespace and normalize line breaks
@@ -162,7 +166,6 @@ struct NotesListView: View {
                 }
                 
                 let note = Note(
-                    title: "New note",
                     transcript: finalText,
                     audioFilePath: audioFilePath,
                     durationSeconds: recordingDuration,
@@ -170,13 +173,13 @@ struct NotesListView: View {
                     transcriptionError: postProcessingError
                 )
                 modelContext.insert(note)
+                try? modelContext.save()
                 
                 // Return success with transcript
                 completion(.success(finalText), note)
             } catch {
                 // Save the recording even if transcription failed
                 let note = Note(
-                    title: "New note",
                     transcript: "",
                     audioFilePath: audioFilePath,
                     durationSeconds: recordingDuration,
@@ -184,6 +187,7 @@ struct NotesListView: View {
                     transcriptionError: error.localizedDescription
                 )
                 modelContext.insert(note)
+                try? modelContext.save()
                 
                 // Return error
                 completion(.failure(error), note)
