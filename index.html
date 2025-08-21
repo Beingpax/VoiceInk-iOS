@@ -59,8 +59,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .features {
@@ -189,7 +195,9 @@
 <body>
     <header>
         <div class="container">
-            <div class="app-icon">🎙️</div>
+            <div class="app-icon">
+                <img src="app-icon.png" alt="VoiceInk App Icon">
+            </div>
             <h1>VoiceInk</h1>
             <p>Transform Your Voice into Text</p>
         </div>
@@ -198,14 +206,14 @@
     <section class="hero">
         <div class="container">
             <h1>Capture Your Thoughts Instantly</h1>
-            <p>The most intuitive voice-to-text app for iOS. Record, transcribe, and organize your ideas with powerful AI.</p>
+            <p>The most intuitive voice-to-text app for iOS. Record, transcribe, and capture your instant ideas with powerful AI.</p>
         </div>
     </section>
 
     <section class="features">
         <div class="container">
             <h2 class="section-title">Why Choose VoiceInk?</h2>
-            <p class="section-subtitle">Powerful features designed for seamless voice-to-text conversion</p>
+            <p class="section-subtitle">Powerful features designed for capturing your instant ideas seamlessly</p>
             
             <div class="features-grid">
                 <div class="feature-card">
@@ -250,9 +258,31 @@
     <section class="download-section">
         <div class="container">
             <h2>Get VoiceInk Today</h2>
-            <p>Available on the App Store for iPhone and iPad</p>
-            <a href="#" class="app-store-badge">📱 Download on App Store</a>
-            <p style="margin-top: 2rem; opacity: 0.8;">Coming soon to the App Store</p>
+            <p>Start capturing your instant ideas across all your devices</p>
+            
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0;">
+                <div style="text-align: center;">
+                    <h3 style="color: white; margin-bottom: 1rem;">📱 iOS & iPadOS</h3>
+                    <a href="#" class="app-store-badge">Download on App Store</a>
+                    <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9em;">Coming soon to the App Store</p>
+                </div>
+                
+                <div style="text-align: center;">
+                    <h3 style="color: white; margin-bottom: 1rem;">💻 macOS</h3>
+                    <a href="https://tryvoiceink.com" class="app-store-badge" target="_blank">Try VoiceInk for Mac</a>
+                    <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9em;">Available now</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                <h3 style="color: white; margin-bottom: 1rem;">✨ Why VoiceInk?</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; color: white;">
+                    <div>• Instant idea capture</div>
+                    <div>• Multiple AI models</div>
+                    <div>• Complete privacy control</div>
+                    <div>• Works offline</div>
+                </div>
+            </div>
         </div>
     </section>
 
