@@ -12,17 +12,19 @@ struct OnboardingView: View {
     @Binding var isOnboardingComplete: Bool
     
     var body: some View {
-        TabView(selection: $currentStep) {
-            WelcomeOnboardingView(currentStep: $currentStep)
-                .tag(0)
-            
-            ModelDownloadOnboardingView(currentStep: $currentStep)
-                .tag(1)
-            
-            ReadyOnboardingView(isOnboardingComplete: $isOnboardingComplete)
-                .tag(2)
+        ZStack {
+            // Step-by-step views without swiping
+            if currentStep == 0 {
+                WelcomeOnboardingView(currentStep: $currentStep)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+            } else if currentStep == 1 {
+                ModelDownloadOnboardingView(currentStep: $currentStep)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+            } else if currentStep == 2 {
+                ReadyOnboardingView(isOnboardingComplete: $isOnboardingComplete)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+            }
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
         .ignoresSafeArea(.all)
     }
 }
@@ -36,9 +38,9 @@ struct WelcomeOnboardingView: View {
             
             // App Icon/Logo
             VStack(spacing: 24) {
-                Image(systemName: "waveform.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(.blue)
+                AppIconView()
+                    .frame(width: 80, height: 80)
+                    .cornerRadius(16)
                 
                 VStack(spacing: 16) {
                     Text("Welcome to VoiceInk")
@@ -120,9 +122,9 @@ struct ModelDownloadOnboardingView: View {
             
             // Header
             VStack(spacing: 24) {
-                Image(systemName: "arrow.down.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(.blue)
+                AppIconView()
+                    .frame(width: 80, height: 80)
+                    .cornerRadius(16)
                 
                 VStack(spacing: 16) {
                     Text("Download Local Model")
@@ -140,52 +142,57 @@ struct ModelDownloadOnboardingView: View {
             
             Spacer()
             
-            // Model Info Card
-            VStack(spacing: 16) {
-                HStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(baseModel.displayName)
-                            .font(.headline)
-                        Text(baseModel.size)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    if baseModel.isDownloaded {
-                        HStack(spacing: 4) {
+            // Model Info Card - styled like LocalModelManagementView
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(baseModel.displayName)
+                                .font(.headline)
+                            Text(baseModel.description)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        // Action indicator
+                        if baseModel.isDownloaded {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("Ready")
-                                .font(.subheadline)
-                                .foregroundColor(.green)
-                        }
-                    } else {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.down.circle")
+                                .font(.title2)
+                        } else if modelManager.isDownloading[baseModel.id] == true {
+                            Image(systemName: "arrow.down.circle.fill")
                                 .foregroundColor(.blue)
-                            Text("Not downloaded")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .font(.title2)
+                        } else {
+                            Image(systemName: "icloud.and.arrow.down")
+                                .foregroundColor(.blue)
+                                .font(.title2)
+                        }
+                    }
+                    
+                    // Progress indicator when downloading
+                    if modelManager.isDownloading[baseModel.id] == true {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("Downloading...")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                                Spacer()
+                                Text("\(Int((modelManager.downloadProgress[baseModel.id] ?? 0) * 100))%")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            ProgressView(value: modelManager.downloadProgress[baseModel.id] ?? 0)
+                                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
                         }
                     }
                 }
                 .padding(16)
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(12)
-                
-                // Progress indicator only
-                if let isDownloading = modelManager.isDownloading[baseModel.id], isDownloading {
-                    VStack(spacing: 12) {
-                        ProgressView(value: modelManager.downloadProgress[baseModel.id] ?? 0.0)
-                            .progressViewStyle(LinearProgressViewStyle())
-                        
-                        Text("Downloading... \(Int((modelManager.downloadProgress[baseModel.id] ?? 0.0) * 100))%")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                }
             }
             .padding(.horizontal, 32)
             
@@ -405,6 +412,28 @@ struct HowItWorksStep: View {
             }
             
             Spacer()
+        }
+    }
+}
+
+// MARK: - App Icon Helper
+
+struct AppIconView: View {
+    var body: some View {
+        // Try to get the app icon from the bundle
+        if let iconsDictionary = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any],
+           let primaryIconsDictionary = iconsDictionary["CFBundlePrimaryIcon"] as? [String: Any],
+           let iconFiles = primaryIconsDictionary["CFBundleIconFiles"] as? [String],
+           let lastIcon = iconFiles.last,
+           let appIcon = UIImage(named: lastIcon) {
+            Image(uiImage: appIcon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            // Fallback to system icon
+            Image(systemName: "app.fill")
+                .font(.system(size: 80))
+                .foregroundColor(.blue)
         }
     }
 }
