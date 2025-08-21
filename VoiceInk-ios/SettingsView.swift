@@ -45,6 +45,17 @@ struct SettingsView: View {
                     Text("Manage Cloud Models")
                 }
             }
+            
+            #if DEBUG
+            Section(header: Text("Development")) {
+                Button("Reset Onboarding") {
+                    UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+                    // Force app restart to show onboarding
+                    exit(0)
+                }
+                .foregroundColor(.red)
+            }
+            #endif
         }
         .navigationTitle("Settings")
     }

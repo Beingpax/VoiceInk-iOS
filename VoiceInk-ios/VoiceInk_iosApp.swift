@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct VoiceInk_iosApp: App {
+    @State private var hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Note.self,
@@ -37,7 +39,11 @@ struct VoiceInk_iosApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if hasCompletedOnboarding {
+                ContentView()
+            } else {
+                OnboardingView(isOnboardingComplete: $hasCompletedOnboarding)
+            }
         }
         .modelContainer(sharedModelContainer)
     }
