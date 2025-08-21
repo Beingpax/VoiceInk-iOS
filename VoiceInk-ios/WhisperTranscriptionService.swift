@@ -42,7 +42,7 @@ struct WhisperTranscriptionService: TranscriptionService {
         
         // Get available model
         let modelManager = LocalModelManager.shared
-        guard let modelPath = modelManager.baseModelPath else {
+        guard let modelPath = await modelManager.baseModelPath else {
             throw WhisperTranscriptionError.noModelAvailable
         }
         
@@ -88,7 +88,7 @@ struct WhisperTranscriptionService: TranscriptionService {
     /// Verify API key (not applicable for local transcription, always returns true if model is available)
     func verifyAPIKey(apiBaseURL: URL, _ apiKey: String) async -> Bool {
         let modelManager = LocalModelManager.shared
-        return modelManager.hasAvailableModel
+        return await modelManager.hasAvailableModel
     }
 }
 
@@ -109,11 +109,13 @@ extension WhisperTranscriptionService {
     }
     
     /// Check if local transcription is available
+    @MainActor
     static var isAvailable: Bool {
         LocalModelManager.shared.hasAvailableModel
     }
     
     /// Get status information for UI display
+    @MainActor
     static func getStatusInfo() -> (isAvailable: Bool, modelInfo: String?) {
         let modelManager = LocalModelManager.shared
         

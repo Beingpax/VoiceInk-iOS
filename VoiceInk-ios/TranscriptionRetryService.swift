@@ -22,9 +22,9 @@ class TranscriptionRetryService {
         }
         
         let settings = AppSettings.shared
-        let provider = settings.effectiveTranscriptionProvider
-        let apiKey = settings.apiKey(for: provider)
-        let model = settings.effectiveTranscriptionModel
+        let provider = await settings.effectiveTranscriptionProvider
+        let apiKey = await settings.apiKey(for: provider)
+        let model = await settings.effectiveTranscriptionModel
         
         guard !apiKey.isEmpty else {
             throw TranscriptionError.noApiKey
@@ -50,12 +50,12 @@ class TranscriptionRetryService {
         
         // Optional post-processing
         var postProcessingError: String? = nil
-        if settings.effectiveIsPostProcessingEnabled {
-            let ppPrompt = settings.effectiveCustomPrompt
+        if await settings.effectiveIsPostProcessingEnabled {
+            let ppPrompt = await settings.effectiveCustomPrompt
             if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                let llmProvider = settings.effectivePostProcessingProvider
-                let llmKey = settings.apiKey(for: llmProvider)
-                let llmModel = settings.effectivePostProcessingModel
+                let llmProvider = await settings.effectivePostProcessingProvider
+                let llmKey = await settings.apiKey(for: llmProvider)
+                let llmModel = await settings.effectivePostProcessingModel
                 if !llmKey.isEmpty {
                     do {
                         finalText = try await postProcessor.postProcessTranscript(

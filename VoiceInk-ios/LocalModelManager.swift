@@ -56,7 +56,7 @@ class LocalModelManager: ObservableObject {
     
     static let shared = LocalModelManager()
     
-    static var modelsDirectory: URL {
+    nonisolated static var modelsDirectory: URL {
         let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let modelsDir = documentsDir.appendingPathComponent("WhisperModels")
         

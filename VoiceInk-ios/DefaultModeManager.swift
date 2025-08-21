@@ -8,6 +8,7 @@ class DefaultModeManager {
     
     /// Creates a default mode if no modes exist
     /// This ensures users can start recording immediately without setup
+    @MainActor
     func ensureDefaultModeExists() {
         let settings = AppSettings.shared
         
@@ -35,6 +36,7 @@ class DefaultModeManager {
     }
     
     /// Call this when user first opens the app or clicks "start using"
+    @MainActor
     func setupForFirstTimeUser() {
         ensureDefaultModeExists()
         
