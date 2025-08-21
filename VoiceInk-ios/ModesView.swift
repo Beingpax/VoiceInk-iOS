@@ -51,7 +51,7 @@ struct ModesView: View {
                     .buttonStyle(.plain)
                     
                     if !settings.modes.isEmpty {
-                        NavigationLink("API Keys") {
+                        NavigationLink("Cloud Models") {
                             APIKeysView()
                         }
                         .font(.subheadline)
@@ -106,21 +106,13 @@ struct ModeRowView: View {
                     .font(.headline)
                     .foregroundStyle(.primary)
                 
-                HStack(spacing: 16) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "waveform")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Text(mode.transcriptionProvider.rawValue)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Transcription: \(mode.transcriptionModel)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                     
-                    HStack(spacing: 4) {
-                        Image(systemName: "brain.head.profile")
-                            .font(.caption)
-                            .foregroundStyle(.purple)
-                        Text(mode.postProcessingProvider.rawValue)
+                    if mode.isPostProcessingEnabled {
+                        Text("Post-processing: \(mode.postProcessingModel)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -128,12 +120,6 @@ struct ModeRowView: View {
             }
             
             Spacer()
-            
-            if !mode.customPrompt.isEmpty {
-                Image(systemName: "text.bubble")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
-            }
         }
         .padding(.vertical, 4)
     }

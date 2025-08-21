@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct APIKeysView: View {
+    @StateObject private var settings = AppSettings.shared
+    
     var body: some View {
         List {
             ForEach(Provider.allCases.filter { $0 != .local }) { provider in
@@ -8,7 +10,7 @@ struct APIKeysView: View {
                     HStack {
                         Text(provider.rawValue)
                         Spacer()
-                        if AppSettings.shared.isKeyVerified(for: provider) {
+                        if settings.isKeyVerified(for: provider) {
                             Image(systemName: "checkmark.seal.fill")
                                 .foregroundStyle(.green)
                         } else {
@@ -19,7 +21,7 @@ struct APIKeysView: View {
                 }
             }
         }
-        .navigationTitle("API Keys")
+        .navigationTitle("Cloud Models")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

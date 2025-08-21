@@ -40,19 +40,9 @@ struct SettingsView: View {
                 }
             }
             
-            Section(header: Text("API Keys")) {
-                ForEach(Provider.allCases.filter { $0 != .local }) { provider in
-                    NavigationLink(destination: ProviderAPIKeyView(provider: provider)) {
-                        HStack {
-                            Text(provider.rawValue)
-                            Spacer()
-                            if !settings.apiKey(for: provider).isEmpty {
-                                Image(systemName: "checkmark.seal.fill")
-                                    .foregroundStyle(.green)
-                                    .font(.caption)
-                            }
-                        }
-                    }
+            Section(header: Text("Cloud Models")) {
+                NavigationLink(destination: APIKeysView()) {
+                    Text("Manage Cloud Models")
                 }
             }
         }

@@ -62,30 +62,30 @@ struct RecordSheetView: View {
                 
                 // Mode selection
                 if !settings.modes.isEmpty {
-                    VStack(spacing: 8) {
-                        if settings.modes.count > 1 {
-                            Picker("Mode", selection: $settings.selectedModeId) {
-                                ForEach(settings.modes) { mode in
-                                    Text(mode.name).tag(mode.id as UUID?)
-                                }
+                    if settings.modes.count > 1 {
+                        Picker("Mode", selection: $settings.selectedModeId) {
+                            ForEach(settings.modes) { mode in
+                                Text(mode.name)
+                                    .font(.system(.title3, design: .rounded, weight: .medium))
+                                    .tag(mode.id as UUID?)
                             }
-                            .pickerStyle(.segmented)
-                            .onAppear {
-                                // Auto-select first mode if none is selected
-                                if settings.selectedModeId == nil {
-                                    settings.selectedModeId = settings.modes.first?.id
-                                }
-                            }
-                        } else if let singleMode = settings.modes.first {
-                            Text(singleMode.name)
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(.secondary)
-                                .onAppear {
-                                    settings.selectedModeId = singleMode.id
-                                }
                         }
+                        .pickerStyle(.wheel)
+                        .frame(height: 100)
+                        .onAppear {
+                            // Auto-select first mode if none is selected
+                            if settings.selectedModeId == nil {
+                                settings.selectedModeId = settings.modes.first?.id
+                            }
+                        }
+                    } else if let singleMode = settings.modes.first {
+                        Text(singleMode.name)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .onAppear {
+                                settings.selectedModeId = singleMode.id
+                            }
                     }
-                    .padding(.horizontal, 8)
                 }
             }
             .padding(.top, 20)
@@ -287,3 +287,5 @@ struct RecordSheetView: View {
         }
     }
 }
+
+
