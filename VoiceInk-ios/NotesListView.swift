@@ -36,16 +36,7 @@ struct NotesListView: View {
                         NavigationLink(destination: SettingsView()) { Image(systemName: "gearshape") }
                     }
                     
-                    #if DEBUG
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Reset Onboarding") {
-                            UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
-                            exit(0)
-                        }
-                        .foregroundColor(.red)
-                        .font(.caption)
-                    }
-                    #endif
+
                 }
                 .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic))
                 .sheet(isPresented: $showingRecordSheet) {
