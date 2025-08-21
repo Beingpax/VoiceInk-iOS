@@ -16,6 +16,22 @@ struct ModeConfigurationView: View {
         self._mode = State(initialValue: mode ?? Mode(name: ""))
     }
     
+    /// Available transcription providers (those with valid API keys or downloaded local models)
+    private var availableTranscriptionProviders: [Provider] {
+        Provider.allCases.filter { provider in
+            // Must have models for transcription AND be properly configured
+            return !provider.models(for: .transcription).isEmpty && settings.isKeyVerified(for: provider)
+        }
+    }
+    
+    /// Available post-processing providers (those with valid API keys)
+    private var availablePostProcessingProviders: [Provider] {
+        Provider.allCases.filter { provider in
+            // Must have models for post-processing AND be properly configured
+            return !provider.models(for: .postProcessing).isEmpty && settings.isKeyVerified(for: provider)
+        }
+    }
+    
     var body: some View {
         Form {
             Section(header: Text("Mode Details")) {
@@ -25,7 +41,7 @@ struct ModeConfigurationView: View {
             
             Section(header: Text("Transcription")) {
                 Picker("Provider", selection: $mode.transcriptionProvider) {
-                    ForEach(Provider.allCases.filter { !$0.models(for: .transcription).isEmpty }) { provider in
+                    ForEach(availableTranscriptionProviders) { provider in
                         Text(provider.rawValue).tag(provider)
                     }
                 }
@@ -43,7 +59,7 @@ struct ModeConfigurationView: View {
                 
                 if mode.isPostProcessingEnabled {
                     Picker("Provider", selection: $mode.postProcessingProvider) {
-                        ForEach(Provider.allCases.filter { !$0.models(for: .postProcessing).isEmpty }) { provider in
+                        ForEach(availablePostProcessingProviders) { provider in
                             Text(provider.rawValue).tag(provider)
                         }
                     }
