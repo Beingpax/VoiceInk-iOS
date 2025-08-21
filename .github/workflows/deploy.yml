@@ -26,10 +26,19 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
+      - name: Create web directory
+        run: |
+          mkdir -p web-deploy
+          cp index.html web-deploy/
+          cp PRIVACY.html web-deploy/
+          cp .nojekyll web-deploy/
+          mkdir -p web-deploy/VoiceInk-ios/Assets.xcassets/AppIcon.appiconset/
+          cp VoiceInk-ios/Assets.xcassets/AppIcon.appiconset/* web-deploy/VoiceInk-ios/Assets.xcassets/AppIcon.appiconset/
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './web-deploy'
           
       - name: Deploy to GitHub Pages
         id: deployment
