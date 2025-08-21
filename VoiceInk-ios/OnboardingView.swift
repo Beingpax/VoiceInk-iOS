@@ -354,6 +354,9 @@ struct ReadyOnboardingView: View {
     }
     
     private func completeOnboarding() {
+        // Create default mode for first-time user
+        DefaultModeManager.shared.setupForFirstTimeUser()
+        
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
         withAnimation(.easeInOut(duration: 0.5)) {
             isOnboardingComplete = true
