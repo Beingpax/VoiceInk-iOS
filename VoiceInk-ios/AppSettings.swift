@@ -131,6 +131,7 @@ final class AppSettings: ObservableObject {
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
         self.cerebrasKeyVerified = UserDefaults.standard.bool(forKey: "cerebrasKeyVerified")
         self.geminiKeyVerified = UserDefaults.standard.bool(forKey: "geminiKeyVerified")
+        
         ensurePreferredModelIsValid()
         ensureLLMModelIsValid()
     }

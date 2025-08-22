@@ -49,11 +49,20 @@ struct WhisperTranscriptionService: TranscriptionService {
         print("WhisperTranscriptionService: Using model at \(modelPath)")
         
         // Load Whisper context
-        let whisperContext: WhisperContext
+        var whisperContext: WhisperContext?
         do {
-            whisperContext = try WhisperContext.createContext(path: modelPath)
+            whisperContext = try await WhisperContext.createContext(path: modelPath)
         } catch {
             print("WhisperTranscriptionService: Failed to load model: \(error)")
+            throw WhisperTranscriptionError.modelLoadFailed
+        }
+        
+        defer {
+            whisperContext?.releaseResources()
+            print("WhisperTranscriptionService: Whisper context resources released.")
+        }
+
+        guard let context = whisperContext else {
             throw WhisperTranscriptionError.modelLoadFailed
         }
         
@@ -68,19 +77,14 @@ struct WhisperTranscriptionService: TranscriptionService {
         }
         
         // Perform transcription
-        do {
-            let transcription = await whisperContext.fullTranscribe(samples: audioSamples)
-            
-            if transcription.isEmpty {
-                print("WhisperTranscriptionService: Warning - empty transcription result")
-                return "No speech detected"
-            }
-            
+        let success = await context.fullTranscribe(samples: audioSamples)
+        
+        if success {
+            let transcription = await context.getTranscription()
             print("WhisperTranscriptionService: Transcription completed successfully")
-            return transcription
-            
-        } catch {
-            print("WhisperTranscriptionService: Transcription failed: \(error)")
+            return transcription.isEmpty ? "No speech detected." : transcription
+        } else {
+            print("WhisperTranscriptionService: Transcription failed")
             throw WhisperTranscriptionError.transcriptionFailed
         }
     }
