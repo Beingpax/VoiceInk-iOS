@@ -36,45 +36,47 @@ struct WelcomeOnboardingView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // App Icon/Logo
+            // Header
             VStack(spacing: 24) {
                 AppIconView()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(16)
+                    .frame(width: 100, height: 100)
+                    .cornerRadius(22)
+                    .shadow(color: Color.black.opacity(0.1), radius: 10, y: 5)
                 
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Text("Welcome to VoiceInk")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                     
-                    Text("Transform your thoughts into text")
-                        .font(.title2)
+                    Text("Transform your thoughts into text effortlessly.")
+                        .font(.headline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
             }
+            .padding(.horizontal, 32)
             
             Spacer()
             
             // Features
-            VStack(spacing: 24) {
+            VStack(alignment: .leading, spacing: 24) {
                 FeatureRow(
-                    icon: "mic.circle.fill",
-                    title: "Record instantly",
-                    description: "Capture your thoughts with a simple tap"
+                    icon: "mic.fill",
+                    title: "Instant Recording",
+                    description: "Capture your thoughts with a single tap, anytime, anywhere."
                 )
                 
                 FeatureRow(
-                    icon: "text.bubble.fill",
-                    title: "Transcribe accurately",
-                    description: "Local AI models or cloud services for precision"
+                    icon: "bolt.fill",
+                    title: "Accurate Transcription",
+                    description: "Leverage powerful AI models for precise speech-to-text conversion."
                 )
                 
                 FeatureRow(
-                    icon: "square.and.arrow.down.fill",
-                    title: "Works offline",
-                    description: "No internet? No problem with local models"
+                    icon: "icloud.slash.fill",
+                    title: "Works Offline",
+                    description: "Transcribe without an internet connection using local models."
                 )
             }
             .padding(.horizontal, 32)
@@ -82,29 +84,18 @@ struct WelcomeOnboardingView: View {
             Spacer()
             
             // Continue Button
-            VStack(spacing: 16) {
-                Button(action: {
+            VStack {
+                Button("Get Started") {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         currentStep = 1
                     }
-                }) {
-                    Text("Get Started")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(Color.blue)
-                        .cornerRadius(16)
                 }
-                .padding(.horizontal, 32)
-                
-                Text("Let's set up VoiceInk for you")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                .buttonStyle(OnboardingButtonStyle())
             }
+            .padding(.horizontal, 32)
             .padding(.bottom, 50)
         }
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
 }
 
@@ -122,18 +113,18 @@ struct ModelDownloadOnboardingView: View {
             
             // Header
             VStack(spacing: 24) {
-                AppIconView()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(16)
+                Image(systemName: "cpu")
+                    .font(.system(size: 70))
+                    .foregroundColor(.accentColor)
                 
-                VStack(spacing: 16) {
-                    Text("Download Local Model")
+                VStack(spacing: 12) {
+                    Text("Offline Transcription")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                     
-                    Text("We'll download a transcription model for offline transcription")
-                        .font(.title3)
+                    Text("Download a local model to transcribe audio even without an internet connection.")
+                        .font(.headline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -142,56 +133,53 @@ struct ModelDownloadOnboardingView: View {
             
             Spacer()
             
-            // Model Info Card - styled like LocalModelManagementView
+            // Model Info Card
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(baseModel.displayName)
-                                .font(.headline)
+                                .font(.headline).fontWeight(.semibold)
                             Text(baseModel.description)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
                         
                         Spacer()
                         
-                        // Action indicator
                         if baseModel.isDownloaded {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                                .font(.title2)
+                                .font(.title)
                         } else if modelManager.isDownloading[baseModel.id] == true {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .foregroundColor(.blue)
-                                .font(.title2)
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
                         } else {
                             Image(systemName: "icloud.and.arrow.down")
-                                .foregroundColor(.blue)
-                                .font(.title2)
+                                .foregroundColor(.accentColor)
+                                .font(.title)
                         }
                     }
                     
-                    // Progress indicator when downloading
                     if modelManager.isDownloading[baseModel.id] == true {
                         VStack(alignment: .leading, spacing: 6) {
                             HStack {
                                 Text("Downloading...")
                                     .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.accentColor)
                                 Spacer()
                                 Text("\(Int((modelManager.downloadProgress[baseModel.id] ?? 0) * 100))%")
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundColor(.accentColor)
                             }
                             
                             ProgressView(value: modelManager.downloadProgress[baseModel.id] ?? 0)
-                                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                                .progressViewStyle(LinearProgressViewStyle(tint: .accentColor))
                         }
                     }
                 }
                 .padding(16)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .cornerRadius(12)
             }
             .padding(.horizontal, 32)
@@ -201,56 +189,35 @@ struct ModelDownloadOnboardingView: View {
             // Bottom Action Buttons
             VStack(spacing: 16) {
                 if let isDownloading = modelManager.isDownloading[baseModel.id], isDownloading {
-                    // Show disabled continue button while downloading
-                    Button(action: {}) {
-                        Text("Downloading...")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(Color.gray)
-                            .cornerRadius(16)
-                    }
-                    .disabled(true)
+                    Button("Downloading...") {}
+                        .buttonStyle(OnboardingButtonStyle())
+                        .disabled(true)
+                    
                 } else if baseModel.isDownloaded {
-                    // Show continue button when downloaded
-                    Button(action: {
+                    Button("Continue") {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep = 2
                         }
-                    }) {
-                        Text("Continue")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(Color.blue)
-                            .cornerRadius(16)
                     }
+                    .buttonStyle(OnboardingButtonStyle())
                 } else {
-                    // Show download button when not downloaded
                     Button(action: downloadModel) {
-                        HStack {
+                        HStack(spacing: 8) {
                             Image(systemName: "arrow.down.circle.fill")
                             Text("Download Model")
                         }
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(Color.blue)
-                        .cornerRadius(16)
                     }
+                    .buttonStyle(OnboardingButtonStyle())
                 }
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 50)
         }
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .alert("Download Error", isPresented: $showError) {
             Button("OK") { showError = false }
         } message: {
-            Text(modelManager.downloadError ?? "Unknown error occurred")
+            Text(modelManager.downloadError ?? "An unknown error occurred.")
         }
         .onChange(of: modelManager.downloadError) { error in
             if error != nil {
@@ -278,79 +245,62 @@ struct ReadyOnboardingView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // Success Icon
+            // Success Icon & Text
             VStack(spacing: 24) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 80))
+                    .font(.system(size: 70))
                     .foregroundColor(.green)
                 
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Text("You're All Set!")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
                     
-                    Text("Start recording your thoughts and ideas")
-                        .font(.title3)
+                    Text("Start recording your thoughts and ideas.")
+                        .font(.headline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal)
                 }
             }
             
             Spacer()
             
             // How it works
-            VStack(spacing: 24) {
-                Text("How it works")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+            VStack(alignment: .leading, spacing: 24) {
+                HowItWorksStep(
+                    number: "1",
+                    title: "Record",
+                    description: "Tap the record button to capture your thoughts."
+                )
                 
-                VStack(spacing: 20) {
-                    HowItWorksStep(
-                        number: "1",
-                        title: "Record",
-                        description: "Tap the record button to capture your thoughts"
-                    )
-                    
-                    HowItWorksStep(
-                        number: "2",
-                        title: "Transcribe",
-                        description: "AI converts your speech to text automatically"
-                    )
-                    
-                    HowItWorksStep(
-                        number: "3",
-                        title: "Save & Organize",
-                        description: "Your notes are saved and ready to review"
-                    )
-                }
+                HowItWorksStep(
+                    number: "2",
+                    title: "Transcribe",
+                    description: "AI converts your speech to text automatically."
+                )
+                
+                HowItWorksStep(
+                    number: "3",
+                    title: "Save & Organize",
+                    description: "Your notes are saved and ready for review."
+                )
             }
             .padding(.horizontal, 32)
             
             Spacer()
             
             // Start Button
-            VStack(spacing: 16) {
-                Button(action: {
+            VStack {
+                Button("Start Using VoiceInk") {
                     completeOnboarding()
-                }) {
-                    Text("Start Using VoiceInk")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(Color.blue)
-                        .cornerRadius(16)
                 }
-                .padding(.horizontal, 32)
-                
-                Text("Ready to capture your first thought?")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                .buttonStyle(OnboardingButtonStyle())
             }
+            .padding(.horizontal, 32)
             .padding(.bottom, 50)
         }
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
     
     private func completeOnboarding() {
@@ -366,27 +316,44 @@ struct ReadyOnboardingView: View {
 
 // MARK: - Supporting Views
 
+struct OnboardingButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(isEnabled ? Color.accentColor : Color.gray)
+            .cornerRadius(16)
+            .opacity(configuration.isPressed ? 0.9 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+    }
+}
+
 struct FeatureRow: View {
     let icon: String
     let title: String
     let description: String
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 20) {
             Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(.blue)
-                .frame(width: 32)
+                .font(.title)
+                .foregroundColor(.accentColor)
+                .frame(width: 40, alignment: .center)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .fontWeight(.semibold)
                 Text(description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            
-            Spacer()
         }
     }
 }
@@ -397,24 +364,24 @@ struct HowItWorksStep: View {
     let description: String
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(alignment: .top, spacing: 16) {
             Text(number)
                 .font(.headline)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)
-                .background(Color.blue)
+                .background(Color.accentColor)
                 .clipShape(Circle())
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.headline)
+                    .fontWeight(.semibold)
                 Text(description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            
-            Spacer()
         }
     }
 }
