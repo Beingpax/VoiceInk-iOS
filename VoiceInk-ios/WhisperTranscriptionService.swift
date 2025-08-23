@@ -49,20 +49,11 @@ struct WhisperTranscriptionService: TranscriptionService {
         print("WhisperTranscriptionService: Using model at \(modelPath)")
         
         // Load Whisper context
-        var whisperContext: WhisperContext?
+        let context: WhisperContext
         do {
-            whisperContext = try await WhisperContext.createContext(path: modelPath)
+            context = try await WhisperContext.createContext(path: modelPath)
         } catch {
             print("WhisperTranscriptionService: Failed to load model: \(error)")
-            throw WhisperTranscriptionError.modelLoadFailed
-        }
-        
-        defer {
-            whisperContext?.releaseResources()
-            print("WhisperTranscriptionService: Whisper context resources released.")
-        }
-
-        guard let context = whisperContext else {
             throw WhisperTranscriptionError.modelLoadFailed
         }
         
@@ -73,6 +64,9 @@ struct WhisperTranscriptionService: TranscriptionService {
             print("WhisperTranscriptionService: Processed \(audioSamples.count) audio samples")
         } catch {
             print("WhisperTranscriptionService: Audio processing failed: \(error)")
+            // Clean up resources before throwing
+            await context.releaseResources()
+            print("WhisperTranscriptionService: Whisper context resources released.")
             throw WhisperTranscriptionError.audioProcessingFailed
         }
         
@@ -81,9 +75,15 @@ struct WhisperTranscriptionService: TranscriptionService {
         
         if success {
             let transcription = await context.getTranscription()
+            // Clean up resources
+            await context.releaseResources()
+            print("WhisperTranscriptionService: Whisper context resources released.")
             print("WhisperTranscriptionService: Transcription completed successfully")
             return transcription.isEmpty ? "No audio detected." : transcription
         } else {
+            // Clean up resources before throwing error
+            await context.releaseResources()
+            print("WhisperTranscriptionService: Whisper context resources released.")
             print("WhisperTranscriptionService: Transcription failed")
             throw WhisperTranscriptionError.transcriptionFailed
         }
