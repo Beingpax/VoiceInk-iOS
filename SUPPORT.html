@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceInk Support</title>
+    <title>Support - VoiceInk</title>
     <style>
         * {
             margin: 0;
@@ -15,55 +15,105 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f5f5;
             min-height: 100vh;
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
         }
         
-        header {
-            padding: 2rem 0;
-            text-align: center;
-            color: white;
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         
         .back-link {
             display: inline-block;
-            color: white;
+            margin-bottom: 30px;
+            color: #667eea;
             text-decoration: none;
-            margin-bottom: 1rem;
-            padding: 0.5rem 1rem;
-            border: 2px solid white;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: #f8f9ff;
             border-radius: 25px;
             transition: all 0.3s ease;
         }
         
         .back-link:hover {
-            background: white;
-            color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: translateX(-5px);
         }
         
-        .support-section {
-            background: #f8f9fa;
-            padding: 3rem 0;
-            margin-top: 2rem;
-            border-radius: 20px;
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
         }
-
-        .support-section h3 {
-             text-align: center;
-             font-size: 2rem;
-             color: #2c3e50;
-             margin-bottom: 2rem;
+        
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .last-updated {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 30px;
         }
         
         details {
             margin-bottom: 1rem;
-            background: #fff;
+            background: #f8f9fa;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -128,26 +178,32 @@
             text-decoration: underline;
         }
         
-        footer {
-            background: #2c3e50;
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            margin-top: 3rem;
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="index.html" class="back-link">← Back to Home</a>
-            <h1>Support</h1>
-        </div>
-    </header>
-
-    <section class="support-section">
-        <div class="container">
-            <h3>Support & FAQ</h3>
+    <div class="container">
+        <div class="content">
+            <a href="index.html" class="back-link">← Back to VoiceInk</a>
+            
+            <h1>Support & FAQ</h1>
+            
             <details>
                 <summary>How can I contact support?</summary>
                 <div class="details-content">
@@ -155,25 +211,27 @@
                     <p><strong>Support Email:</strong> <a href="mailto:prakashjoshipax@gmail.com">prakashjoshipax@gmail.com</a></p>
                 </div>
             </details>
+            
             <details>
                 <summary>Is my data private?</summary>
                 <div class="details-content">
                     <p>Yes. Privacy is a core feature of VoiceInk. When using local on-device models, your audio and transcriptions never leave your device. For cloud services, data is sent directly to the provider you've configured. We never see or store your data.</p>
                 </div>
             </details>
+            
             <details>
                 <summary>How does offline transcription work?</summary>
                 <div class="details-content">
                     <p>You can download powerful AI models directly to your device from the app's settings. Once downloaded, these models allow you to transcribe audio with high accuracy, completely offline, ensuring your privacy and enabling you to work anywhere.</p>
                 </div>
             </details>
-        </div>
-    </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 VoiceInk. Made with ❤️ by Pax.</p>
+            <hr style="margin: 40px 0; border: none; height: 2px; background: #eee;">
+            
+            <p style="text-align: center; color: #666; font-size: 0.9em;">
+                <a href="index.html" class="back-link">← Back to VoiceInk</a>
+            </p>
         </div>
-    </footer>
+    </div>
 </body>
 </html>
