@@ -54,23 +54,23 @@ final class AppSettings: ObservableObject {
 
     // Separate API keys per provider
     @Published var groqAPIKey: String {
-        didSet { UserDefaults.standard.set(groqAPIKey, forKey: "groqAPIKey") }
+        didSet { saveAPIKey(groqAPIKey, forKey: "groqAPIKey") }
     }
 
     @Published var openAIAPIKey: String {
-        didSet { UserDefaults.standard.set(openAIAPIKey, forKey: "openAIAPIKey") }
+        didSet { saveAPIKey(openAIAPIKey, forKey: "openAIAPIKey") }
     }
 
     @Published var deepgramAPIKey: String {
-        didSet { UserDefaults.standard.set(deepgramAPIKey, forKey: "deepgramAPIKey") }
+        didSet { saveAPIKey(deepgramAPIKey, forKey: "deepgramAPIKey") }
     }
 
     @Published var cerebrasAPIKey: String {
-        didSet { UserDefaults.standard.set(cerebrasAPIKey, forKey: "cerebrasAPIKey") }
+        didSet { saveAPIKey(cerebrasAPIKey, forKey: "cerebrasAPIKey") }
     }
 
     @Published var geminiAPIKey: String {
-        didSet { UserDefaults.standard.set(geminiAPIKey, forKey: "geminiAPIKey") }
+        didSet { saveAPIKey(geminiAPIKey, forKey: "geminiAPIKey") }
     }
     
     // Track verification status per provider
@@ -121,11 +121,11 @@ final class AppSettings: ObservableObject {
         let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
         self.llmModel = initialLLMModel
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
-        self.groqAPIKey = UserDefaults.standard.string(forKey: "groqAPIKey") ?? ""
-        self.openAIAPIKey = UserDefaults.standard.string(forKey: "openAIAPIKey") ?? ""
-        self.deepgramAPIKey = UserDefaults.standard.string(forKey: "deepgramAPIKey") ?? ""
-        self.cerebrasAPIKey = UserDefaults.standard.string(forKey: "cerebrasAPIKey") ?? ""
-        self.geminiAPIKey = UserDefaults.standard.string(forKey: "geminiAPIKey") ?? ""
+        self.groqAPIKey = loadAPIKey(forKey: "groqAPIKey")
+        self.openAIAPIKey = loadAPIKey(forKey: "openAIAPIKey")
+        self.deepgramAPIKey = loadAPIKey(forKey: "deepgramAPIKey")
+        self.cerebrasAPIKey = loadAPIKey(forKey: "cerebrasAPIKey")
+        self.geminiAPIKey = loadAPIKey(forKey: "geminiAPIKey")
         self.groqKeyVerified = UserDefaults.standard.bool(forKey: "groqKeyVerified")
         self.openAIKeyVerified = UserDefaults.standard.bool(forKey: "openAIKeyVerified")
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
@@ -295,6 +295,21 @@ final class AppSettings: ObservableObject {
             // For backward compatibility, enable post-processing if there's a prompt
             return !postProcessPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
+    }
+
+    private func saveAPIKey(_ key: String, forKey account: String) {
+        guard let data = key.data(using: .utf8) else { return }
+        let status = KeychainService.save(key: account, data: data)
+        if status != errSecSuccess {
+            print("Error saving API key to keychain: \(status)")
+        }
+    }
+    
+    private func loadAPIKey(forKey account: String) -> String {
+        if let data = KeychainService.load(key: account), let key = String(data: data, encoding: .utf8) {
+            return key
+        }
+        return ""
     }
 }
 
