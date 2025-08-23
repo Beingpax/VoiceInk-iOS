@@ -4,7 +4,7 @@ import SwiftData
 struct NoteDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    let note: Note
+    let note: Transcription
     
     @State private var isRetranscribing = false
     @StateObject private var settings = AppSettings.shared
@@ -15,7 +15,7 @@ struct NoteDetailView: View {
                 // Main content with scroll
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(note.createdAt.formatted(date: .abbreviated, time: .shortened))
+                        Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
                             .font(.footnote)
                             .foregroundStyle(.secondary)
 
@@ -30,7 +30,7 @@ struct NoteDetailView: View {
                                 Text("Transcript")
                                     .font(.headline)
                                 
-                                Text(note.transcript.isEmpty ? "No content" : note.transcript)
+                                Text((note.enhancedText ?? note.text).isEmpty ? "No content" : (note.enhancedText ?? note.text))
                                     .font(.body)
                                     .textSelection(.enabled)
                                     .padding()
@@ -74,8 +74,8 @@ struct NoteDetailView: View {
         VStack(spacing: 0) {
             if let audioPath = note.fullAudioPath,
                FileManager.default.fileExists(atPath: audioPath) {
-                AudioPlayerView(audioFilePath: audioPath, duration: note.durationSeconds)
-            } else if note.audioFilePath != nil && !note.audioFilePath!.isEmpty {
+                AudioPlayerView(audioFilePath: audioPath, duration: note.duration)
+            } else if note.audioFileURL != nil && !note.audioFileURL!.isEmpty {
                 // Modern error state - file missing
                 HStack(spacing: 12) {
                     Circle()
@@ -100,7 +100,7 @@ struct NoteDetailView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
-            } else if note.durationSeconds > 0 {
+            } else if note.duration > 0 {
                 // Modern error state - path missing
                 HStack(spacing: 12) {
                     Circle()

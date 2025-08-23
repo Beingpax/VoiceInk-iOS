@@ -14,4 +14,4 @@ struct ContentView: View {
     }
 }
 
-#Preview { ContentView().modelContainer(for: [Note.self], inMemory: true) }
+#Preview { ContentView().modelContainer(for: [Transcription.self], inMemory: true) }

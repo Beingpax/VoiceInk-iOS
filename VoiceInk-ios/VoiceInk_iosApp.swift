@@ -14,7 +14,7 @@ struct VoiceInk_iosApp: App {
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Note.self,
+            Transcription.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +25,7 @@ struct VoiceInk_iosApp: App {
             let resetKey = "VoiceInk_DataReset_v2"
             if !UserDefaults.standard.bool(forKey: resetKey) {
                 let context = container.mainContext
-                try context.delete(model: Note.self)
+                try context.delete(model: Transcription.self)
                 try context.save()
                 UserDefaults.standard.set(true, forKey: resetKey)
                 print("SwiftData reset completed")

@@ -9,12 +9,12 @@ enum RecordingState {
 
 struct RecordSheetView: View {
     @ObservedObject var recorder: AudioRecorder
-    let onStopAndTranscribe: (@escaping (Result<String, Error>, Note?) -> Void) -> Void
+    let onStopAndTranscribe: (@escaping (Result<String, Error>, Transcription?) -> Void) -> Void
     let onDismiss: (() -> Void)? // Callback for dismissal
     @State private var animate = false
     @StateObject private var settings = AppSettings.shared
     @State private var recordingState: RecordingState = .recording
-    @State private var createdNote: Note? // Track the note created from this recording
+    @State private var createdNote: Transcription? // Track the note created from this recording
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -101,8 +101,8 @@ struct RecordSheetView: View {
                 // Stop button
                 Button(action: {
                     recordingState = .processing
-                    onStopAndTranscribe { result, note in
-                        createdNote = note
+                    onStopAndTranscribe { result, transcription in
+                        createdNote = transcription
                         setTranscriptionResult(result)
                     }
                 }) {
@@ -235,19 +235,19 @@ struct RecordSheetView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 
                 Button(action: {
-                    if let note = createdNote {
+                    if let transcription = createdNote {
                         // Retry transcription of the created note
                         recordingState = .processing
                         Task {
                             do {
-                                let transcript = try await TranscriptionRetryService.shared.retranscribe(note: note)
+                                let transcript = try await TranscriptionRetryService.shared.retranscribe(note: transcription)
                                 await MainActor.run {
                                     setTranscriptionResult(.success(transcript))
                                 }
                             } catch {
                                 await MainActor.run {
-                                    note.transcriptionStatus = .failed
-                                    note.transcriptionError = error.localizedDescription
+                                    transcription.transcriptionStatus = .failed
+                                    transcription.transcriptionError = error.localizedDescription
                                     setTranscriptionResult(.failure(error))
                                 }
                             }

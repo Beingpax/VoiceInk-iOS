@@ -15,7 +15,7 @@ class TranscriptionRetryService {
     private init() {}
     
     /// Retries transcription for a given note using current app settings
-    func retranscribe(note: Note) async throws -> String {
+    func retranscribe(note: Transcription) async throws -> String {
         guard let audioPath = note.fullAudioPath,
               FileManager.default.fileExists(atPath: audioPath) else {
             throw TranscriptionError.audioFileNotFound
@@ -76,7 +76,12 @@ class TranscriptionRetryService {
         }
         
         // Update note
-        note.transcript = finalText
+        note.text = cleanedText
+        note.enhancedText = (finalText == cleanedText) ? nil : finalText
+        note.transcriptionModelName = model
+        if await settings.effectiveIsPostProcessingEnabled {
+            note.aiEnhancementModelName = await settings.effectivePostProcessingModel
+        }
         note.transcriptionStatus = .completed
         note.transcriptionError = postProcessingError
         

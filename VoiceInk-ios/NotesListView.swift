@@ -12,18 +12,22 @@ struct StaticButtonStyle: ButtonStyle {
 
 struct NotesListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Note.createdAt, order: .reverse)]) private var notes: [Note]
+    @Query(sort: [SortDescriptor(\Transcription.timestamp, order: .reverse)]) private var notes: [Transcription]
 
     @StateObject private var recorder = AudioRecorder()
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
     @State private var showingRecordSheet: Bool = false
     @State private var showingNoModesAlert: Bool = false
-    @State private var currentRecordingNote: Note?
+    @State private var currentRecordingNote: Transcription?
     private let postProcessor = LLMPostProcessor()
 
-    var filteredNotes: [Note] {
-        notes.filter { searchText.isEmpty || $0.transcript.localizedCaseInsensitiveContains(searchText) }
+    var filteredNotes: [Transcription] {
+        notes.filter { note in
+            searchText.isEmpty ||
+            note.text.localizedCaseInsensitiveContains(searchText) ||
+            (note.enhancedText ?? "").localizedCaseInsensitiveContains(searchText)
+        }
     }
 
     init() {}
@@ -100,7 +104,7 @@ struct NotesListView: View {
         }
     }
 
-    private func stopAndTranscribe(completion: @escaping (Result<String, Error>, Note?) -> Void) {
+    private func stopAndTranscribe(completion: @escaping (Result<String, Error>, Transcription?) -> Void) {
         recorder.stopRecording()
         guard let fileURL = recorder.currentRecordingURL else { return }
         isTranscribing = true
@@ -113,7 +117,7 @@ struct NotesListView: View {
         transcribeAudio(audioFilePath: audioFileName, recordingDuration: recordingDuration, completion: completion)
     }
     
-    private func transcribeAudio(audioFilePath: String, recordingDuration: Double, completion: @escaping (Result<String, Error>, Note?) -> Void) {
+    private func transcribeAudio(audioFilePath: String, recordingDuration: Double, completion: @escaping (Result<String, Error>, Transcription?) -> Void) {
         
         Task {
             defer { 
@@ -132,10 +136,10 @@ struct NotesListView: View {
             
             // If no API key, save audio with pending status
             guard !apiKey.isEmpty else {
-                let note = Note(
-                    transcript: "",
-                    audioFilePath: audioFilePath,
-                    durationSeconds: recordingDuration,
+                let note = Transcription(
+                    text: "",
+                    duration: recordingDuration,
+                    audioFileURL: audioFilePath,
                     transcriptionStatus: .pending,
                     transcriptionError: "No API key configured"
                 )
@@ -159,6 +163,7 @@ struct NotesListView: View {
                     .replacingOccurrences(of: "[ \t]+", with: " ", options: .regularExpression) // Normalize multiple spaces/tabs to single space
                 
                 var finalText = cleanedText
+                var enhancedText: String? = nil
                 
                 // Optional post-processing using effective settings
                 var postProcessingError: String? = nil
@@ -171,6 +176,7 @@ struct NotesListView: View {
                         if !llmKey.isEmpty {
                             do {
                                 finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
+                                enhancedText = finalText
                             } catch {
                                 // Post-processing failed, but transcription succeeded
                                 postProcessingError = "Post-processing failed: \(error.localizedDescription)"
@@ -181,10 +187,13 @@ struct NotesListView: View {
                     }
                 }
                 
-                let note = Note(
-                    transcript: finalText,
-                    audioFilePath: audioFilePath,
-                    durationSeconds: recordingDuration,
+                let note = Transcription(
+                    text: cleanedText,
+                    duration: recordingDuration,
+                    enhancedText: enhancedText,
+                    audioFileURL: audioFilePath,
+                    transcriptionModelName: model,
+                    aiEnhancementModelName: settings.effectiveIsPostProcessingEnabled ? settings.effectivePostProcessingModel : nil,
                     transcriptionStatus: .completed,
                     transcriptionError: postProcessingError
                 )
@@ -195,10 +204,10 @@ struct NotesListView: View {
                 completion(.success(finalText), note)
             } catch {
                 // Save the recording even if transcription failed
-                let note = Note(
-                    transcript: "",
-                    audioFilePath: audioFilePath,
-                    durationSeconds: recordingDuration,
+                let note = Transcription(
+                    text: "",
+                    duration: recordingDuration,
+                    audioFileURL: audioFilePath,
                     transcriptionStatus: .failed,
                     transcriptionError: error.localizedDescription
                 )
@@ -229,7 +238,7 @@ struct NotesListView: View {
 
 #Preview {
     NotesListView()
-        .modelContainer(for: [Note.self])
+        .modelContainer(for: [Transcription.self])
 }
 
 

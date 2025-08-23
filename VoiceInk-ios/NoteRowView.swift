@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NoteRowView: View {
-    let note: Note
+    let note: Transcription
     // Callbacks removed since star/share are gone
     let onToggleStar: () -> Void = {}
     let onToggleShare: () -> Void = {}
@@ -14,11 +14,11 @@ struct NoteRowView: View {
                 .multilineTextAlignment(.leading)
             
             HStack(spacing: 16) {
-                Label(note.createdAt.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+                Label(note.timestamp.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                if note.durationSeconds > 0 {
-                    Label(timeString(note.durationSeconds), systemImage: "play.circle")
+                if note.duration > 0 {
+                    Label(timeString(note.duration), systemImage: "play.circle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -42,7 +42,8 @@ struct NoteRowView: View {
         case .failed:
             return "Transcription failed - tap to retry"
         case .completed:
-            return note.transcript.isEmpty ? "No audible content detected." : note.transcript
+            let displayText = note.enhancedText ?? note.text
+            return displayText.isEmpty ? "No audible content detected." : displayText
         }
     }
 

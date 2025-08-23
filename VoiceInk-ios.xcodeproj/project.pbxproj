@@ -44,7 +44,7 @@
 
 /* Begin PBXFileReference section */
 		E13AB56A2E56E8950074AC55 /* whisper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = whisper.xcframework; path = "../whisper.cpp/build-apple/whisper.xcframework"; sourceTree = "<group>"; };
-		E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoiceInk-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E168DF072E4B464B00F133D2 /* VoiceInk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceInk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E168DF182E4B464C00F133D2 /* VoiceInk-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceInk-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E168DF222E4B464C00F133D2 /* VoiceInk-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoiceInk-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -128,7 +128,7 @@
 		E168DF082E4B464B00F133D2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */,
+				E168DF072E4B464B00F133D2 /* VoiceInk.app */,
 				E168DF182E4B464C00F133D2 /* VoiceInk-iosTests.xctest */,
 				E168DF222E4B464C00F133D2 /* VoiceInk-iosUITests.xctest */,
 			);
@@ -158,7 +158,7 @@
 			packageProductDependencies = (
 			);
 			productName = "VoiceInk-ios";
-			productReference = E168DF072E4B464B00F133D2 /* VoiceInk-ios.app */;
+			productReference = E168DF072E4B464B00F133D2 /* VoiceInk.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E168DF172E4B464C00F133D2 /* VoiceInk-iosTests */ = {
@@ -330,13 +330,14 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-ios";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = VoiceInk;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -363,13 +364,14 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.prakashjoshipax.VoiceInk.VoiceInk-ios";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = VoiceInk;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
