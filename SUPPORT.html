@@ -10,74 +10,63 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
+            background: white;
         }
-        
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 20px;
+            padding: 0 20px;
         }
-        
         header {
-            padding-bottom: 2rem;
+            padding: 2.5rem 0;
             text-align: center;
-            border-bottom: 1px solid #e0e0e0;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
         header h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
-            color: #2c3e50;
         }
-        
         main {
-            padding: 2rem 0;
+            padding: 4rem 0;
         }
-        
-        .support-section {
-            margin-bottom: 2rem;
+        .content-section {
+            margin-bottom: 2.5rem;
         }
-        
-        .support-section h2 {
-            font-size: 1.8rem;
-            color: #34495e;
-            margin-bottom: 1rem;
+        .content-section h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
             border-bottom: 2px solid #667eea;
             padding-bottom: 0.5rem;
         }
-        
-        .support-section p {
+        .content-section h3 {
+             font-size: 1.3rem;
+             color: #34495e;
+             margin-top: 1.5rem;
+             margin-bottom: 0.75rem;
+        }
+        .content-section p {
             margin-bottom: 1rem;
             color: #555;
             font-size: 1.1rem;
         }
-        
-        .support-section a {
+        .content-section a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
-        
-        .support-section a:hover {
+        .content-section a:hover {
             text-decoration: underline;
         }
-        
-        .faq-item {
-            margin-bottom: 1.5rem;
+        .back-link {
+            text-align: center;
+            margin-top: 3rem;
         }
-        
-        .faq-item h3 {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-        
         footer {
             background: #2c3e50;
             color: white;
@@ -85,19 +74,9 @@
             text-align: center;
             margin-top: 2rem;
         }
-
         footer a {
-            color: #764ba2;
+            color: #3498db;
             text-decoration: none;
-        }
-        
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            .support-section h2 {
-                font-size: 1.5rem;
-            }
         }
     </style>
 </head>
@@ -110,47 +89,39 @@
 
     <main>
         <div class="container">
-            <section class="support-section">
-                <h2>Contact Us</h2>
+            <section class="content-section">
+                <h2>Get In Touch</h2>
                 <p>
-                    Have questions or need help with VoiceInk? The best way to reach us is by email. We'll do our best to get back to you as soon as possible.
+                    For questions, feedback, or support requests, the best way to reach us is by email. We're here to help and will get back to you as soon as possible.
                 </p>
                 <p>
-                    <strong>Email:</strong> <a href="mailto:prakashjoshipax@gmail.com">prakashjoshipax@gmail.com</a>
+                    <strong>Support Email:</strong> <a href="mailto:prakashjoshipax@gmail.com">prakashjoshipax@gmail.com</a>
                 </p>
             </section>
             
-            <section class="support-section">
-                <h2>Frequently Asked Questions (FAQ)</h2>
+            <section class="content-section">
+                <h2>Frequently Asked Questions</h2>
                 
-                <div class="faq-item">
-                    <h3>Is my data private?</h3>
-                    <p>
-                        Yes. VoiceInk is designed with privacy as a top priority. When you use local, on-device models for transcription, your audio data never leaves your phone. If you choose to use a cloud-based transcription service, your data is sent directly to that provider. We do not store any of your audio files or transcriptions on our servers. Please review our <a href="PRIVACY.html">Privacy Policy</a> for more details.
-                    </p>
-                </div>
+                <h3>Is my data private?</h3>
+                <p>
+                    Yes. Privacy is a core feature of VoiceInk. When using local on-device models, your audio and transcriptions never leave your device. For cloud services, data is sent directly to the provider you've configured. We never see or store your data. For full details, please see our <a href="PRIVACY.html">Privacy Policy</a>.
+                </p>
 
-                <div class="faq-item">
-                    <h3>How does offline transcription work?</h3>
-                    <p>
-                        VoiceInk allows you to download powerful AI models directly to your device. These models run locally, which means you can get high-quality transcriptions even without an internet connection. This is perfect for maintaining privacy and for transcribing on the go.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3>Which transcription services are supported?</h3>
-                    <p>
-                        VoiceInk supports both local (offline) transcription via Whisper models and various cloud-based services like OpenAI, Groq, and Deepgram. You can enter your own API keys in the app's settings to use these providers.
-                    </p>
-                </div>
+                <h3>How does offline transcription work?</h3>
+                <p>
+                    You can download powerful AI models directly to your device from the app's settings. Once downloaded, these models allow you to transcribe audio with high accuracy, completely offline, ensuring your privacy and enabling you to work anywhere.
+                </p>
             </section>
+
+            <div class="back-link">
+                <a href="index.html">← Back to Home</a>
+            </div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 VoiceInk. All Rights Reserved.</p>
-            <p style="margin-top: 0.5rem;"><a href="index.html">Back to Home</a></p>
+            <p>&copy; 2025 VoiceInk. Made with ❤️ by Pax.</p>
         </div>
     </footer>
 </body>
