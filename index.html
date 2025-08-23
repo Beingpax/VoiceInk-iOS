@@ -163,6 +163,91 @@
         .privacy-link:hover {
             text-decoration: underline;
         }
+
+        /* Support Section Styles */
+        .support-section {
+            background: #f8f9fa;
+            padding: 3rem 0;
+        }
+
+        .support-section .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .support-section h3 {
+             text-align: center;
+             font-size: 2rem;
+             color: #2c3e50;
+             margin-bottom: 2rem;
+        }
+        
+        details {
+            margin-bottom: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        details:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        summary {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #34495e;
+            padding: 1.2rem;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            list-style: none; /* Remove marker */
+        }
+        
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: '+';
+            color: #667eea;
+            font-size: 2rem;
+            font-weight: 400;
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        details[open] > summary::after {
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .details-content {
+            padding: 0 1.2rem 1.2rem 1.2rem;
+            color: #555;
+            line-height: 1.7;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 0.5rem;
+        }
+        
+        .details-content p {
+            margin-bottom: 0;
+            padding-top: 1rem;
+        }
+
+        .details-content a {
+            color: #667eea;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .details-content a:hover {
+            text-decoration: underline;
+        }
         
         footer {
             background: #2c3e50;
@@ -270,9 +355,32 @@
             <p>We're committed to protecting your privacy and providing you with the help you need.</p>
             <p style="margin-top: 1rem;">
                 <a href="PRIVACY.html" class="privacy-link">View Privacy Policy</a>
-                <span style="margin: 0 10px;">|</span>
-                <a href="SUPPORT.html" class="privacy-link">Get Support</a>
             </p>
+        </div>
+    </section>
+
+    <section class="support-section">
+        <div class="container">
+            <h3>Support & FAQ</h3>
+            <details>
+                <summary>How can I contact support?</summary>
+                <div class="details-content">
+                    <p>For questions, feedback, or support requests, the best way to reach us is by email. We're here to help and will get back to you as soon as possible.</p>
+                    <p><strong>Support Email:</strong> <a href="mailto:prakashjoshipax@gmail.com">prakashjoshipax@gmail.com</a></p>
+                </div>
+            </details>
+            <details>
+                <summary>Is my data private?</summary>
+                <div class="details-content">
+                    <p>Yes. Privacy is a core feature of VoiceInk. When using local on-device models, your audio and transcriptions never leave your device. For cloud services, data is sent directly to the provider you've configured. We never see or store your data.</p>
+                </div>
+            </details>
+            <details>
+                <summary>How does offline transcription work?</summary>
+                <div class="details-content">
+                    <p>You can download powerful AI models directly to your device from the app's settings. Once downloaded, these models allow you to transcribe audio with high accuracy, completely offline, ensuring your privacy and enabling you to work anywhere.</p>
+                </div>
+            </details>
         </div>
     </section>
 
