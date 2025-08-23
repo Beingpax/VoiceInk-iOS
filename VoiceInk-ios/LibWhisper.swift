@@ -41,9 +41,7 @@ actor WhisperContext {
         let maxThreads = max(1, min(8, cpuCount() - 2))
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         
-        "auto".withCString { auto in
-            params.language = auto
-        }
+        params.language = nil
         
         params.print_realtime = true
         params.print_progress = false
