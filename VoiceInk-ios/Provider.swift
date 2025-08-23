@@ -53,7 +53,9 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
             ]
         case (.openai, .transcription):
             return [
-                "whisper-1"
+                "whisper-1",
+                "gpt-4o-transcribe",
+                "gpt-4o-mini-transcribe"
             ]
         case (.openai, .postProcessing):
             return [
