@@ -120,6 +120,26 @@ struct RecordSheetView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 .buttonStyle(.plain)
+                
+                // Cancel button
+                Button(action: {
+                    recorder.stopRecording()
+                    onDismiss?() ?? dismiss()
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .medium))
+                        Text("Cancel Recording")
+                            .font(.subheadline.weight(.medium))
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 32)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(.systemGray5))
+                    .foregroundStyle(.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
             }
             .padding(.bottom, 40)
         }
