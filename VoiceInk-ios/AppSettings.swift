@@ -121,11 +121,11 @@ final class AppSettings: ObservableObject {
         let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
         self.llmModel = initialLLMModel
         self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
-        self.groqAPIKey = loadAPIKey(forKey: "groqAPIKey")
-        self.openAIAPIKey = loadAPIKey(forKey: "openAIAPIKey")
-        self.deepgramAPIKey = loadAPIKey(forKey: "deepgramAPIKey")
-        self.cerebrasAPIKey = loadAPIKey(forKey: "cerebrasAPIKey")
-        self.geminiAPIKey = loadAPIKey(forKey: "geminiAPIKey")
+        self.groqAPIKey = AppSettings.loadAPIKey(forKey: "groqAPIKey")
+        self.openAIAPIKey = AppSettings.loadAPIKey(forKey: "openAIAPIKey")
+        self.deepgramAPIKey = AppSettings.loadAPIKey(forKey: "deepgramAPIKey")
+        self.cerebrasAPIKey = AppSettings.loadAPIKey(forKey: "cerebrasAPIKey")
+        self.geminiAPIKey = AppSettings.loadAPIKey(forKey: "geminiAPIKey")
         self.groqKeyVerified = UserDefaults.standard.bool(forKey: "groqKeyVerified")
         self.openAIKeyVerified = UserDefaults.standard.bool(forKey: "openAIKeyVerified")
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
@@ -305,7 +305,7 @@ final class AppSettings: ObservableObject {
         }
     }
     
-    private func loadAPIKey(forKey account: String) -> String {
+    private static func loadAPIKey(forKey account: String) -> String {
         if let data = KeychainService.load(key: account), let key = String(data: data, encoding: .utf8) {
             return key
         }

@@ -18,6 +18,7 @@ struct NotesListView: View {
     @State private var isTranscribing: Bool = false
     @State private var searchText: String = ""
     @State private var showingRecordSheet: Bool = false
+    @State private var showingNoModesAlert: Bool = false
     @State private var currentRecordingNote: Note?
     private let postProcessor = LLMPostProcessor()
 
@@ -68,7 +69,13 @@ struct NotesListView: View {
 
     private var recordBar: some View {
         HStack {
-            Button(action: { showingRecordSheet = true }) {
+            Button(action: {
+                if AppSettings.shared.modes.isEmpty {
+                    showingNoModesAlert = true
+                } else {
+                    showingRecordSheet = true
+                }
+            }) {
                 HStack(spacing: 8) {
                     Image(systemName: isTranscribing ? "waveform" : "mic.fill")
                     Text(isTranscribing ? "Processing..." : "Start Recording")
@@ -86,6 +93,11 @@ struct NotesListView: View {
         }
         .padding(.horizontal)
         .padding(.bottom)
+        .alert("No Modes Found", isPresented: $showingNoModesAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Please create a new mode in Settings before recording.")
+        }
     }
 
     private func stopAndTranscribe(completion: @escaping (Result<String, Error>, Note?) -> Void) {
