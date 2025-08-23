@@ -82,7 +82,7 @@ struct WhisperTranscriptionService: TranscriptionService {
         if success {
             let transcription = await context.getTranscription()
             print("WhisperTranscriptionService: Transcription completed successfully")
-            return transcription.isEmpty ? "No speech detected." : transcription
+            return transcription.isEmpty ? "No audio detected." : transcription
         } else {
             print("WhisperTranscriptionService: Transcription failed")
             throw WhisperTranscriptionError.transcriptionFailed

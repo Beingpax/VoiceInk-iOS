@@ -13,13 +13,13 @@ import whisper
 #endif
 import os
 
+enum WhisperError: Error {
+    case couldNotInitializeContext
+}
 
 // Meet Whisper C++ constraint: Don't access from more than one thread at a time.
 actor WhisperContext {
     private var context: OpaquePointer?
-    private var languageCString: [CChar]?
-    private var prompt: String?
-    private var promptCString: [CChar]?
     private var vadModelPath: String?
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "WhisperContext")
 
@@ -41,26 +41,8 @@ actor WhisperContext {
         let maxThreads = max(1, min(8, cpuCount() - 2))
         var params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY)
         
-        // Read language directly from UserDefaults
-        let selectedLanguage = UserDefaults.standard.string(forKey: "SelectedLanguage") ?? "auto"
-        if selectedLanguage != "auto" {
-            languageCString = Array(selectedLanguage.utf8CString)
-            params.language = languageCString?.withUnsafeBufferPointer { ptr in
-                ptr.baseAddress
-            }
-        } else {
-            languageCString = nil
-            params.language = nil
-        }
-        
-        if prompt != nil {
-            promptCString = Array(prompt!.utf8CString)
-            params.initial_prompt = promptCString?.withUnsafeBufferPointer { ptr in
-                ptr.baseAddress
-            }
-        } else {
-            promptCString = nil
-            params.initial_prompt = nil
+        "en".withCString { en in
+            params.language = en
         }
         
         params.print_realtime = true
@@ -102,9 +84,6 @@ actor WhisperContext {
             }
         }
         
-        languageCString = nil
-        promptCString = nil
-        
         return success
     }
 
@@ -121,7 +100,9 @@ actor WhisperContext {
 
     static func createContext(path: String) async throws -> WhisperContext {
         let whisperContext = WhisperContext()
-        try await whisperContext.initializeModel(path: path)
+        try await Task {
+            try await whisperContext.initializeModel(path: path)
+        }.value
         
         // Load VAD model from bundle resources
         let vadModelPath = VADModelManager.shared.getModelPath()
@@ -161,11 +142,6 @@ actor WhisperContext {
             whisper_free(context)
             self.context = nil
         }
-        languageCString = nil
-    }
-
-    func setPrompt(_ prompt: String?) {
-        self.prompt = prompt
     }
 }
 
@@ -173,4 +149,4 @@ fileprivate func cpuCount() -> Int {
     ProcessInfo.processInfo.processorCount
 }
 
-}
+
