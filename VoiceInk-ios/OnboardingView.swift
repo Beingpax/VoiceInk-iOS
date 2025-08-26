@@ -104,6 +104,7 @@ struct ModelDownloadOnboardingView: View {
     @StateObject private var modelManager = LocalModelManager.shared
     @State private var hasStartedDownload = false
     @State private var showError = false
+    @State private var showDownloadConfirmation = false
     
     var baseModel = WhisperModel.baseModel
     
@@ -201,10 +202,12 @@ struct ModelDownloadOnboardingView: View {
                     }
                     .buttonStyle(OnboardingButtonStyle())
                 } else {
-                    Button(action: downloadModel) {
+                    Button(action: {
+                        showDownloadConfirmation = true
+                    }) {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.down.circle.fill")
-                            Text("Download Model")
+                            Text("Download Model (\(baseModel.size))")
                         }
                     }
                     .buttonStyle(OnboardingButtonStyle())
@@ -218,6 +221,14 @@ struct ModelDownloadOnboardingView: View {
             Button("OK") { showError = false }
         } message: {
             Text(modelManager.downloadError ?? "An unknown error occurred.")
+        }
+        .alert("Download Model", isPresented: $showDownloadConfirmation) {
+            Button("Download") {
+                downloadModel()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("To enable offline transcription, a \(baseModel.size) model needs to be downloaded. This may incur data charges if you are not on Wi-Fi.")
         }
         .onChange(of: modelManager.downloadError) { error in
             if error != nil {

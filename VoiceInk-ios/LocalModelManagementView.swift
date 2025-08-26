@@ -43,6 +43,7 @@ struct ModelRowView: View {
     let model: WhisperModel
     @ObservedObject var modelManager: LocalModelManager
     @State private var showingDeleteAlert = false
+    @State private var showingDownloadConfirmation = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -72,13 +73,7 @@ struct ModelRowView: View {
                     }
                 } else {
                     Button(action: {
-                        Task {
-                            do {
-                                try await modelManager.downloadModel(model)
-                            } catch {
-                                print("Download failed: \(error)")
-                            }
-                        }
+                        showingDownloadConfirmation = true
                     }) {
                         Image(systemName: "icloud.and.arrow.down")
                             .foregroundColor(.blue)
@@ -120,6 +115,24 @@ struct ModelRowView: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Delete \(model.displayName)? This will remove the model from your device.")
+        }
+        .alert("Download Model", isPresented: $showingDownloadConfirmation) {
+            Button("Download") {
+                downloadModel()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("To enable offline transcription, a \(model.size) model needs to be downloaded. This may incur data charges if you are not on Wi-Fi.")
+        }
+    }
+    
+    private func downloadModel() {
+        Task {
+            do {
+                try await modelManager.downloadModel(model)
+            } catch {
+                print("Download failed: \(error)")
+            }
         }
     }
     
