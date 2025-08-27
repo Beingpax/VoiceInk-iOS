@@ -47,6 +47,15 @@ struct SettingsView: View {
             }
             
 
+            #if DEBUG
+            Section(header: Text("Debug")) {
+                Button(role: .destructive) {
+                    resetAppData()
+                } label: {
+                    Label("Reset All App Data", systemImage: "trash")
+                }
+            }
+            #endif
         }
         .navigationTitle("Settings")
     }
@@ -54,6 +63,34 @@ struct SettingsView: View {
     private func deleteMode(at offsets: IndexSet) {
         settings.modes.remove(atOffsets: offsets)
     }
+
+    #if DEBUG
+    private func resetAppData() {
+        // 1) Delete all SwiftData Transcription records
+        do {
+            let descriptor = FetchDescriptor<Transcription>()
+            let modelContainer = try ModelContainer(for: Transcription.self)
+            let context = ModelContext(modelContainer)
+            let notes = try context.fetch(descriptor)
+            for note in notes {
+                context.delete(note)
+            }
+            try? context.save()
+        } catch {
+            print("Failed to reset SwiftData: \(error)")
+        }
+
+        // 2) Delete audio files directory
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let recordingsDir = documentsURL.appendingPathComponent("Recordings")
+        if FileManager.default.fileExists(atPath: recordingsDir.path) {
+            try? FileManager.default.removeItem(at: recordingsDir)
+        }
+
+        // 3) Reset settings, modes, and keys
+        settings.resetAll()
+    }
+    #endif
 }
 
 

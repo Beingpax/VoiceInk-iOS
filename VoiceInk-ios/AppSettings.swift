@@ -273,6 +273,40 @@ final class AppSettings: ObservableObject {
         }
         return ""
     }
+
+    // MARK: - Debug Reset
+    /// Remove all persisted preferences, API keys, and modes.
+    func resetAll() {
+        // Clear modes and selection
+        modes = []
+        selectedModeId = nil
+        UserDefaults.standard.removeObject(forKey: "modes")
+        UserDefaults.standard.removeObject(forKey: "selectedModeId")
+
+        // Clear verification flags
+        groqKeyVerified = false
+        openAIKeyVerified = false
+        deepgramKeyVerified = false
+        cerebrasKeyVerified = false
+        geminiKeyVerified = false
+        UserDefaults.standard.removeObject(forKey: "groqKeyVerified")
+        UserDefaults.standard.removeObject(forKey: "openAIKeyVerified")
+        UserDefaults.standard.removeObject(forKey: "deepgramKeyVerified")
+        UserDefaults.standard.removeObject(forKey: "cerebrasKeyVerified")
+        UserDefaults.standard.removeObject(forKey: "geminiKeyVerified")
+
+        // Clear API keys from memory and Keychain
+        groqAPIKey = ""
+        openAIAPIKey = ""
+        deepgramAPIKey = ""
+        cerebrasAPIKey = ""
+        geminiAPIKey = ""
+        _ = KeychainService.delete(key: "groqAPIKey")
+        _ = KeychainService.delete(key: "openAIAPIKey")
+        _ = KeychainService.delete(key: "deepgramAPIKey")
+        _ = KeychainService.delete(key: "cerebrasAPIKey")
+        _ = KeychainService.delete(key: "geminiAPIKey")
+    }
 }
 
 
