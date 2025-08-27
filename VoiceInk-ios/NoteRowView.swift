@@ -10,35 +10,47 @@ struct NoteRowView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(transcriptText)
                 .font(.body)
+                .foregroundStyle(.primary)
+                .lineSpacing(2)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
-            
-            HStack(spacing: 16) {
-                Label(note.timestamp.formatted(date: .abbreviated, time: .shortened), systemImage: "calendar")
+
+            HStack(spacing: 8) {
+                Text(relativeTimestamp)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
                 if note.duration > 0 {
-                    Label(timeString(note.duration), systemImage: "play.circle")
+                    Text("•")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    Text(timeString(note.duration))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                
+
+                Spacer(minLength: 0)
+
                 if note.transcriptionStatus == .pending {
-                    HStack(spacing: 4) {
+                    HStack(spacing: 6) {
                         ProgressView()
                             .scaleEffect(0.7)
-                            .tint(.blue)
-                        Text("Processing...")
+                        Text("Processing")
                             .font(.caption)
-                            .foregroundStyle(.blue)
                     }
+                    .foregroundStyle(.secondary)
                 } else if note.transcriptionStatus == .failed {
-                    Label("Failed", systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
+                    Text("Failed")
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.orange.opacity(0.12))
+                        .clipShape(Capsule())
                 }
             }
         }
+        .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -60,6 +72,12 @@ struct NoteRowView: View {
                 return "No audible content detected."
             }
         }
+    }
+
+    private var relativeTimestamp: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: note.timestamp, relativeTo: Date())
     }
 
     private func timeString(_ seconds: Double) -> String {

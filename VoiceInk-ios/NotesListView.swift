@@ -34,6 +34,7 @@ struct NotesListView: View {
         NavigationStack {
             content
                 .navigationTitle("VoiceInk")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         NavigationLink(destination: SettingsView()) { Image(systemName: "gearshape") }
@@ -90,17 +91,59 @@ struct NotesListView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 0) {
-            List {
-                ForEach(filteredNotes) { note in
-                    NavigationLink(destination: NoteDetailView(note: note)) {
-                        NoteRowView(note: note)
+        Group {
+            if filteredNotes.isEmpty {
+                emptyState
+            } else {
+                List {
+                    Section(header: sectionHeader) {
+                        ForEach(filteredNotes) { note in
+                            NavigationLink(destination: NoteDetailView(note: note)) {
+                                NoteRowView(note: note)
+                            }
+                        }
+                        .onDelete(perform: deleteItems)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
             }
-            .listStyle(.insetGrouped)
         }
+    }
+
+    private var sectionHeader: some View {
+        HStack {
+            Text("Recent")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text("\(filteredNotes.count)")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(Color(.tertiarySystemFill))
+                    .frame(width: 88, height: 88)
+                Image(systemName: "waveform")
+                    .font(.system(size: 36, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            Text("No notes yet")
+                .font(.title3.weight(.semibold))
+            Text("Tap Start Recording to capture your first note.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
     }
 
     private var unifiedRecordingComponent: some View {

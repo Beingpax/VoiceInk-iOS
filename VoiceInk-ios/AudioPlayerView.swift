@@ -3,10 +3,33 @@ import SwiftUI
 struct AudioPlayerView: View {
     let audioFilePath: String
     let duration: Double
+    var timestamp: Date? = nil
     @StateObject private var player = AudioPlayer()
     
     var body: some View {
         VStack(spacing: 0) {
+            if let ts = timestamp {
+                HStack(spacing: 8) {
+                    Image(systemName: "calendar")
+                        .foregroundStyle(.secondary)
+                    Text(relativeTimestamp(from: ts))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if duration > 0 {
+                        Text("•")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                        Image(systemName: "waveform")
+                            .foregroundStyle(.secondary)
+                        Text(timeString(duration))
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+            }
             if player.isLoading {
                 // Simple loading state
                 HStack(spacing: 12) {
@@ -105,6 +128,12 @@ struct AudioPlayerView: View {
         let m = s / 60
         let r = s % 60
         return String(format: "%d:%02d", m, r)
+    }
+
+    private func relativeTimestamp(from date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 

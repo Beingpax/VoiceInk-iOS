@@ -15,10 +15,6 @@ struct NoteDetailView: View {
                 // Main content with scroll
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(note.timestamp.formatted(date: .abbreviated, time: .shortened))
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-
                         // Transcription status and retry button
                         if note.needsTranscription {
                             transcriptionStatusView
@@ -37,6 +33,7 @@ struct NoteDetailView: View {
                     }
                     .padding()
                 }
+                .scrollIndicators(.hidden)
                 
                 // Bottom audio player (web-form style)
                 if hasAudioFile {
@@ -50,6 +47,7 @@ struct NoteDetailView: View {
         }
         .navigationTitle("Note")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemGroupedBackground))
     }
     
     private var transcriptContentView: some View {
@@ -70,7 +68,7 @@ struct NoteDetailView: View {
                 .textSelection(.enabled)
                 .padding()
                 .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
     
@@ -92,12 +90,14 @@ struct NoteDetailView: View {
         }
         return true
     }
+
+    // Summary card removed per design feedback
     
     private var bottomAudioPlayer: some View {
         VStack(spacing: 0) {
             if let audioPath = note.fullAudioPath,
                FileManager.default.fileExists(atPath: audioPath) {
-                AudioPlayerView(audioFilePath: audioPath, duration: note.duration)
+                AudioPlayerView(audioFilePath: audioPath, duration: note.duration, timestamp: note.timestamp)
             } else if note.audioFileURL != nil && !note.audioFileURL!.isEmpty {
                 // Modern error state - file missing
                 HStack(spacing: 12) {
@@ -159,20 +159,27 @@ struct NoteDetailView: View {
         return String(format: "%02d:%02d", m, r)
     }
     
+    private var relativeTimestamp: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: note.timestamp, relativeTo: Date())
+    }
+    
     private var transcriptionStatusView: some View {
         VStack(spacing: 12) {
             HStack {
                 Image(systemName: note.transcriptionStatus == .failed ? "exclamationmark.triangle.fill" : "clock.fill")
                     .foregroundStyle(note.transcriptionStatus == .failed ? .red : .orange)
                 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(note.transcriptionStatus == .failed ? "Transcription Failed" : "Transcription Pending")
                         .font(.subheadline.weight(.medium))
-                    
-                    if let error = note.transcriptionError {
+                    if let error = note.transcriptionError, !error.isEmpty {
                         Text(error)
-                            .font(.caption)
+                            .font(.callout)
+                            .textSelection(.enabled)
                             .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 
@@ -182,28 +189,18 @@ struct NoteDetailView: View {
             // Mode selection for re-transcription
             if !settings.modes.isEmpty && !isRetranscribing {
                 VStack(spacing: 8) {
-                    HStack {
-                        Text("Transcription Mode")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    }
-                    
                     if settings.modes.count > 1 {
                         Picker("Mode", selection: $settings.selectedModeId) {
                             ForEach(settings.modes) { mode in
                                 Text(mode.name).tag(mode.id as UUID?)
                             }
                         }
-                        .pickerStyle(.segmented)
+                        .pickerStyle(.wheel)
+                        .frame(height: 80)
                     } else if let singleMode = settings.modes.first {
                         Text(singleMode.name)
-                            .font(.subheadline)
+                            .font(.title2.bold())
                             .foregroundStyle(.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(Color(.tertiarySystemFill))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
             }
@@ -217,15 +214,16 @@ struct NoteDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             } else {
-                Button("Retry Transcription") {
+                Button {
                     retranscribe()
+                } label: {
+                    Label("Retry Transcription", systemImage: "arrow.clockwise")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
                 }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.blue)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .buttonStyle(.borderedProminent)
+                .tint(.blue)
+                .controlSize(.regular)
             }
         }
         .padding()
