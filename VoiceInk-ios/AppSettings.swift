@@ -282,6 +282,7 @@ final class AppSettings: ObservableObject {
         selectedModeId = nil
         UserDefaults.standard.removeObject(forKey: "modes")
         UserDefaults.standard.removeObject(forKey: "selectedModeId")
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
 
         // Clear verification flags
         groqKeyVerified = false

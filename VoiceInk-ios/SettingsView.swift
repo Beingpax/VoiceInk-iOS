@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct SettingsView: View {
     @StateObject private var settings = AppSettings.shared
