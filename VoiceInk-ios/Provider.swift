@@ -52,7 +52,8 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case (.groq, .postProcessing):
             return [
                 "llama-3.1-8b-instant",
-                "llama-3.1-70b-versatile"
+                "llama-3.1-70b-versatile",
+                "openai/gpt-oss-120b"
             ]
         case (.openai, .transcription):
             return [

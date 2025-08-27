@@ -256,7 +256,7 @@ final class AppSettings: ObservableObject {
     
     /// Get the hardcoded post-processing model for VoiceInk
     func voiceInkPostProcessingModel() -> String {
-        return "gpt-oss-120b"
+        return "openai/gpt-oss-120b"
     }
 
     private func saveAPIKey(_ key: String, forKey account: String) {
