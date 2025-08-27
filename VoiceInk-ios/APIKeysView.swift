@@ -5,7 +5,7 @@ struct APIKeysView: View {
     
     var body: some View {
         List {
-            ForEach(Provider.allCases.filter { $0 != .local }) { provider in
+            ForEach(Provider.allCases.filter { $0 != .local && $0 != .voiceink }) { provider in
                 NavigationLink(destination: ProviderAPIKeyView(provider: provider)) {
                     HStack {
                         Text(provider.rawValue)

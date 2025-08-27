@@ -50,7 +50,7 @@ struct NotesListView: View {
                         onCancel: { recordingManager.cancelRecording() },
                         onStop: { recordingManager.stopRecording(modelContext: modelContext) }
                     )
-                    .presentationDetents([.fraction(0.4)])
+                    .presentationDetents([.height(220)])
                     .presentationDragIndicator(.visible)
                     .presentationCornerRadius(16)
                     .interactiveDismissDisabled(true)
