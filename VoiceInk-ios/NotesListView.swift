@@ -159,6 +159,7 @@ struct NotesListView: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
         .tint(.red)
         .controlSize(.large)
         .padding(.horizontal, 32)
