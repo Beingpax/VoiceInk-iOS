@@ -23,7 +23,16 @@ struct NoteRowView: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                if note.transcriptionStatus == .failed {
+                if note.transcriptionStatus == .pending {
+                    HStack(spacing: 4) {
+                        ProgressView()
+                            .scaleEffect(0.7)
+                            .tint(.blue)
+                        Text("Processing...")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                    }
+                } else if note.transcriptionStatus == .failed {
                     Label("Failed", systemImage: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundStyle(.orange)
@@ -38,7 +47,7 @@ struct NoteRowView: View {
     private var transcriptText: String {
         switch note.transcriptionStatus {
         case .pending:
-            return "Transcription pending..."
+            return "New note"
         case .failed:
             return "Transcription failed - tap to retry"
         case .completed:

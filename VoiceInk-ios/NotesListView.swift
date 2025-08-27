@@ -85,12 +85,10 @@ struct NotesListView: View {
                     showingNoModesAlert = true
                 } else {
                     switch recordingState {
-                    case .idle, .completed, .error:
+                    case .idle, .completed, .error, .processing:
                         startInlineRecording()
                     case .recording:
                         stopInlineRecording()
-                    case .processing:
-                        break // Do nothing while processing
                     }
                 }
             }) {
@@ -107,7 +105,6 @@ struct NotesListView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
             .buttonStyle(StaticButtonStyle())
-            .disabled(recordingState == .processing)
         }
         .padding(.horizontal)
         .padding(.bottom)
@@ -118,119 +115,7 @@ struct NotesListView: View {
         }
     }
 
-    private func stopAndTranscribe(completion: @escaping (Result<String, Error>, Transcription?) -> Void) {
-        recorder.stopRecording()
-        guard let fileURL = recorder.currentRecordingURL else { return }
-        
-        // ALWAYS preserve the audio file first, regardless of what happens next
-        // Store relative path instead of absolute path for persistence across app launches
-        let audioFileName = fileURL.lastPathComponent
-        let recordingDuration = recorder.currentDuration
-        
-        transcribeAudio(audioFilePath: audioFileName, recordingDuration: recordingDuration, completion: completion)
-    }
-    
-    private func transcribeAudio(audioFilePath: String, recordingDuration: Double, completion: @escaping (Result<String, Error>, Transcription?) -> Void) {
-        
-        Task {
-            defer { 
-                // Clean up recorder state but keep the audio file
-                recorder.currentRecordingURL = nil
-                recorder.currentDuration = 0
-            }
-            
-            let settings = AppSettings.shared
-            
-            // Use effective settings from selected mode
-            let provider = settings.effectiveTranscriptionProvider
-            let apiKey = settings.apiKey(for: provider)
-            let model = settings.effectiveTranscriptionModel
-            
-            // If no API key, save audio with pending status
-            guard !apiKey.isEmpty else {
-                let note = Transcription(
-                    text: "",
-                    duration: recordingDuration,
-                    audioFileURL: audioFilePath,
-                    transcriptionStatus: .pending,
-                    transcriptionError: "No API key configured"
-                )
-                modelContext.insert(note)
-                try? modelContext.save()
-                completion(.failure(NSError(domain: "VoiceInk", code: 1, userInfo: [NSLocalizedDescriptionKey: "No API key configured"])), note)
-                return
-            }
-            
-            do {
-                // Resolve the relative path to absolute path for transcription
-                let recordingsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                    .appendingPathComponent("Recordings")
-                let fileURL = recordingsDir.appendingPathComponent(audioFilePath)
-                let service = TranscriptionServiceFactory.service(for: provider)
-                let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
-                // Clean up transcription: trim whitespace and normalize line breaks
-                let cleanedText = rawText
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .replacingOccurrences(of: "\n\n+", with: "\n\n", options: .regularExpression) // Remove excessive line breaks
-                    .replacingOccurrences(of: "[ \t]+", with: " ", options: .regularExpression) // Normalize multiple spaces/tabs to single space
-                
-                var finalText = cleanedText
-                var enhancedText: String? = nil
-                
-                // Optional post-processing using effective settings
-                var postProcessingError: String? = nil
-                if settings.effectiveIsPostProcessingEnabled {
-                    let ppPrompt = settings.effectiveCustomPrompt
-                    if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        let llmProvider = settings.effectivePostProcessingProvider
-                        let llmKey = settings.apiKey(for: llmProvider)
-                        let llmModel = settings.effectivePostProcessingModel
-                        if !llmKey.isEmpty {
-                            do {
-                                finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
-                                enhancedText = finalText
-                            } catch {
-                                // Post-processing failed, but transcription succeeded
-                                postProcessingError = "Post-processing failed: \(error.localizedDescription)"
-                                // Still use the cleaned transcription text
-                                finalText = cleanedText
-                            }
-                        }
-                    }
-                }
-                
-                let note = Transcription(
-                    text: cleanedText,
-                    duration: recordingDuration,
-                    enhancedText: enhancedText,
-                    audioFileURL: audioFilePath,
-                    transcriptionModelName: model,
-                    aiEnhancementModelName: settings.effectiveIsPostProcessingEnabled ? settings.effectivePostProcessingModel : nil,
-                    transcriptionStatus: .completed,
-                    transcriptionError: postProcessingError
-                )
-                modelContext.insert(note)
-                try? modelContext.save()
-                
-                // Return success with transcript
-                completion(.success(finalText), note)
-            } catch {
-                // Save the recording even if transcription failed
-                let note = Transcription(
-                    text: "",
-                    duration: recordingDuration,
-                    audioFileURL: audioFilePath,
-                    transcriptionStatus: .failed,
-                    transcriptionError: error.localizedDescription
-                )
-                modelContext.insert(note)
-                try? modelContext.save()
-                
-                // Return error
-                completion(.failure(error), note)
-            }
-        }
-    }
+
 
     // MARK: - Computed Properties
     private var recordingButtonIcon: String {
@@ -265,13 +150,7 @@ struct NotesListView: View {
             switch recordingState {
             case .recording:
                 recordingView
-            case .processing:
-                processingView
-            case .completed(let transcript):
-                completedView(transcript: transcript)
-            case .error(let message):
-                errorView(message: message)
-            case .idle:
+            case .idle, .processing, .completed, .error:
                 EmptyView()
             }
         }
@@ -320,63 +199,7 @@ struct NotesListView: View {
         }
     }
     
-    private var processingView: some View {
-        HStack(spacing: 12) {
-            ProgressView()
-                .scaleEffect(0.8)
-                .tint(.blue)
-            
-            Text("Processing recording...")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            
-            Spacer()
-        }
-    }
-    
-    private func completedView(transcript: String) -> some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("Recording saved!")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.green)
-                Spacer()
-                Button("Dismiss") {
-                    recordingState = .idle
-                }
-                .font(.subheadline)
-                .foregroundStyle(.blue)
-            }
-            
-            Text(transcript.prefix(100) + (transcript.count > 100 ? "..." : ""))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-    
-    private func errorView(message: String) -> some View {
-        VStack(spacing: 12) {
-            HStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                Text("Recording saved with error")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.orange)
-                Spacer()
-                Button("Dismiss") {
-                    recordingState = .idle
-                }
-                .font(.subheadline)
-                .foregroundStyle(.blue)
-            }
-            
-            Text("Audio saved but transcription failed. You can retry from your notes.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
+
     
     // MARK: - Recording Functions
     private func startInlineRecording() {
@@ -396,29 +219,118 @@ struct NotesListView: View {
     }
     
     private func stopInlineRecording() {
-        recordingState = .processing
-        animate = false
+        // Stop recording and get file info
+        recorder.stopRecording()
+        guard let fileURL = recorder.currentRecordingURL else { return }
         
-        stopAndTranscribe { result, note in
-            currentRecordingNote = note
-            setTranscriptionResult(result)
+        // Store relative path and duration
+        let audioFileName = fileURL.lastPathComponent
+        let recordingDuration = recorder.currentDuration
+        
+        // IMMEDIATELY create and insert the note with pending status
+        let note = Transcription(
+            text: "",
+            duration: recordingDuration,
+            audioFileURL: audioFileName,
+            transcriptionStatus: .pending
+        )
+        modelContext.insert(note)
+        try? modelContext.save()
+        
+        // Reset UI state immediately so user can continue using the app
+        recordingState = .idle
+        animate = false
+        currentRecordingNote = note
+        
+        // Start background transcription
+        transcribeInBackground(note: note, audioFileName: audioFileName, recordingDuration: recordingDuration)
+    }
+    
+    private func transcribeInBackground(note: Transcription, audioFileName: String, recordingDuration: Double) {
+        Task {
+            defer { 
+                // Clean up recorder state
+                recorder.currentRecordingURL = nil
+                recorder.currentDuration = 0
+            }
+            
+            let settings = AppSettings.shared
+            
+            // Use effective settings from selected mode
+            let provider = settings.effectiveTranscriptionProvider
+            let apiKey = settings.apiKey(for: provider)
+            let model = settings.effectiveTranscriptionModel
+            
+            // If no API key, update note with error
+            guard !apiKey.isEmpty else {
+                await MainActor.run {
+                    note.transcriptionStatus = .failed
+                    note.transcriptionError = "No API key configured"
+                    try? modelContext.save()
+                }
+                return
+            }
+            
+            do {
+                // Resolve the relative path to absolute path for transcription
+                let recordingsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    .appendingPathComponent("Recordings")
+                let fileURL = recordingsDir.appendingPathComponent(audioFileName)
+                let service = TranscriptionServiceFactory.service(for: provider)
+                let rawText = try await service.transcribeAudioFile(apiBaseURL: provider.baseURL, apiKey: apiKey, model: model, fileURL: fileURL, language: nil)
+                
+                // Clean up transcription
+                let cleanedText = rawText
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: "\n\n+", with: "\n\n", options: .regularExpression)
+                    .replacingOccurrences(of: "[ \t]+", with: " ", options: .regularExpression)
+                
+                var finalText = cleanedText
+                var enhancedText: String? = nil
+                var postProcessingError: String? = nil
+                
+                // Optional post-processing
+                if settings.effectiveIsPostProcessingEnabled {
+                    let ppPrompt = settings.effectiveCustomPrompt
+                    if !ppPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        let llmProvider = settings.effectivePostProcessingProvider
+                        let llmKey = settings.apiKey(for: llmProvider)
+                        let llmModel = settings.effectivePostProcessingModel
+                        if !llmKey.isEmpty {
+                            do {
+                                finalText = try await postProcessor.postProcessTranscript(provider: llmProvider, apiKey: llmKey, model: llmModel, prompt: ppPrompt, transcript: cleanedText)
+                                enhancedText = finalText
+                            } catch {
+                                postProcessingError = "Post-processing failed: \(error.localizedDescription)"
+                                finalText = cleanedText
+                            }
+                        }
+                    }
+                }
+                
+                // Update the existing note on main thread
+                await MainActor.run {
+                    note.text = cleanedText
+                    note.enhancedText = enhancedText
+                    note.transcriptionModelName = model
+                    note.aiEnhancementModelName = settings.effectiveIsPostProcessingEnabled ? settings.effectivePostProcessingModel : nil
+                    note.transcriptionStatus = .completed
+                    note.transcriptionError = postProcessingError
+                    try? modelContext.save()
+                }
+                
+            } catch {
+                // Update note with error on main thread
+                await MainActor.run {
+                    note.transcriptionStatus = .failed
+                    note.transcriptionError = error.localizedDescription
+                    try? modelContext.save()
+                }
+            }
         }
     }
     
-    private func setTranscriptionResult(_ result: Result<String, Error>) {
-        switch result {
-        case .success(let transcript):
-            recordingState = .completed(transcript)
-            // Auto-dismiss after a delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                if case .completed = recordingState {
-                    recordingState = .idle
-                }
-            }
-        case .failure(let error):
-            recordingState = .error(error.localizedDescription)
-        }
-    }
+
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
