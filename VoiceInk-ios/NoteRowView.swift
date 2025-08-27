@@ -47,7 +47,7 @@ struct NoteRowView: View {
     private var transcriptText: String {
         switch note.transcriptionStatus {
         case .pending:
-            return "New note"
+            return "New transcription"
         case .failed:
             return "Transcription failed - tap to retry"
         case .completed:
