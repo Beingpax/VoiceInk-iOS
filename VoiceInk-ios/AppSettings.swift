@@ -25,32 +25,7 @@ final class AppSettings: ObservableObject {
         return modes.first { $0.id == selectedModeId }
     }
 
-    // Legacy properties for backward compatibility (deprecated)
-    @Published var selectedProvider: Provider {
-        didSet {
-            UserDefaults.standard.set(selectedProvider.rawValue, forKey: "selectedProvider")
-            ensurePreferredModelIsValid()
-        }
-    }
 
-    @Published var preferredModel: String {
-        didSet { UserDefaults.standard.set(preferredModel, forKey: "preferredModel") }
-    }
-
-    @Published var llmProvider: Provider {
-        didSet {
-            UserDefaults.standard.set(llmProvider.rawValue, forKey: "llmProvider")
-            ensureLLMModelIsValid()
-        }
-    }
-
-    @Published var llmModel: String {
-        didSet { UserDefaults.standard.set(llmModel, forKey: "llmModel") }
-    }
-
-    @Published var postProcessPrompt: String {
-        didSet { UserDefaults.standard.set(postProcessPrompt, forKey: "postProcessPrompt") }
-    }
 
     // Separate API keys per provider
     @Published var groqAPIKey: String {
@@ -108,19 +83,7 @@ final class AppSettings: ObservableObject {
             self.selectedModeId = nil
         }
         
-        // Legacy settings for backward compatibility
-        if let raw = UserDefaults.standard.string(forKey: "selectedProvider"), let p = Provider(rawValue: raw) {
-            self.selectedProvider = p
-        } else {
-            self.selectedProvider = .groq
-        }
-        self.preferredModel = UserDefaults.standard.string(forKey: "preferredModel") ?? Provider.groq.models(for: .transcription).first ?? "whisper-large-v3"
-        let storedLLMProviderRaw = UserDefaults.standard.string(forKey: "llmProvider")
-        let resolvedLLMProvider = Provider(rawValue: storedLLMProviderRaw ?? "") ?? .groq
-        self.llmProvider = resolvedLLMProvider
-        let initialLLMModel = UserDefaults.standard.string(forKey: "llmModel") ?? resolvedLLMProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
-        self.llmModel = initialLLMModel
-        self.postProcessPrompt = UserDefaults.standard.string(forKey: "postProcessPrompt") ?? ""
+
         self.groqAPIKey = AppSettings.loadAPIKey(forKey: "groqAPIKey")
         self.openAIAPIKey = AppSettings.loadAPIKey(forKey: "openAIAPIKey")
         self.deepgramAPIKey = AppSettings.loadAPIKey(forKey: "deepgramAPIKey")
@@ -131,9 +94,7 @@ final class AppSettings: ObservableObject {
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
         self.cerebrasKeyVerified = UserDefaults.standard.bool(forKey: "cerebrasKeyVerified")
         self.geminiKeyVerified = UserDefaults.standard.bool(forKey: "geminiKeyVerified")
-        
-        ensurePreferredModelIsValid()
-        ensureLLMModelIsValid()
+
     }
 
     func apiKey(for provider: Provider) -> String {
@@ -201,22 +162,7 @@ final class AppSettings: ObservableObject {
         }
     }
 
-    private func ensurePreferredModelIsValid() {
-        let availableModels = selectedProvider.models(for: .transcription)
-        if !availableModels.contains(preferredModel) {
-            preferredModel = availableModels.first ?? preferredModel
-        }
-    }
 
-    private func ensureLLMModelIsValid() {
-        let availableModels = llmProvider.models(for: .postProcessing)
-        if !availableModels.contains(llmModel) {
-            llmModel = availableModels.first ?? llmModel
-        }
-    }
-    
-
-    
     // MARK: - Modes Management
     
     private func saveModes() {
@@ -235,70 +181,69 @@ final class AppSettings: ObservableObject {
     
     // MARK: - Mode-based Settings
     
-    /// Get the effective transcription provider (from selected mode, first mode, or fallback to legacy)
+    /// Get the effective transcription provider (from selected mode or first mode)
     var effectiveTranscriptionProvider: Provider {
         if let selectedMode = selectedMode {
             return selectedMode.transcriptionProvider
         } else if let firstMode = modes.first {
             return firstMode.transcriptionProvider
         } else {
-            return selectedProvider
+            return .groq // Default fallback
         }
     }
     
-    /// Get the effective transcription model (from selected mode, first mode, or fallback to legacy)
+    /// Get the effective transcription model (from selected mode or first mode)
     var effectiveTranscriptionModel: String {
         if let selectedMode = selectedMode {
             return selectedMode.transcriptionProvider == .voiceink ? voiceInkTranscriptionModel() : selectedMode.transcriptionModel
         } else if let firstMode = modes.first {
             return firstMode.transcriptionProvider == .voiceink ? voiceInkTranscriptionModel() : firstMode.transcriptionModel
         } else {
-            return effectiveTranscriptionProvider == .voiceink ? voiceInkTranscriptionModel() : preferredModel
+            return effectiveTranscriptionProvider == .voiceink ? voiceInkTranscriptionModel() : "whisper-large-v3" // Default fallback
         }
     }
     
-    /// Get the effective post-processing provider (from selected mode, first mode, or fallback to legacy)
+    /// Get the effective post-processing provider (from selected mode or first mode)
     var effectivePostProcessingProvider: Provider {
         if let selectedMode = selectedMode {
             return selectedMode.postProcessingProvider
         } else if let firstMode = modes.first {
             return firstMode.postProcessingProvider
         } else {
-            return llmProvider
+            return .groq // Default fallback
         }
     }
     
-    /// Get the effective post-processing model (from selected mode, first mode, or fallback to legacy)
+    /// Get the effective post-processing model (from selected mode or first mode)
     var effectivePostProcessingModel: String {
         if let selectedMode = selectedMode {
             return selectedMode.postProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : selectedMode.postProcessingModel
         } else if let firstMode = modes.first {
             return firstMode.postProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : firstMode.postProcessingModel
         } else {
-            return effectivePostProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : llmModel
+            return effectivePostProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : "llama-3.1-8b-instant" // Default fallback
         }
     }
     
-    /// Get the effective custom prompt (from selected mode, first mode, or fallback to legacy)
+    /// Get the effective custom prompt (from selected mode or first mode)
     var effectiveCustomPrompt: String {
         if let selectedMode = selectedMode {
             return selectedMode.customPrompt
         } else if let firstMode = modes.first {
             return firstMode.customPrompt
         } else {
-            return postProcessPrompt
+            return "" // Default fallback
         }
     }
     
-    /// Get whether post-processing is enabled (from selected mode, first mode, or fallback to checking if prompt exists)
+    /// Get whether post-processing is enabled (from selected mode or first mode)
     var effectiveIsPostProcessingEnabled: Bool {
         if let selectedMode = selectedMode {
             return selectedMode.isPostProcessingEnabled
         } else if let firstMode = modes.first {
             return firstMode.isPostProcessingEnabled
         } else {
-            // For backward compatibility, enable post-processing if there's a prompt
-            return !postProcessPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return false // Default fallback
         }
     }
     

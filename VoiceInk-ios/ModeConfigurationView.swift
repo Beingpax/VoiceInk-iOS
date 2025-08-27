@@ -113,7 +113,7 @@ struct ModeConfigurationView: View {
             }
         }
         .onChange(of: mode.transcriptionProvider) { _, _ in
-            // Reset model when provider changes
+            // Update model when provider changes
             if mode.transcriptionProvider == .voiceink {
                 mode.transcriptionModel = settings.voiceInkTranscriptionModel()
             } else {
@@ -124,7 +124,7 @@ struct ModeConfigurationView: View {
             }
         }
         .onChange(of: mode.postProcessingProvider) { _, _ in
-            // Reset model when provider changes
+            // Update model when provider changes
             if mode.postProcessingProvider == .voiceink {
                 mode.postProcessingModel = settings.voiceInkPostProcessingModel()
             } else {
