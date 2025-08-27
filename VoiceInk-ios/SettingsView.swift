@@ -88,7 +88,23 @@ struct SettingsView: View {
             try? FileManager.default.removeItem(at: recordingsDir)
         }
 
-        // 3) Reset settings, modes, and keys
+        // 3) Delete local model directory
+        let modelsDir = LocalModelManager.modelsDirectory
+        if FileManager.default.fileExists(atPath: modelsDir.path) {
+            try? FileManager.default.removeItem(at: modelsDir)
+        }
+
+        // 4) Clear caches and tmp contents (best-effort)
+        let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        if let cacheItems = try? FileManager.default.contentsOfDirectory(at: cachesURL, includingPropertiesForKeys: nil) {
+            for url in cacheItems { try? FileManager.default.removeItem(at: url) }
+        }
+        let tmpPath = NSTemporaryDirectory()
+        if let tmpItems = try? FileManager.default.contentsOfDirectory(atPath: tmpPath) {
+            for item in tmpItems { try? FileManager.default.removeItem(atPath: (tmpPath as NSString).appendingPathComponent(item)) }
+        }
+
+        // 5) Reset settings, modes, and keys
         settings.resetAll()
     }
     #endif
