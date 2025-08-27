@@ -228,9 +228,9 @@ final class AppSettings: ObservableObject {
     /// Get the effective custom prompt (from selected mode or first mode)
     var effectiveCustomPrompt: String {
         if let selectedMode = selectedMode {
-            return selectedMode.customPrompt
+            return selectedMode.effectivePrompt
         } else if let firstMode = modes.first {
-            return firstMode.customPrompt
+            return firstMode.effectivePrompt
         } else {
             return "" // Default fallback
         }

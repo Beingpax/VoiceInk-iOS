@@ -24,19 +24,9 @@ struct NoteDetailView: View {
                             transcriptionStatusView
                         }
 
-                        // Transcript content (moved to top)
+                        // Transcript content
                         if note.transcriptionStatus == .completed {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Transcript")
-                                    .font(.headline)
-                                
-                                Text((note.enhancedText ?? note.text).isEmpty ? "No content" : (note.enhancedText ?? note.text))
-                                    .font(.body)
-                                    .textSelection(.enabled)
-                                    .padding()
-                                    .background(Color(.secondarySystemGroupedBackground))
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                            }
+                            transcriptContentView
                         }
                         
                         // Add bottom padding to account for audio player
@@ -60,6 +50,39 @@ struct NoteDetailView: View {
         }
         .navigationTitle("Note")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var transcriptContentView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Transcript")
+                    .font(.headline)
+                Spacer()
+                Button(action: { copyToClipboard(displayedTranscriptText) }) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.blue)
+                }
+            }
+            
+            Text(displayedTranscriptText)
+                .font(.body)
+                .textSelection(.enabled)
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+    
+    private var displayedTranscriptText: String {
+        // Backend logic: Show post-processed result if available, otherwise show original
+        if let enhancedText = note.enhancedText, !enhancedText.isEmpty {
+            return enhancedText
+        } else if !note.text.isEmpty {
+            return note.text
+        } else {
+            return "No content available."
+        }
     }
     
     private var hasAudioFile: Bool {
@@ -224,6 +247,16 @@ struct NoteDetailView: View {
             }
         }
     }
+    
+    private func copyToClipboard(_ text: String) {
+        UIPasteboard.general.string = text
+        
+        // Optional: Add haptic feedback
+        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        impactFeedback.impactOccurred()
+    }
+    
+
 }
 
 

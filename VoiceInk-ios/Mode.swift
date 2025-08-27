@@ -12,7 +12,7 @@ struct Mode: Identifiable, Codable {
     var isPostProcessingEnabled: Bool
     var postProcessingProvider: Provider
     var postProcessingModel: String
-    var customPrompt: String
+    var promptTemplate: PromptTemplate
     
     init(name: String, 
          transcriptionProvider: Provider = .groq,
@@ -20,7 +20,7 @@ struct Mode: Identifiable, Codable {
          isPostProcessingEnabled: Bool = false,
          postProcessingProvider: Provider = .groq,
          postProcessingModel: String? = nil,
-         customPrompt: String = "") {
+         promptTemplate: PromptTemplate? = nil) {
         self.id = UUID()
         self.name = name
         self.transcriptionProvider = transcriptionProvider
@@ -28,6 +28,24 @@ struct Mode: Identifiable, Codable {
         self.isPostProcessingEnabled = isPostProcessingEnabled
         self.postProcessingProvider = postProcessingProvider
         self.postProcessingModel = postProcessingModel ?? postProcessingProvider.models(for: .postProcessing).first ?? "llama-3.1-8b-instant"
-        self.customPrompt = customPrompt
+        self.promptTemplate = promptTemplate ?? PromptTemplate(type: .summary)
+    }
+    
+    /// Legacy support for custom prompts - creates a custom template
+    @available(*, deprecated, message: "Use promptTemplate instead")
+    var customPrompt: String {
+        get {
+            return promptTemplate.type == .custom ? promptTemplate.customPrompt : ""
+        }
+        set {
+            if !newValue.isEmpty {
+                promptTemplate = PromptTemplate(type: .custom, customPrompt: newValue)
+            }
+        }
+    }
+    
+    /// Returns the effective prompt to use for post-processing
+    var effectivePrompt: String {
+        return promptTemplate.effectivePrompt
     }
 }

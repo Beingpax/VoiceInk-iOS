@@ -31,7 +31,7 @@ class DefaultModeManager {
             isPostProcessingEnabled: false, // No post-processing
             postProcessingProvider: .groq, // Doesn't matter since disabled
             postProcessingModel: "llama-3.1-8b-instant", // Doesn't matter since disabled
-            customPrompt: "" // No custom prompt
+            promptTemplate: PromptTemplate(type: .summary) // Default to summary template
         )
     }
     

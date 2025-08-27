@@ -51,8 +51,14 @@ struct NoteRowView: View {
         case .failed:
             return "Transcription failed - tap to retry"
         case .completed:
-            let displayText = note.enhancedText ?? note.text
-            return displayText.isEmpty ? "No audible content detected." : displayText
+            // Prioritize enhanced text (post-processed result) over original text
+            if let enhancedText = note.enhancedText, !enhancedText.isEmpty {
+                return enhancedText
+            } else if !note.text.isEmpty {
+                return note.text
+            } else {
+                return "No audible content detected."
+            }
         }
     }
 
