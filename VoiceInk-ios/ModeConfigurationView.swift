@@ -19,7 +19,11 @@ struct ModeConfigurationView: View {
     /// Available transcription providers (those with valid API keys or downloaded local models)
     private var availableTranscriptionProviders: [Provider] {
         Provider.allCases.filter { provider in
-            // Must have models for transcription AND be properly configured
+            // VoiceInk is always available (has hardcoded API key)
+            if provider == .voiceink {
+                return true
+            }
+            // Other providers: Must have models for transcription AND be properly configured
             return !provider.models(for: .transcription).isEmpty && settings.isKeyVerified(for: provider)
         }
     }
@@ -27,7 +31,11 @@ struct ModeConfigurationView: View {
     /// Available post-processing providers (those with valid API keys)
     private var availablePostProcessingProviders: [Provider] {
         Provider.allCases.filter { provider in
-            // Must have models for post-processing AND be properly configured
+            // VoiceInk is always available (has hardcoded API key)
+            if provider == .voiceink {
+                return true
+            }
+            // Other providers: Must have models for post-processing AND be properly configured
             return !provider.models(for: .postProcessing).isEmpty && settings.isKeyVerified(for: provider)
         }
     }
@@ -46,9 +54,18 @@ struct ModeConfigurationView: View {
                     }
                 }
                 
-                Picker("Model", selection: $mode.transcriptionModel) {
-                    ForEach(mode.transcriptionProvider.models(for: .transcription), id: \.self) { model in
-                        Text(model).tag(model)
+                if mode.transcriptionProvider != .voiceink {
+                    Picker("Model", selection: $mode.transcriptionModel) {
+                        ForEach(mode.transcriptionProvider.models(for: .transcription), id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                    }
+                } else {
+                    HStack {
+                        Text("Model")
+                        Spacer()
+                        Text("whisper-large-v3")
+                            .foregroundColor(.secondary)
                     }
                 }
             }
@@ -64,9 +81,18 @@ struct ModeConfigurationView: View {
                         }
                     }
                     
-                    Picker("Model", selection: $mode.postProcessingModel) {
-                        ForEach(mode.postProcessingProvider.models(for: .postProcessing), id: \.self) { model in
-                            Text(model).tag(model)
+                    if mode.postProcessingProvider != .voiceink {
+                        Picker("Model", selection: $mode.postProcessingModel) {
+                            ForEach(mode.postProcessingProvider.models(for: .postProcessing), id: \.self) { model in
+                                Text(model).tag(model)
+                            }
+                        }
+                    } else {
+                        HStack {
+                            Text("Model")
+                            Spacer()
+                            Text("gpt-oss-120b")
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -88,16 +114,24 @@ struct ModeConfigurationView: View {
         }
         .onChange(of: mode.transcriptionProvider) { _, _ in
             // Reset model when provider changes
-            let availableModels = mode.transcriptionProvider.models(for: .transcription)
-            if !availableModels.contains(mode.transcriptionModel) {
-                mode.transcriptionModel = availableModels.first ?? ""
+            if mode.transcriptionProvider == .voiceink {
+                mode.transcriptionModel = settings.voiceInkTranscriptionModel()
+            } else {
+                let availableModels = mode.transcriptionProvider.models(for: .transcription)
+                if !availableModels.contains(mode.transcriptionModel) {
+                    mode.transcriptionModel = availableModels.first ?? ""
+                }
             }
         }
         .onChange(of: mode.postProcessingProvider) { _, _ in
             // Reset model when provider changes
-            let availableModels = mode.postProcessingProvider.models(for: .postProcessing)
-            if !availableModels.contains(mode.postProcessingModel) {
-                mode.postProcessingModel = availableModels.first ?? ""
+            if mode.postProcessingProvider == .voiceink {
+                mode.postProcessingModel = settings.voiceInkPostProcessingModel()
+            } else {
+                let availableModels = mode.postProcessingProvider.models(for: .postProcessing)
+                if !availableModels.contains(mode.postProcessingModel) {
+                    mode.postProcessingModel = availableModels.first ?? ""
+                }
             }
         }
     }

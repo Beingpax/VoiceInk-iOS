@@ -12,6 +12,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
     case cerebras = "Cerebras"
     case gemini = "Gemini"
     case local = "Local (Whisper)"
+    case voiceink = "VoiceInk"
 
     var id: String { rawValue }
 
@@ -23,6 +24,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case .cerebras: return URL(string: "https://api.cerebras.ai")!
         case .gemini: return URL(string: "https://generativelanguage.googleapis.com/v1beta/openai")!
         case .local: return URL(string: "http://localhost")! // Not used for local transcription
+        case .voiceink: return URL(string: "https://api.groq.com/openai")! // VoiceInk uses Groq backend
         }
     }
     
@@ -34,6 +36,7 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
         case .cerebras: return URL(string: "https://cloud.cerebras.ai/platform")!
         case .gemini: return URL(string: "https://aistudio.google.com/app/apikey")!
         case .local: return URL(string: "https://github.com/ggerganov/whisper.cpp")! // Whisper.cpp GitHub page
+        case .voiceink: return URL(string: "https://voiceink.app")! // VoiceInk website
         }
     }
 
@@ -91,6 +94,10 @@ enum Provider: String, CaseIterable, Codable, Identifiable {
             ]
         case (.local, .postProcessing):
             return [] // Local transcription doesn't support post-processing
+        case (.voiceink, .transcription):
+            return [] // Hardcoded: whisper-large-v3 (no user selection)
+        case (.voiceink, .postProcessing):
+            return [] // Hardcoded: gpt-oss-120b (no user selection)
         }
     }
 }

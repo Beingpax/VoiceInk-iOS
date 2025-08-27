@@ -144,6 +144,7 @@ final class AppSettings: ObservableObject {
         case .cerebras: return cerebrasAPIKey
         case .gemini: return geminiAPIKey
         case .local: return "local" // Local transcription doesn't need an API key
+        case .voiceink: return "" // TODO: Replace with actual VoiceInk API key
         }
     }
 
@@ -171,6 +172,8 @@ final class AppSettings: ObservableObject {
             if geminiAPIKey != key { geminiKeyVerified = false }
         case .local:
             break // Local provider doesn't use API keys
+        case .voiceink:
+            break // VoiceInk uses hardcoded API key
         }
     }
     
@@ -182,6 +185,7 @@ final class AppSettings: ObservableObject {
         case .cerebras: return cerebrasKeyVerified && !cerebrasAPIKey.isEmpty
         case .gemini: return geminiKeyVerified && !geminiAPIKey.isEmpty
         case .local: return LocalModelManager.shared.hasAvailableModel
+        case .voiceink: return true // VoiceInk uses hardcoded API key, always verified
         }
     }
     
@@ -193,6 +197,7 @@ final class AppSettings: ObservableObject {
         case .cerebras: cerebrasKeyVerified = verified
         case .gemini: geminiKeyVerified = verified
         case .local: break // Local model status is handled by LocalModelManager
+        case .voiceink: break // VoiceInk uses hardcoded API key, no verification needed
         }
     }
 
@@ -244,11 +249,11 @@ final class AppSettings: ObservableObject {
     /// Get the effective transcription model (from selected mode, first mode, or fallback to legacy)
     var effectiveTranscriptionModel: String {
         if let selectedMode = selectedMode {
-            return selectedMode.transcriptionModel
+            return selectedMode.transcriptionProvider == .voiceink ? voiceInkTranscriptionModel() : selectedMode.transcriptionModel
         } else if let firstMode = modes.first {
-            return firstMode.transcriptionModel
+            return firstMode.transcriptionProvider == .voiceink ? voiceInkTranscriptionModel() : firstMode.transcriptionModel
         } else {
-            return preferredModel
+            return effectiveTranscriptionProvider == .voiceink ? voiceInkTranscriptionModel() : preferredModel
         }
     }
     
@@ -266,11 +271,11 @@ final class AppSettings: ObservableObject {
     /// Get the effective post-processing model (from selected mode, first mode, or fallback to legacy)
     var effectivePostProcessingModel: String {
         if let selectedMode = selectedMode {
-            return selectedMode.postProcessingModel
+            return selectedMode.postProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : selectedMode.postProcessingModel
         } else if let firstMode = modes.first {
-            return firstMode.postProcessingModel
+            return firstMode.postProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : firstMode.postProcessingModel
         } else {
-            return llmModel
+            return effectivePostProcessingProvider == .voiceink ? voiceInkPostProcessingModel() : llmModel
         }
     }
     
@@ -295,6 +300,18 @@ final class AppSettings: ObservableObject {
             // For backward compatibility, enable post-processing if there's a prompt
             return !postProcessPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
+    }
+    
+    // MARK: - VoiceInk Hardcoded Models
+    
+    /// Get the hardcoded transcription model for VoiceInk
+    func voiceInkTranscriptionModel() -> String {
+        return "whisper-large-v3"
+    }
+    
+    /// Get the hardcoded post-processing model for VoiceInk
+    func voiceInkPostProcessingModel() -> String {
+        return "gpt-oss-120b"
     }
 
     private func saveAPIKey(_ key: String, forKey account: String) {
