@@ -1,0 +1,15 @@
+{
+  "originHash" : "e73c4125af8b019ecb5e4d8b92ecd0bfbd454ea2065453b96594b17e436333de",
+  "pins" : [
+    {
+      "identity" : "keyboardkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KeyboardKit/KeyboardKit",
+      "state" : {
+        "revision" : "a7e33ac2e6f47e16288ce09ec8d765cd329f918c",
+        "version" : "9.9.0"
+      }
+    }
+  ],
+  "version" : 3
+}
