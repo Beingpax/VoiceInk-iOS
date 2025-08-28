@@ -86,6 +86,13 @@
 			);
 			target = E18B9A4C2E600F9F0068773A /* VoiceInkKeyboard */;
 		};
+		E18B9BE02E6056DB0068773A /* Exceptions for "VoiceInk-ios" folder in "VoiceInkKeyboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppGroupCoordinator.swift,
+			);
+			target = E18B9A4C2E600F9F0068773A /* VoiceInkKeyboard */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -93,6 +100,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				E168DF2A2E4B464C00F133D2 /* Exceptions for "VoiceInk-ios" folder in "VoiceInk-ios" target */,
+				E18B9BE02E6056DB0068773A /* Exceptions for "VoiceInk-ios" folder in "VoiceInkKeyboard" target */,
 			);
 			path = "VoiceInk-ios";
 			sourceTree = "<group>";

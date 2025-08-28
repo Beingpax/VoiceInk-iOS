@@ -30,7 +30,7 @@ This document outlines the steps to integrate Keyboard Kit into the VoiceInk app
 
 ## Phase 2: Building the Keyboard and Communication
 
-- [ ] **Request Full Access for the Keyboard:**
+- [x] **Request Full Access for the Keyboard:**
     - In the project navigator, find the `Info.plist` file inside your keyboard extension's folder.
     - Right-click and choose `Open As` > `Source Code`.
     - Inside the `NSExtension` dictionary, add the following key-value pair to request open access, which is necessary for the keyboard to interact with the App Group.
@@ -38,18 +38,20 @@ This document outlines the steps to integrate Keyboard Kit into the VoiceInk app
         <key>RequestsOpenAccess</key>
         <true/>
         ```
-- [ ] **Design the Keyboard with a Record Button:**
+- [x] **Design the Keyboard with a Record Button:**
     - In `KeyboardViewController.swift`, use Keyboard Kit to create a custom layout that includes a "Record" button.
+    - ✅ **COMPLETED**: Red capsule-shaped record button implemented with proper styling, constraints, and haptic feedback. Button toggles between "🎤 Record" and "⏹️ Stop" states with visual feedback.
 
-- [ ] **Implement Keyboard-to-App Signaling:**
+- [x] **Implement Keyboard-to-App Signaling:**
     - Create a new Swift file, `AppGroupCoordinator.swift`, to manage communication.
     - In this file, create a class or struct to handle:
         1. Writing a "start recording" signal to a shared `UserDefaults` instance associated with your App Group.
         2. Posting Darwin notifications for immediate communication between keyboard and main app.
-    - Make sure to add this new file to both the main app target and the keyboard extension target in the "Target Membership" inspector.
+    - ✅ **COMPLETED**: Modern 2025 iOS-native implementation created with hybrid App Groups + Darwin Notifications approach
+    - ⏳ **NEXT**: Add this file to both the main app target and keyboard extension target in Xcode's "Target Membership" inspector.
     - When the user taps the Record button, the keyboard will:
         1. Set a flag (e.g., `shouldStartRecording = true`) in the shared `UserDefaults`.
-        2. Post a Darwin notification (e.g., `com.yourcompany.voiceink.startRecording`) to immediately notify the main app.
+        2. Post a Darwin notification (e.g., `com.prakashjoshipax.VoiceInk.startRecording`) to immediately notify the main app.
 
 ## Phase 3: Implementing Recording in the Main App
 

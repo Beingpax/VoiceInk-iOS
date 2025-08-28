@@ -125,23 +125,32 @@ class KeyboardViewController: KeyboardInputViewController {
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
         
-        // TODO: Use the coordinator to signal the main app
-        // let coordinator = AppGroupCoordinator.shared
+        // Use the coordinator to signal the main app
+        let coordinator = AppGroupCoordinator.shared
         
-        // For now, just provide visual feedback
+        if coordinator.isRecording {
+            // Currently recording, so stop
+            coordinator.requestStopRecording()
+        } else {
+            // Not recording, so start
+            coordinator.requestStartRecording()
+        }
+        
+        // Update visual state
         updateButtonAppearanceBasedOnState()
     }
     
     private func updateButtonAppearanceBasedOnState() {
-        // Temporary visual feedback until AppGroupCoordinator is implemented
-        let isRecording = recordButton.backgroundColor == UIColor.systemGreen
+        // Use AppGroupCoordinator to get real recording state
+        let coordinator = AppGroupCoordinator.shared
+        let isRecording = coordinator.isRecording
         
         if isRecording {
-            recordButton.backgroundColor = UIColor.systemRed
-            recordButton.setTitle("🎤 Record", for: .normal)
-        } else {
             recordButton.backgroundColor = UIColor.systemGreen
             recordButton.setTitle("⏹️ Stop", for: .normal)
+        } else {
+            recordButton.backgroundColor = UIColor.systemRed
+            recordButton.setTitle("🎤 Record", for: .normal)
         }
         
         // Ensure capsule shape is maintained
