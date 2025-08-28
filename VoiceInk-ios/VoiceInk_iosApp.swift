@@ -13,6 +13,12 @@ struct VoiceInk_iosApp: App {
     @State private var hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
     @StateObject private var recordingManager = RecordingManager()
     
+    init() {
+        // Clear any stale recording state on app launch
+        AppGroupCoordinator.shared.updateRecordingState(false)
+        print("🧹 Cleared stale recording state on app launch")
+    }
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Transcription.self,

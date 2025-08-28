@@ -29,11 +29,11 @@ final class AudioSessionManager: ObservableObject {
         let audioSession = AVAudioSession.sharedInstance()
         
         do {
-            // Configure session for foreground recording only
+            // Configure session for recording with background support
             try audioSession.setCategory(
                 .playAndRecord,
                 mode: .spokenAudio,
-                options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP]
+                options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .mixWithOthers]
             )
             
             // Activate the session

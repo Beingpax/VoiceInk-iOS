@@ -69,7 +69,18 @@ final class AppGroupCoordinator {
     
     /// Get current recording state (for keyboard UI updates)
     var isRecording: Bool {
-        return sharedDefaults?.bool(forKey: UserDefaultsKeys.isRecording) ?? false
+        let storedState = sharedDefaults?.bool(forKey: UserDefaultsKeys.isRecording) ?? false
+        let timestamp = sharedDefaults?.double(forKey: UserDefaultsKeys.lastRecordingTimestamp) ?? 0
+        let currentTime = Date().timeIntervalSince1970
+        
+        // If the stored state is more than 30 seconds old, consider it stale
+        if storedState && (currentTime - timestamp) > 30 {
+            print("⚠️ Recording state appears stale, clearing it")
+            updateRecordingState(false)
+            return false
+        }
+        
+        return storedState
     }
     
     // MARK: - Public Interface for Main App
@@ -77,9 +88,13 @@ final class AppGroupCoordinator {
     /// Call this from the main app to update recording state
     func updateRecordingState(_ isRecording: Bool) {
         sharedDefaults?.set(isRecording, forKey: UserDefaultsKeys.isRecording)
+        // Update timestamp whenever state changes
+        sharedDefaults?.set(Date().timeIntervalSince1970, forKey: UserDefaultsKeys.lastRecordingTimestamp)
         
         // Notify keyboard of state change
         postDarwinNotification(NotificationNames.recordingStateChanged)
+        
+        print("📡 Updated recording state: \(isRecording)")
     }
     
     /// Check and consume start recording flag (returns true if should start)

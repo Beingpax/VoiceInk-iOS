@@ -11,10 +11,18 @@ import KeyboardKit
 class KeyboardViewController: KeyboardInputViewController {
     
     var recordButton: UIButton!
+    private let coordinator = AppGroupCoordinator.shared
+    private var recordingStatusTimer: Timer?
+    
+    deinit {
+        recordingStatusTimer?.invalidate()
+        recordingStatusTimer = nil
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupKeyboard()
+        setupRecordingStatusMonitoring()
     }
     
     private func setupKeyboard() {
@@ -47,22 +55,27 @@ class KeyboardViewController: KeyboardInputViewController {
     }
     
     private func setupRecordButton() {
-        // Create the capsule-shaped record button
+        // Create the native iOS-style record button
         recordButton = UIButton(type: .system)
-        recordButton.setTitle("🎤 Record", for: .normal)
-        recordButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        recordButton.backgroundColor = UIColor.systemRed
-        recordButton.setTitleColor(.white, for: .normal)
-        recordButton.layer.cornerRadius = 14 // Will be adjusted to make it capsule-shaped
         recordButton.translatesAutoresizingMaskIntoConstraints = false
         recordButton.addTarget(self, action: #selector(recordButtonTapped), for: .touchUpInside)
         
-        // Add some padding and styling for better appearance
-        recordButton.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
+        // Configure for idle state initially
+        configureButtonForIdleState()
+        
+        // Add native iOS styling
+        recordButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        recordButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 16, bottom: 6, right: 16)
+        
+        // Native iOS shadow and styling
         recordButton.layer.shadowColor = UIColor.black.cgColor
         recordButton.layer.shadowOffset = CGSize(width: 0, height: 1)
-        recordButton.layer.shadowOpacity = 0.15
-        recordButton.layer.shadowRadius = 1.5
+        recordButton.layer.shadowOpacity = 0.2
+        recordButton.layer.shadowRadius = 2
+        
+        // Add subtle border for better definition
+        recordButton.layer.borderWidth = 0.5
+        recordButton.layer.borderColor = UIColor.separator.cgColor
         
         // Add button to main view
         view.addSubview(recordButton)
@@ -70,13 +83,47 @@ class KeyboardViewController: KeyboardInputViewController {
         // Set up constraints - position in top center with safe margins
         NSLayoutConstraint.activate([
             recordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            recordButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
-            recordButton.heightAnchor.constraint(equalToConstant: 28),
-            recordButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 80)
+            recordButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
+            recordButton.heightAnchor.constraint(equalToConstant: 32),
+            recordButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 120)
         ])
         
         // Ensure button stays on top
         view.bringSubviewToFront(recordButton)
+    }
+    
+    private func configureButtonForIdleState() {
+        // Use SF Symbol for microphone
+        let microphoneConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
+        let microphoneImage = UIImage(systemName: "mic.fill", withConfiguration: microphoneConfig)
+        
+        recordButton.setImage(microphoneImage, for: .normal)
+        recordButton.setTitle(" Record", for: .normal)
+        recordButton.backgroundColor = UIColor.systemBlue
+        recordButton.setTitleColor(.white, for: .normal)
+        recordButton.tintColor = .white
+        
+        // Ensure image and text are properly aligned
+        recordButton.semanticContentAttribute = .forceLeftToRight
+        recordButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 4)
+        recordButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
+    }
+    
+    private func configureButtonForRecordingState() {
+        // Use SF Symbol for stop
+        let stopConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
+        let stopImage = UIImage(systemName: "stop.fill", withConfiguration: stopConfig)
+        
+        recordButton.setImage(stopImage, for: .normal)
+        recordButton.setTitle(" Stop", for: .normal)
+        recordButton.backgroundColor = UIColor.systemRed
+        recordButton.setTitleColor(.white, for: .normal)
+        recordButton.tintColor = .white
+        
+        // Ensure image and text are properly aligned
+        recordButton.semanticContentAttribute = .forceLeftToRight
+        recordButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 4)
+        recordButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -120,14 +167,32 @@ class KeyboardViewController: KeyboardInputViewController {
     }
     
     @objc private func recordButtonTapped() {
+        // Add native iOS button press animation
+        addButtonPressAnimation()
         
         // Provide haptic feedback
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
         
-        // Simply open the main app for recording
-        // No more complex coordination - just switch to main app
-        openMainAppForRecording()
+        if coordinator.isRecording {
+            // Stop recording
+            coordinator.requestStopRecording()
+            updateButtonAppearanceBasedOnState()
+        } else {
+            // Start recording by opening main app
+            openMainAppForRecording()
+        }
+    }
+    
+    private func addButtonPressAnimation() {
+        // Native iOS button press animation - scale down then back up
+        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
+            self.recordButton.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }) { _ in
+            UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut], animations: {
+                self.recordButton.transform = CGAffineTransform.identity
+            })
+        }
     }
     
     private func openMainAppForRecording() {
@@ -194,22 +259,47 @@ class KeyboardViewController: KeyboardInputViewController {
     
     private func showUserMessage() {
         // Last resort: Update button to show user should open main app manually
-        recordButton.setTitle("📱 Open VoiceInk", for: .normal)
-        recordButton.backgroundColor = UIColor.systemBlue
+        let appConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold)
+        let appImage = UIImage(systemName: "app", withConfiguration: appConfig)
+        
+        recordButton.setImage(appImage, for: .normal)
+        recordButton.setTitle(" Open VoiceInk", for: .normal)
+        recordButton.backgroundColor = UIColor.systemOrange
+        recordButton.setTitleColor(.white, for: .normal)
+        recordButton.tintColor = .white
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.recordButton.setTitle("🎤 Record", for: .normal)
-            self.recordButton.backgroundColor = UIColor.systemRed
+            self.configureButtonForIdleState()
         }
     }
     
-    private func updateButtonAppearanceBasedOnState() {
-        // Simplified: Always show "Record" since we just open the main app
-        recordButton.backgroundColor = UIColor.systemRed
-        recordButton.setTitle("🎤 Record", for: .normal)
+    private func setupRecordingStatusMonitoring() {
+        // Monitor recording status every 0.5 seconds
+        recordingStatusTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.updateButtonAppearanceBasedOnState()
+        }
         
-        // Ensure capsule shape is maintained
-        recordButton.layer.cornerRadius = recordButton.frame.height / 2
+        // Initial state update
+        updateButtonAppearanceBasedOnState()
+    }
+    
+    private func updateButtonAppearanceBasedOnState() {
+        let isRecording = coordinator.isRecording
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let button = self.recordButton else { return }
+            
+            if isRecording {
+                // Configure for recording state
+                self.configureButtonForRecordingState()
+            } else {
+                // Configure for idle state
+                self.configureButtonForIdleState()
+            }
+            
+            // Ensure capsule shape is maintained
+            button.layer.cornerRadius = button.frame.height / 2
+        }
     }
     
     override func textWillChange(_ textInput: UITextInput?) {

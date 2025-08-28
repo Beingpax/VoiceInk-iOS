@@ -87,6 +87,11 @@ struct NotesListView: View {
                         )
                     }
                 }
+                .onReceive(NotificationCenter.default.publisher(for: .stopRecordingFromKeyboard)) { _ in
+                    if recordingManager.isRecording {
+                        recordingManager.stopRecording(modelContext: modelContext)
+                    }
+                }
         }
     }
 

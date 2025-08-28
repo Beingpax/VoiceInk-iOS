@@ -4,6 +4,10 @@ import AVFoundation
 import Combine
 import UIKit
 
+extension Notification.Name {
+    static let stopRecordingFromKeyboard = Notification.Name("stopRecordingFromKeyboard")
+}
+
 enum RecordingState: Equatable {
     case idle
     case recording
@@ -45,6 +49,7 @@ final class RecordingManager: ObservableObject {
     private var durationTimer: Timer?
 
     private let sessionManager = AudioSessionManager.shared
+    private let coordinator = AppGroupCoordinator.shared
     
     var isRecording: Bool {
         recordingState == .recording
@@ -54,10 +59,22 @@ final class RecordingManager: ObservableObject {
     init() {
         // Simplified initialization - no complex keyboard coordination needed
         print("🎙️ RecordingManager initialized")
+        setupCoordinatorCallbacks()
     }
     
     deinit {
         durationTimer?.invalidate()
+    }
+    
+    // MARK: - Coordinator Setup
+    private func setupCoordinatorCallbacks() {
+        coordinator.onStopRecordingRequested = { [weak self] in
+            guard let self = self, self.isRecording else { return }
+            // This will be called when keyboard extension requests stop
+            print("🛑 Stop recording requested from keyboard extension")
+            // We need modelContext, so we'll handle this via a notification instead
+            NotificationCenter.default.post(name: .stopRecordingFromKeyboard, object: nil)
+        }
     }
     
     // MARK: - Recording Flow (Simplified)
@@ -86,6 +103,9 @@ final class RecordingManager: ObservableObject {
         recordingState = .recording
         animate = true
         
+        // Update coordinator state
+        coordinator.updateRecordingState(true)
+        
         // Auto-select first mode if none is selected
         if settings.selectedModeId == nil && !settings.modes.isEmpty {
             settings.selectedModeId = settings.modes.first?.id
@@ -99,6 +119,8 @@ final class RecordingManager: ObservableObject {
             activeRecordingAlert = .generic(error)
             recordingState = .idle
             animate = false
+            // Update coordinator state on error
+            coordinator.updateRecordingState(false)
         }
     }
     
@@ -128,6 +150,9 @@ final class RecordingManager: ObservableObject {
         currentRecordingNote = note
         isRecordingSheetPresented = false
         
+        // Update coordinator state
+        coordinator.updateRecordingState(false)
+        
         // Start background transcription
         transcribeInBackground(note: note, audioFileName: audioFileName, recordingDuration: recordingDuration, modelContext: modelContext)
     }
@@ -139,6 +164,9 @@ final class RecordingManager: ObservableObject {
         animate = false
         isRecordingSheetPresented = false
         currentDuration = 0
+        
+        // Update coordinator state
+        coordinator.updateRecordingState(false)
     }
     
     // MARK: - Permissions
