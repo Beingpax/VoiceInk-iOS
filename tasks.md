@@ -43,21 +43,29 @@ This document outlines the steps to integrate Keyboard Kit into the VoiceInk app
 
 - [ ] **Implement Keyboard-to-App Signaling:**
     - Create a new Swift file, `AppGroupCoordinator.swift`, to manage communication.
-    - In this file, create a class or struct to handle writing a "start recording" signal to a shared `UserDefaults` instance associated with your App Group.
+    - In this file, create a class or struct to handle:
+        1. Writing a "start recording" signal to a shared `UserDefaults` instance associated with your App Group.
+        2. Posting Darwin notifications for immediate communication between keyboard and main app.
     - Make sure to add this new file to both the main app target and the keyboard extension target in the "Target Membership" inspector.
-    - When the user taps the Record button, the keyboard will call a method in your coordinator to set a flag (e.g., `shouldStartRecording = true`) in the shared `UserDefaults`.
+    - When the user taps the Record button, the keyboard will:
+        1. Set a flag (e.g., `shouldStartRecording = true`) in the shared `UserDefaults`.
+        2. Post a Darwin notification (e.g., `com.yourcompany.voiceink.startRecording`) to immediately notify the main app.
 
 ## Phase 3: Implementing Recording in the Main App
 
 - [ ] **Listen for Signals in the Main App:**
-    - In your main app, likely within your `RecordingManager` or a similar central class, use the `AppGroupCoordinator` to observe changes to the `shouldStartRecording` flag in the shared `UserDefaults`.
-    - You can use Key-Value Observing (KVO) or a timer to check the value periodically when the app is in the background.
+    - In your main app, likely within your `RecordingManager` or a similar central class, use the `AppGroupCoordinator` to:
+        1. Register a Darwin notification observer for the recording signals (e.g., `com.yourcompany.voiceink.startRecording`).
+        2. When a Darwin notification is received, immediately check the corresponding flag in the shared `UserDefaults`.
+    - This approach provides immediate notification when the keyboard sends a signal, eliminating the need for polling or timers.
 
 - [ ] **Handle Recording Lifecycle:**
     - When the main app detects that `shouldStartRecording` is `true`, it will:
         1. Immediately reset the flag to `false` in shared `UserDefaults` to prevent multiple recordings.
         2. Start the audio recording using your existing `AudioRecorder` service.
-    - You will need a corresponding "Stop" button in the keyboard that sets a `shouldStopRecording` flag, which the main app will also observe to stop and save the recording.
+    - You will need a corresponding "Stop" button in the keyboard that:
+        1. Sets a `shouldStopRecording` flag in shared `UserDefaults`.
+        2. Posts a Darwin notification (e.g., `com.yourcompany.voiceink.stopRecording`) to immediately notify the main app to stop and save the recording.
 
 - [ ] **Provide User Feedback:**
     - The keyboard UI should update to indicate that a recording is in progress (e.g., the record button changes to a stop icon). This state can also be managed via a flag in the shared `UserDefaults` (e.g., `isRecording`). The keyboard will read this flag to update its UI.
