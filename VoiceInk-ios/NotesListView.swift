@@ -17,7 +17,7 @@ struct NotesListView: View {
 
     @State private var searchText: String = ""
     @State private var showingNoModesAlert: Bool = false
-    @StateObject private var recordingManager = RecordingManager()
+    @EnvironmentObject private var recordingManager: RecordingManager
     @StateObject private var settings = AppSettings.shared
 
     var filteredNotes: [Transcription] {
@@ -183,6 +183,7 @@ struct NotesListView: View {
 #Preview {
     NotesListView()
         .modelContainer(for: [Transcription.self])
+        .environmentObject(RecordingManager())
 }
 
 

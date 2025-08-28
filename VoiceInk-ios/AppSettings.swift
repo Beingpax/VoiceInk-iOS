@@ -69,6 +69,10 @@ final class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(geminiKeyVerified, forKey: "geminiKeyVerified") }
     }
     
+    // Audio session timeout configuration
+    @Published var audioSessionTimeoutSeconds: Int {
+        didSet { UserDefaults.standard.set(audioSessionTimeoutSeconds, forKey: "audioSessionTimeoutSeconds") }
+    }
 
 
     private init() {
@@ -94,6 +98,9 @@ final class AppSettings: ObservableObject {
         self.deepgramKeyVerified = UserDefaults.standard.bool(forKey: "deepgramKeyVerified")
         self.cerebrasKeyVerified = UserDefaults.standard.bool(forKey: "cerebrasKeyVerified")
         self.geminiKeyVerified = UserDefaults.standard.bool(forKey: "geminiKeyVerified")
+        
+        // Load audio session timeout (default: 90 seconds)
+        self.audioSessionTimeoutSeconds = UserDefaults.standard.object(forKey: "audioSessionTimeoutSeconds") as? Int ?? 90
 
     }
 
@@ -295,6 +302,10 @@ final class AppSettings: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "deepgramKeyVerified")
         UserDefaults.standard.removeObject(forKey: "cerebrasKeyVerified")
         UserDefaults.standard.removeObject(forKey: "geminiKeyVerified")
+        
+        // Reset audio session timeout to default
+        audioSessionTimeoutSeconds = 90
+        UserDefaults.standard.removeObject(forKey: "audioSessionTimeoutSeconds")
 
         // Clear API keys from memory and Keychain
         groqAPIKey = ""

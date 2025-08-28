@@ -16,12 +16,11 @@ final class AudioRecorder: NSObject, ObservableObject {
 
     private var audioRecorder: AVAudioRecorder?
     private var meterTimer: Timer?
+    private let sessionManager = AudioSessionManager.shared
 
     func startRecording() throws {
-        // Configure audio session for background recording
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker, .allowBluetooth])
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        // Use session manager to activate audio session
+        try sessionManager.activateSessionForRecording()
 
         let filename = "recording_\(Int(Date().timeIntervalSince1970)).wav"
         let url = Self.recordingsDirectory().appendingPathComponent(filename)
@@ -37,8 +36,10 @@ final class AudioRecorder: NSObject, ObservableObject {
         audioRecorder = try AVAudioRecorder(url: url, settings: settings)
         audioRecorder?.delegate = self
         audioRecorder?.isMeteringEnabled = true
-        guard audioRecorder?.record() == true else { 
-            throw NSError(domain: "Audio", code: -1) 
+        guard audioRecorder?.record() == true else {
+            // Provide a more descriptive error to help with debugging
+            let userInfo = [NSLocalizedDescriptionKey: "Failed to start AVAudioRecorder. The record() method returned false. This often happens in the background if the audio session is not configured correctly or if there is a conflict with another app."]
+            throw NSError(domain: "com.prakashjoshipax.VoiceInk.AudioRecorder", code: 1001, userInfo: userInfo)
         }
 
         currentRecordingURL = url
@@ -69,17 +70,26 @@ final class AudioRecorder: NSObject, ObservableObject {
         isRecording = false
         levelsHistory.removeAll()
         
-        // Deactivate audio session when done recording
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        // Schedule session deactivation with timeout instead of immediate deactivation
+        sessionManager.scheduleDeactivation()
     }
 
     func discard() {
-        stopRecording()
+        audioRecorder?.stop()
+        audioRecorder = nil
+        meterTimer?.invalidate()
+        meterTimer = nil
+        isRecording = false
+        levelsHistory.removeAll()
+        
         if let url = currentRecordingURL {
             try? FileManager.default.removeItem(at: url)
         }
         currentRecordingURL = nil
         currentDuration = 0
+        
+        // Schedule session deactivation after discard as well
+        sessionManager.scheduleDeactivation()
     }
 
     static func recordingsDirectory() -> URL {

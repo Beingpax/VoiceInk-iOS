@@ -125,33 +125,88 @@ class KeyboardViewController: KeyboardInputViewController {
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
         
-        // Use the coordinator to signal the main app
-        let coordinator = AppGroupCoordinator.shared
+        // Simply open the main app for recording
+        // No more complex coordination - just switch to main app
+        openMainAppForRecording()
+    }
+    
+    private func openMainAppForRecording() {
+        // iOS keyboard extensions have severe limitations with audio recording
+        // The correct approach is to simply open the main app and let user record there
         
-        if coordinator.isRecording {
-            // Currently recording, so stop
-            coordinator.requestStopRecording()
+        // Try multiple approaches to open the main app
+        if let url = URL(string: "voiceink://record") {
+            // Method 1: Try extensionContext.open (primary method)
+            extensionContext?.open(url) { success in
+                if success {
+                    print("✅ Opened main app via extensionContext")
+                } else {
+                    print("❌ extensionContext.open failed, trying alternative methods")
+                    DispatchQueue.main.async {
+                        self.tryAlternativeURLOpening(url)
+                    }
+                }
+            }
         } else {
-            // Not recording, so start
-            coordinator.requestStartRecording()
+            // Fallback: Show message to user
+            showUserMessage()
+        }
+    }
+    
+    private func tryAlternativeURLOpening(_ url: URL) {
+        // Try UIApplication directly if available
+        if let sharedApp = UIApplication.value(forKeyPath: "sharedApplication") as? UIApplication {
+            if sharedApp.canOpenURL(url) {
+                sharedApp.open(url, options: [:]) { success in
+                    if success {
+                        print("✅ Opened main app via UIApplication.open")
+                    } else {
+                        print("❌ UIApplication.open failed")
+                        self.showUserMessage()
+                    }
+                }
+                return
+            }
         }
         
-        // Update visual state
-        updateButtonAppearanceBasedOnState()
+        // Fallback: Try responder chain method
+        openURLViaResponderChain(url)
+    }
+    
+    private func openURLViaResponderChain(_ url: URL) {
+        // iOS 18 workaround: Use responder chain to open URL
+        var responder: UIResponder? = self
+        let selector = sel_registerName("openURL:")
+        
+        while let r = responder, !r.responds(to: selector) {
+            responder = r.next
+        }
+        
+        if let responder = responder {
+            _ = responder.perform(selector, with: url)
+            print("✅ Attempted to open main app via responder chain")
+            // Don't assume success since we can't get feedback from this method
+        } else {
+            print("❌ All URL opening methods failed")
+            showUserMessage()
+        }
+    }
+    
+    private func showUserMessage() {
+        // Last resort: Update button to show user should open main app manually
+        recordButton.setTitle("📱 Open VoiceInk", for: .normal)
+        recordButton.backgroundColor = UIColor.systemBlue
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.recordButton.setTitle("🎤 Record", for: .normal)
+            self.recordButton.backgroundColor = UIColor.systemRed
+        }
     }
     
     private func updateButtonAppearanceBasedOnState() {
-        // Use AppGroupCoordinator to get real recording state
-        let coordinator = AppGroupCoordinator.shared
-        let isRecording = coordinator.isRecording
-        
-        if isRecording {
-            recordButton.backgroundColor = UIColor.systemGreen
-            recordButton.setTitle("⏹️ Stop", for: .normal)
-        } else {
-            recordButton.backgroundColor = UIColor.systemRed
-            recordButton.setTitle("🎤 Record", for: .normal)
-        }
+        // Simplified: Always show "Record" since we just open the main app
+        recordButton.backgroundColor = UIColor.systemRed
+        recordButton.setTitle("🎤 Record", for: .normal)
         
         // Ensure capsule shape is maintained
         recordButton.layer.cornerRadius = recordButton.frame.height / 2

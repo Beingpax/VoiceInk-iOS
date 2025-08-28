@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 import Combine
+import UIKit
 
 enum RecordingState: Equatable {
     case idle
@@ -42,7 +43,8 @@ final class RecordingManager: ObservableObject {
     private let postProcessor = LLMPostProcessor()
     private let settings = AppSettings.shared
     private var durationTimer: Timer?
-    private let coordinator = AppGroupCoordinator.shared
+
+    private let sessionManager = AudioSessionManager.shared
     
     var isRecording: Bool {
         recordingState == .recording
@@ -50,34 +52,17 @@ final class RecordingManager: ObservableObject {
     
     // MARK: - Initialization
     init() {
-        setupKeyboardCoordination()
+        // Simplified initialization - no complex keyboard coordination needed
+        print("🎙️ RecordingManager initialized")
     }
     
-    // MARK: - Keyboard Coordination
-    private func setupKeyboardCoordination() {
-        // Set up callbacks for keyboard-initiated recording
-        coordinator.onStartRecordingRequested = { [weak self] in
-            self?.handleKeyboardStartRecording()
-        }
-        
-        coordinator.onStopRecordingRequested = { [weak self] in
-            self?.handleKeyboardStopRecording()
-        }
+    deinit {
+        durationTimer?.invalidate()
     }
     
-    private func handleKeyboardStartRecording() {
-        // Only start if not already recording
-        guard !isRecording else { return }
-        startRecordingFlow()
-    }
+    // MARK: - Recording Flow (Simplified)
     
-    private func handleKeyboardStopRecording() {
-        // Only stop if currently recording
-        guard isRecording else { return }
-        // We need the modelContext, but we'll handle this in the view layer
-        // For now, just update the coordinator state
-        coordinator.updateRecordingState(false)
-    }
+
     
     // MARK: - Recording Flow
     func startRecordingFlow() {
@@ -110,14 +95,10 @@ final class RecordingManager: ObservableObject {
             try recorder.startRecording()
             startDurationTimer()
             isRecordingSheetPresented = true
-            
-            // Update coordinator state for keyboard UI
-            coordinator.updateRecordingState(true)
         } catch {
             activeRecordingAlert = .generic(error)
             recordingState = .idle
             animate = false
-            coordinator.updateRecordingState(false)
         }
     }
     
@@ -147,9 +128,6 @@ final class RecordingManager: ObservableObject {
         currentRecordingNote = note
         isRecordingSheetPresented = false
         
-        // Update coordinator state for keyboard UI
-        coordinator.updateRecordingState(false)
-        
         // Start background transcription
         transcribeInBackground(note: note, audioFileName: audioFileName, recordingDuration: recordingDuration, modelContext: modelContext)
     }
@@ -161,9 +139,6 @@ final class RecordingManager: ObservableObject {
         animate = false
         isRecordingSheetPresented = false
         currentDuration = 0
-        
-        // Update coordinator state for keyboard UI
-        coordinator.updateRecordingState(false)
     }
     
     // MARK: - Permissions

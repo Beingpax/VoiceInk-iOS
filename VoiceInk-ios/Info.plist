@@ -6,10 +6,17 @@
 	<string>Voice Ink</string>
 	<key>CFBundleName</key>
 	<string>VoiceInk</string>
-	<key>UIBackgroundModes</key>
+
+	<key>CFBundleURLTypes</key>
 	<array>
-		<string>remote-notification</string>
-		<string>audio</string>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.prakashjoshipax.VoiceInk</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>voiceink</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -47,6 +47,31 @@ struct SettingsView: View {
                 }
             }
             
+            Section(header: Text("Audio Settings")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Session Timeout")
+                        Spacer()
+                        Text("\(settings.audioSessionTimeoutSeconds)s")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Slider(
+                        value: Binding(
+                            get: { Double(settings.audioSessionTimeoutSeconds) },
+                            set: { settings.audioSessionTimeoutSeconds = Int($0) }
+                        ),
+                        in: 0...300,
+                        step: 15
+                    )
+                    
+                    Text("How long to keep the microphone session active after recording stops. Longer timeouts prevent 'session activation failed' errors when recording frequently, but may use more battery.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.vertical, 4)
+            }
 
             #if DEBUG
             Section(header: Text("Debug")) {
